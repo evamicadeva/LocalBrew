@@ -27,6 +27,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 @Entity
 @Table(name = "favorite_drinks",  uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "drink_id"})
@@ -51,4 +52,6 @@ public class FavoriteDrink {
 	    @Column(nullable = false, updatable = false)
 	    private LocalDateTime savedAt;
 	}
+
+
 
