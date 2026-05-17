@@ -48,7 +48,7 @@ public class Venue {
 	@Column (nullable = false)
 	@Enumerated(EnumType.STRING)
 	private StatusVenue status;
-	@Column (nullable = false)
+	@Column (nullable = false, name = "created_at")
 	private LocalDate createdAt;
 	
 	@ManyToOne
