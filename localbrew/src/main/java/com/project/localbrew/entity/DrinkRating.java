@@ -23,7 +23,7 @@ public class DrinkRating {
     private Integer rating; // DTO validation
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
