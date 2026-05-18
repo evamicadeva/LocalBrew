@@ -49,10 +49,12 @@ import lombok.Builder;
 	    @CreationTimestamp
 	    @Column(nullable = false, updatable = false)
 	    private LocalDateTime createdAt;
-	   
-	    @JsonIgnore //evita ricorsione infinita prima di DTO
-	    @OneToMany(mappedBy = "user")
+	  
+
+	    @OneToMany(cascade = CascadeType.ALL)
+	    @JoinColumn(name = "user_id")
 	    private List<FavoriteDrink> favoriteDrinks;
-}
+	    }
+
 
 
