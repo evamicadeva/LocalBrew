@@ -8,8 +8,8 @@ import com.project.localbrew.entity.Venue;
 public interface VenueService {
 	// Crud
 	List<Venue> findAllVenues();
-	Venue findVenueById(Venue venue, UUID id);
+	Venue findVenueById(UUID id);
 	Venue saveVenue(Venue venue);
-	Venue updateVenueById(UUID id);
+	Venue updateVenueById(Venue venue, UUID id);
 	void deleteVenue(UUID id);
 }
