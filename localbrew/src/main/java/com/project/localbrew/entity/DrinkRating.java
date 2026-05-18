@@ -13,8 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "drink_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "drink_id"})
-)
+@Table(name = "drink_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "drink_id"}))
 public class DrinkRating {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +31,5 @@ public class DrinkRating {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-
 }
 

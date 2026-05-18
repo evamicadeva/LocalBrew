@@ -1,5 +1,8 @@
 package com.project.localbrew.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -25,31 +28,39 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "books")
+@Table(name = "venues")
 public class Venue {
 	@Id
 	@GeneratedValue (strategy = GenerationType.UUID)
 	private UUID id;
-	@Column (nullable = false, length = 50)
+
+	@Column(nullable = false, length = 50)
 	private String name;
-	@Column (nullable = true, length = 500)
+
+	@Column(length = 500)
 	private String desription;
-	@Column (nullable = false, length = 70)
+
+	@Column(nullable = false, length = 70)
 	private String adress;
-	@Column (nullable = false)
+
+	@Column(nullable = false)
 	private Double latitude;
-	@Column (nullable = false)
+
+	@Column(nullable = false)
 	private Double longitude;
-	@Column (nullable = false)
+
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private VenueType type;
-	@Column (nullable = false)
+
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private StatusVenue status;
+	
 	@Column (nullable = false, name = "created_at")
 	private LocalDate createdAt;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	private User ownerId;
-	}
+	private User owner;
+}
