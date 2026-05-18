@@ -11,5 +11,5 @@ public interface VenueService {
 	Venue findVenueById(UUID id);
 	Venue saveVenue(Venue venue);
 	Venue updateVenueById(Venue venue, UUID id);
-	void deleteVenue(UUID id);
+	void deleteVenueById(UUID id);
 }
