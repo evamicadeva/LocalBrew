@@ -7,9 +7,9 @@ import java.util.UUID;
 import com.project.localbrew.entity.Venue;
 import com.project.localbrew.repository.VenueRepository;
 
-public class VenueServiceImpl implements VenueService{
+public class VenueServiceImpl implements VenueService {
 	private final VenueRepository venueRepository;
-	
+
 	public VenueServiceImpl(VenueRepository venueRepository) {
 		this.venueRepository = venueRepository;
 	}
@@ -22,10 +22,10 @@ public class VenueServiceImpl implements VenueService{
 	@Override
 	public Venue findVenueById(UUID id) {
 		if(id == null) {
-			// Mettere eccezione personalizzata
+			// Mettere eccezione personalizzata per id non trovato
 		}
 		Optional<Venue> optVenue = venueRepository.findById(id);
-		return null;
+		return optVenue.orElseThrow(() -> new);// mettere eccezione personalizzata per Venue non trovato con quel id
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class VenueServiceImpl implements VenueService{
 	@Override
 	public void deleteVenue(UUID id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
