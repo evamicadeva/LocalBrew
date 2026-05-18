@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.project.localbrew.entity.FavoriteDrink;
 
-
+@Repository
 public interface FavoriteDrinkRepository extends JpaRepository<FavoriteDrink, UUID> {
 
 }
