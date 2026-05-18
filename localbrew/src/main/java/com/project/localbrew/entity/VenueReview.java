@@ -1,21 +1,18 @@
 package com.project.localbrew.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,39 +25,24 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "venues")
-public class Venue {
+@Table(name = "venue_reviews")
+public class VenueReview {
 	@Id
 	@GeneratedValue (strategy = GenerationType.UUID)
 	private UUID id;
-
-	@Column(nullable = false, length = 50)
-	private String name;
-
-	@Column(length = 500)
-	private String desription;
-
-	@Column(nullable = false, length = 70)
-	private String adress;
-
 	@Column(nullable = false)
-	private Double latitude;
-
-	@Column(nullable = false)
-	private Double longitude;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private VenueType type;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private StatusVenue status;
-	
-	@Column (nullable = false, name = "created_at")
+	@Min(value = 1,message = "Il rating deve essere almeno 1")
+	@Max(value = 5,message = "Il rating deve essere massimo 5")
+	private Integer rating;
+	@Column(nullable = true, length = 500)
+	private String comment;
+	@Column(nullable = false, name = "create_at")
 	private LocalDate createdAt;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	private User owner;
+	private User userId;
+	@ManyToOne
+	@JoinColumn(name = "venue_id")
+	private Venue venueId;
 }
