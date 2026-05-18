@@ -33,5 +33,6 @@ public class DrinkRating {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+
 }
 

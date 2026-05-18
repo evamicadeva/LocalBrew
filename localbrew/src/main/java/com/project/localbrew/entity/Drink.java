@@ -2,7 +2,6 @@ package com.project.localbrew.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.UUID;
 
 @Getter

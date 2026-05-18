@@ -7,4 +7,5 @@ public enum DrinkCategory {
     ALE,
     WHEAT,
     SOUR
+
 }
