@@ -2,7 +2,6 @@ package com.project.localbrew.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -13,7 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Slf4j
 @Entity
 @Table(name = "favorite_venues", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "venue_id"}))
 public class FavoriteVenue {
