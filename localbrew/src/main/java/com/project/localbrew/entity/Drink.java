@@ -2,6 +2,7 @@ package com.project.localbrew.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.UUID;
 
 @Getter
@@ -27,6 +28,7 @@ public class Drink {
     @Enumerated(EnumType.STRING)
     private DrinkCategory category;
 
+    // alcohol by volume
     private Double abv; // DTO validation (0-100)
 
     private String origin;
