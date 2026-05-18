@@ -36,7 +36,7 @@ public class VenueReview {
 	private Integer rating;
 	@Column(nullable = true, length = 500)
 	private String comment;
-	@Column(nullable = false)
+	@Column(nullable = false, name = "create_at")
 	private LocalDate createdAt;
 	
 	@ManyToOne
