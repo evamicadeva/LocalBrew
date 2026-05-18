@@ -7,5 +7,5 @@ import com.project.localbrew.entity.Venue;
 public interface VenueService {
 	List<Venue> findAllVenues();
 	Venue findVenueByUUID();
-	
+	Venue saveVenue(Venue venue);
 }
