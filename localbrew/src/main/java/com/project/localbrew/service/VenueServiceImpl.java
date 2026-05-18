@@ -90,9 +90,14 @@ public class VenueServiceImpl implements VenueService {
 
 	@Transactional
 	@Override
-	public void deleteVenue(UUID id) {
-		// TODO Auto-generated method stub
-
+	public void deleteVenueById(UUID id) {
+		if (id == null) {
+			// Mettere eccezione personalizzata per id non trovato
+		}
+		
+		//cambiare exception con un eccezione personalizata
+		Venue delVenue = venueRepository.findById(id).orElsethrow(() -> new IllegalArgumentException());
+		venueRepository.delete(delVenue);
 	}
 
 	// metodi privati
