@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.project.localbrew.entity.Venue;
 
 public interface VenueService {
+	// Crud
 	List<Venue> findAllVenues();
 	Venue findVenueById(UUID id);
 	Venue saveVenue(Venue venue);
