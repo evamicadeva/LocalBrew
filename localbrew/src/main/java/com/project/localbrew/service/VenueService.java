@@ -8,7 +8,7 @@ import com.project.localbrew.entity.Venue;
 public interface VenueService {
 	// Crud
 	List<Venue> findAllVenues();
-	Venue findVenueById(UUID id);
+	Venue findVenueById(Venue venue, UUID id);
 	Venue saveVenue(Venue venue);
 	Venue updateVenueById(UUID id);
 	void deleteVenue(UUID id);
