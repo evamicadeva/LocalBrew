@@ -20,10 +20,10 @@ public class DrinkRating {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private UUID userId;   // FK → USER
+    private User user;   // FK → USER
 
     @Column(name = "drink_id", nullable = false)
-    private UUID drinkId;  // FK → DRINK
+    private Drink drink;  // FK → DRINK
 
     @Column(nullable = false)
     private Integer rating; // DTO validation
