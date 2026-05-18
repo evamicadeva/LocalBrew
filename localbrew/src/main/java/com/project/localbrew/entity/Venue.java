@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Slf4j
 @Entity
-@Table(name = "venues")
+@Table(name = "books")
 public class Venue {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
