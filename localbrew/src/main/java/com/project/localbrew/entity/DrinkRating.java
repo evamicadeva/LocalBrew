@@ -19,17 +19,18 @@ public class DrinkRating {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
-    private User user;   // FK → USER
-
-    @Column(name = "drink_id", nullable = false)
-    private Drink drink;  // FK → DRINK
-
     @Column(nullable = false)
     private Integer rating; // DTO validation
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     private LocalDateTime createdAt;
-}
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "drink_id", nullable = false)
+    private Drink drink;
+}
