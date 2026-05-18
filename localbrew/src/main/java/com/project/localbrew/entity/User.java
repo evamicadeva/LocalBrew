@@ -18,14 +18,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
-
+import lombok.extern.slf4j.Slf4j;
 
 	@Getter
 	@Setter
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	
+	@Slf4j
 	@Entity
 	@Table(name = "users")
 	public class User {

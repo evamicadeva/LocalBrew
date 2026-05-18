@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "books")
 public class Venue {
 	@Id
-	@GeneratedValue (strategy = GenerationType.AUTO)
+	@GeneratedValue (strategy = GenerationType.UUID)
 	private UUID id;
 	@Column (nullable = false, length = 50)
 	private String name;

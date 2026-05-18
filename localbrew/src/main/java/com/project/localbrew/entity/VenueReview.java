@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "venue_reviews")
 public class VenueReview {
 	@Id
-	@GeneratedValue (strategy = GenerationType.AUTO)
+	@GeneratedValue (strategy = GenerationType.UUID)
 	private UUID id;
 	@Column(nullable = false)
 	@Min(value = 1,message = "Il rating deve essere almeno 1")
