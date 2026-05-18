@@ -1,5 +1,6 @@
 package com.project.localbrew.entity;
 import com.project.localbrew.entity.User;
+import com.project.localbrew.entity.Drink;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,13 +22,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 @Builder
+//<<<<<<< HEAD
 
+//=======
+//>>>>>>> e96228e070be08e2d7f379811b407f4da4f7493b
 @Entity
 @Table(name = "favorite_drinks",  uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "drink_id"})
@@ -54,4 +61,8 @@ public class FavoriteDrink {
 	}
 
 
+//<<<<<<< HEAD
 
+
+//=======
+//>>>>>>> e96228e070be08e2d7f379811b407f4da4f7493b
