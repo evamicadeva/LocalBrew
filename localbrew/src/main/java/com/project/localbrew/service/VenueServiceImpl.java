@@ -25,7 +25,7 @@ public class VenueServiceImpl implements VenueService {
 			// Mettere eccezione personalizzata per id non trovato
 		}
 		Optional<Venue> optVenue = venueRepository.findById(id);
-		return optVenue.orElseThrow(() -> new);// mettere eccezione personalizzata per Venue non trovato con quel id
+		return optVenue.orElseThrow(() -> new Exception());// mettere eccezione personalizzata per Venue non trovato con quel id
 	}
 
 	@Override
