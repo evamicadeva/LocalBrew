@@ -112,4 +112,35 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
             throw new IllegalArgumentException("Il prezzo deve essere un valore positivo");
         }
     }
+
+    @Override
+    public List<VenueDrink> findVenueDrinksByVenue(UUID venueId) {
+        if (venueId == null) {
+            throw new IllegalArgumentException("L'ID del locale non può essere nullo");
+        }
+
+        List<VenueDrink> results = venueDrinkRepository.findByVenueId(venueId);
+
+        if (results.isEmpty()) {
+            throw new RuntimeException("Nessun drink trovato per il locale con ID: " + venueId);
+        }
+
+        return results;
+    }
+
+    @Override
+    public List<VenueDrink> findVenueDrinksByDrink(UUID drinkId) {
+        if (drinkId == null) {
+            throw new IllegalArgumentException("L'ID del drink non può essere nullo");
+        }
+
+        List<VenueDrink> results = venueDrinkRepository.findByDrinkId(drinkId);
+
+        if (results.isEmpty()) {
+            throw new RuntimeException("Nessun locale trovato che serva il drink con ID: " + drinkId);
+        }
+
+        return results;
+    }
+
 }
