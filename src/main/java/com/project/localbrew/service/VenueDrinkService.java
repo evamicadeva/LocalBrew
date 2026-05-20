@@ -16,4 +16,10 @@ public interface VenueDrinkService {
     VenueDrink updateVenueDrinkById(UUID id, VenueDrink drink);
 
     void deleteVenueDrinkById(UUID id);
+
+    // Utility
+    List<VenueDrink> findVenueDrinksByVenue(UUID venueId);
+
+    List<VenueDrink> findVenueDrinksByDrink(UUID drinkId);
+
 }
