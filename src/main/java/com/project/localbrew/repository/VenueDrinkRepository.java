@@ -9,4 +9,10 @@ import com.project.localbrew.entity.VenueDrink;
 @Repository
 public interface VenueDrinkRepository extends JpaRepository<VenueDrink, UUID> {
 
+    List<VenueDrink> findByVenueId(UUID venueId);
+
+    List<VenueDrink> findByDrinkId(UUID drinkId);
+
+    boolean existsByVenueIdAndDrinkId(UUID venueId, UUID drinkId);
+
 }
