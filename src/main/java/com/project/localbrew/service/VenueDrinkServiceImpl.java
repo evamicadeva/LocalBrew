@@ -24,12 +24,7 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
     private final DrinkRepository drinkRepository;
     private final CurrentUserService currentUserService;
 
-    public VenueDrinkServiceImpl(
-            VenueDrinkRepository venueDrinkRepository,
-            VenueRepository venueRepository,
-            DrinkRepository drinkRepository,
-            CurrentUserService currentUserService
-    ) {
+    public VenueDrinkServiceImpl(VenueDrinkRepository venueDrinkRepository, VenueRepository venueRepository, DrinkRepository drinkRepository, CurrentUserService currentUserService) {
         this.venueDrinkRepository = venueDrinkRepository;
         this.venueRepository = venueRepository;
         this.drinkRepository = drinkRepository;
@@ -47,10 +42,7 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
             throw new EntityNotFoundException("Venue non trovata con ID: " + venueId);
         }
 
-        return venueDrinkRepository.findByVenueId(venueId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return venueDrinkRepository.findByVenueId(venueId).stream().map(this::toResponse).toList();
     }
 
     @Override
@@ -65,19 +57,14 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
         Venue venue = findVenueById(venueId);
         ensureCanManageVenue(venue);
 
-        Drink drink = drinkRepository.findById(request.getDrinkId())
-                .orElseThrow(() -> new EntityNotFoundException("Drink non trovato con ID: " + request.getDrinkId()));
+        Drink drink = drinkRepository.findById(request.getDrinkId()).orElseThrow(() -> new EntityNotFoundException("Drink non trovato con ID: " + request.getDrinkId()));
 
         boolean exists = venueDrinkRepository.existsByVenueIdAndDrinkId(venue.getId(), drink.getId());
         if (exists) {
             throw new IllegalArgumentException("Drink gia presente nel menu della venue");
         }
 
-        VenueDrink venueDrink = VenueDrink.builder()
-                .venue(venue)
-                .drink(drink)
-                .price(request.getPrice())
-                .build();
+        VenueDrink venueDrink = VenueDrink.builder().venue(venue).drink(drink).price(request.getPrice()).build();
 
         return toResponse(venueDrinkRepository.save(venueDrink));
     }
@@ -97,8 +84,7 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
         Venue venue = findVenueById(venueId);
         ensureCanManageVenue(venue);
 
-        VenueDrink venueDrink = venueDrinkRepository.findByVenueIdAndDrinkId(venueId, drinkId)
-                .orElseThrow(() -> new EntityNotFoundException("Drink non trovato nel menu della venue"));
+        VenueDrink venueDrink = venueDrinkRepository.findByVenueIdAndDrinkId(venueId, drinkId).orElseThrow(() -> new EntityNotFoundException("Drink non trovato nel menu della venue"));
 
         if (request.getPrice() != null) {
             venueDrink.setPrice(request.getPrice());
@@ -119,15 +105,13 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
         Venue venue = findVenueById(venueId);
         ensureCanManageVenue(venue);
 
-        VenueDrink venueDrink = venueDrinkRepository.findByVenueIdAndDrinkId(venueId, drinkId)
-                .orElseThrow(() -> new EntityNotFoundException("Drink non trovato nel menu della venue"));
+        VenueDrink venueDrink = venueDrinkRepository.findByVenueIdAndDrinkId(venueId, drinkId).orElseThrow(() -> new EntityNotFoundException("Drink non trovato nel menu della venue"));
 
         venueDrinkRepository.delete(venueDrink);
     }
 
     private Venue findVenueById(UUID id) {
-        return venueRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Venue non trovata con ID: " + id));
+        return venueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Venue non trovata con ID: " + id));
     }
 
     private void ensureCanManageVenue(Venue venue) {
@@ -144,18 +128,6 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
         Venue venue = venueDrink.getVenue();
         Drink drink = venueDrink.getDrink();
 
-        return VenueDrinkResponse.builder()
-                .id(venueDrink.getId())
-                .venueId(venue.getId())
-                .venueName(venue.getName())
-                .drinkId(drink.getId())
-                .drinkName(drink.getName())
-                .drinkDescription(drink.getDescription())
-                .category(drink.getCategory())
-                .abv(drink.getAbv())
-                .origin(drink.getOrigin())
-                .imageUri(drink.getImageUri())
-                .price(venueDrink.getPrice())
-                .build();
+        return VenueDrinkResponse.builder().id(venueDrink.getId()).venueId(venue.getId()).venueName(venue.getName()).drinkId(drink.getId()).drinkName(drink.getName()).drinkDescription(drink.getDescription()).category(drink.getCategory()).abv(drink.getAbv()).origin(drink.getOrigin()).imageUri(drink.getImageUri()).price(venueDrink.getPrice()).build();
     }
 }

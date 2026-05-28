@@ -14,15 +14,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder
-    ) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -39,38 +37,27 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("ID non può essere null");
         }
 
-        return userRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Utente non trovato con ID: " + id));
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Utente non trovato con ID: " + id));
     }
 
     @Override
     public User findByEmail(String email) {
 
         if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Email non può essere vuota");
+            throw new IllegalArgumentException("Email non può essere vuota");
         }
 
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Utente non trovato"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
     }
 
     @Override
     public User findByUsername(String username) {
 
         if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Username non può essere vuoto");
+            throw new IllegalArgumentException("Username non può essere vuoto");
         }
 
-        return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Utente non trovato"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
     }
 
     @Transactional
@@ -78,130 +65,88 @@ public class UserServiceImpl implements UserService {
     public User saveUser(User user) {
 
         if (user == null) {
-            throw new IllegalArgumentException(
-                    "Utente non può essere null");
+            throw new IllegalArgumentException("Utente non può essere null");
         }
 
-        if (user.getUsername() == null ||
-                user.getUsername().isBlank()) {
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
 
-            throw new IllegalArgumentException(
-                    "Username non può essere vuoto");
+            throw new IllegalArgumentException("Username non può essere vuoto");
         }
 
-        if (user.getEmail() == null ||
-                user.getEmail().isBlank()) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
 
-            throw new IllegalArgumentException(
-                    "Email non può essere vuota");
+            throw new IllegalArgumentException("Email non può essere vuota");
         }
 
-        if (user.getPasswordHash() == null ||
-                user.getPasswordHash().isBlank()) {
+        if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
 
-            throw new IllegalArgumentException(
-                    "Password non può essere vuota");
+            throw new IllegalArgumentException("Password non può essere vuota");
         }
 
         if (user.getRole() == null) {
-            throw new IllegalArgumentException(
-                    "Role non può essere null");
+            throw new IllegalArgumentException("Role non può essere null");
         }
 
         // Username unico
-        Optional<User> existingUsername =
-                userRepository.findByUsername(user.getUsername());
+        Optional<User> existingUsername = userRepository.findByUsername(user.getUsername());
 
         if (existingUsername.isPresent()) {
-            throw new IllegalArgumentException(
-                    "Username già esistente: "
-                            + user.getUsername());
+            throw new IllegalArgumentException("Username già esistente: " + user.getUsername());
         }
 
         // Email unica
-        Optional<User> existingEmail =
-                userRepository.findByEmail(user.getEmail());
+        Optional<User> existingEmail = userRepository.findByEmail(user.getEmail());
 
         if (existingEmail.isPresent()) {
-            throw new IllegalArgumentException(
-                    "Email già esistente: "
-                            + user.getEmail());
+            throw new IllegalArgumentException("Email già esistente: " + user.getEmail());
         }
 
         // Encode password
-        user.setPasswordHash(
-                passwordEncoder.encode(user.getPasswordHash())
-        );
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
 
         return userRepository.save(user);
     }
 
-    @Transactional
     @Override
-    public User updateUser(
-            UUID id,
-            UserUpdateRequest request
-    ) {
+    public User updateUser(UUID id, UserUpdateRequest request) {
 
         User existingUser = findById(id);
 
         // Username
-        if (request.getUsername() != null &&
-                !request.getUsername().isBlank()) {
+        if (request.getUsername() != null && !request.getUsername().isBlank()) {
 
-            Optional<User> userWithUsername =
-                    userRepository.findByUsername(
-                            request.getUsername());
+            Optional<User> userWithUsername = userRepository.findByUsername(request.getUsername());
 
-            if (userWithUsername.isPresent()
-                    && !userWithUsername.get()
-                    .getId()
-                    .equals(id)) {
+            if (userWithUsername.isPresent() && !userWithUsername.get().getId().equals(id)) {
 
-                throw new IllegalArgumentException(
-                        "Username già esistente");
+                throw new IllegalArgumentException("Username già esistente");
             }
 
-            existingUser.setUsername(
-                    request.getUsername());
+            existingUser.setUsername(request.getUsername());
         }
 
         // Email
-        if (request.getEmail() != null &&
-                !request.getEmail().isBlank()) {
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
 
-            Optional<User> userWithEmail =
-                    userRepository.findByEmail(
-                            request.getEmail());
+            Optional<User> userWithEmail = userRepository.findByEmail(request.getEmail());
 
-            if (userWithEmail.isPresent()
-                    && !userWithEmail.get()
-                    .getId()
-                    .equals(id)) {
+            if (userWithEmail.isPresent() && !userWithEmail.get().getId().equals(id)) {
 
-                throw new IllegalArgumentException(
-                        "Email già esistente");
+                throw new IllegalArgumentException("Email già esistente");
             }
 
-            existingUser.setEmail(
-                    request.getEmail());
+            existingUser.setEmail(request.getEmail());
         }
 
         // Password
-        if (request.getPassword() != null &&
-                !request.getPassword().isBlank()) {
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
 
-            existingUser.setPasswordHash(
-                    passwordEncoder.encode(
-                            request.getPassword()
-                    )
-            );
+            existingUser.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         }
 
         return userRepository.save(existingUser);
     }
 
-    @Transactional
     @Override
     public UserResponse updateUserRole(UUID id, Role role) {
         if (role == null) {
@@ -217,7 +162,6 @@ public class UserServiceImpl implements UserService {
         return toResponse(userRepository.save(existingUser));
     }
 
-    @Transactional
     @Override
     public void deleteUserById(UUID id) {
 
@@ -240,12 +184,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Utente non puo essere null");
         }
 
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .createdAt(user.getCreatedAt())
-                .build();
+        return UserResponse.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail()).role(user.getRole()).createdAt(user.getCreatedAt()).build();
     }
 }

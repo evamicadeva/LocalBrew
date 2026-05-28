@@ -22,7 +22,6 @@ public class DrinkServiceImpl implements DrinkService {
         this.drinkRepository = drinkRepository;
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
     @Override
     public List<DrinkResponse> findDrinks(List<DrinkCategory> categories, String name) {
         List<Drink> drinks;
@@ -40,7 +39,6 @@ public class DrinkServiceImpl implements DrinkService {
                 .toList();
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
     @Override
     public Drink findDrinkById(UUID id) {
         validateId(id);

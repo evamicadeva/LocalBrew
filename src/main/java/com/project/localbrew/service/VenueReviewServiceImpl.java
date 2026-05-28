@@ -25,11 +25,7 @@ public class VenueReviewServiceImpl implements VenueReviewService {
     private final VenueRepository venueRepository;
     private final CurrentUserService currentUserService;
 
-    public VenueReviewServiceImpl(
-            VenueReviewRepository venueReviewRepository,
-            VenueRepository venueRepository,
-            CurrentUserService currentUserService
-    ) {
+    public VenueReviewServiceImpl(VenueReviewRepository venueReviewRepository, VenueRepository venueRepository, CurrentUserService currentUserService) {
         this.venueReviewRepository = venueReviewRepository;
         this.venueRepository = venueRepository;
         this.currentUserService = currentUserService;
@@ -37,10 +33,7 @@ public class VenueReviewServiceImpl implements VenueReviewService {
 
     @Override
     public List<VenueReviewResponse> findAllReviews() {
-        return venueReviewRepository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return venueReviewRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Override
@@ -59,25 +52,15 @@ public class VenueReviewServiceImpl implements VenueReviewService {
         }
 
         User currentUser = currentUserService.getCurrentUser();
-        Venue venue = venueRepository.findById(request.getVenueId())
-                .orElseThrow(() -> new EntityNotFoundException("Venue non trovata con ID: " + request.getVenueId()));
+        Venue venue = venueRepository.findById(request.getVenueId()).orElseThrow(() -> new EntityNotFoundException("Venue non trovata con ID: " + request.getVenueId()));
 
-        boolean alreadyReviewed = venueReviewRepository.existsByUserIdAndVenueId(
-                currentUser.getId(),
-                venue.getId()
-        );
+        boolean alreadyReviewed = venueReviewRepository.existsByUserIdAndVenueId(currentUser.getId(), venue.getId());
 
         if (alreadyReviewed) {
             throw new IllegalArgumentException("Hai gia recensito questa venue");
         }
 
-        VenueReview review = VenueReview.builder()
-                .rating(request.getRating())
-                .comment(request.getComment())
-                .createdAt(LocalDateTime.now())
-                .user(currentUser)
-                .venue(venue)
-                .build();
+        VenueReview review = VenueReview.builder().rating(request.getRating()).comment(request.getComment()).createdAt(LocalDateTime.now()).user(currentUser).venue(venue).build();
 
         return toResponse(venueReviewRepository.save(review));
     }
@@ -98,9 +81,7 @@ public class VenueReviewServiceImpl implements VenueReviewService {
             throw new AccessDeniedException("Non puoi modificare recensioni di altri utenti");
         }
 
-        if (request.getRating() != null &&
-                request.getRating() >= 1 &&
-                request.getRating() <= 5) {
+        if (request.getRating() != null && request.getRating() >= 1 && request.getRating() <= 5) {
             existingReview.setRating(request.getRating());
         }
 
@@ -133,10 +114,7 @@ public class VenueReviewServiceImpl implements VenueReviewService {
             throw new IllegalArgumentException("Venue ID non puo essere null");
         }
 
-        return venueReviewRepository.findAllByVenueId(venueId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return venueReviewRepository.findAllByVenueId(venueId).stream().map(this::toResponse).toList();
     }
 
     @Override
@@ -145,25 +123,14 @@ public class VenueReviewServiceImpl implements VenueReviewService {
             throw new IllegalArgumentException("User ID non puo essere null");
         }
 
-        return venueReviewRepository.findAllByUserId(userId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return venueReviewRepository.findAllByUserId(userId).stream().map(this::toResponse).toList();
     }
 
     private VenueReview findEntityById(UUID id) {
-        return venueReviewRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Recensione non trovata con ID: " + id));
+        return venueReviewRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Recensione non trovata con ID: " + id));
     }
 
     private VenueReviewResponse toResponse(VenueReview review) {
-        return VenueReviewResponse.builder()
-                .id(review.getId())
-                .rating(review.getRating())
-                .comment(review.getComment())
-                .createdAt(review.getCreatedAt())
-                .username(review.getUser() != null ? review.getUser().getUsername() : null)
-                .venueName(review.getVenue() != null ? review.getVenue().getName() : null)
-                .build();
+        return VenueReviewResponse.builder().id(review.getId()).rating(review.getRating()).comment(review.getComment()).createdAt(review.getCreatedAt()).username(review.getUser() != null ? review.getUser().getUsername() : null).venueName(review.getVenue() != null ? review.getVenue().getName() : null).build();
     }
 }
