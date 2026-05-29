@@ -1,218 +1,113 @@
-export const API_BASE_URL = window.LOCALBREW_API_BASE_URL || 'http://localhost:8080';
-export const TOKEN_KEY = 'localbrew-token';
+const API_BASE_URL = '';
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
+/*
+  Sostituisci questi percorsi con gli endpoint reali
+  definiti nel back-end LocalBrew.
+*/
+const LOGIN_URL = `${API_BASE_URL}/api/v1/auth/login`;
+const REGISTER_URL = `${API_BASE_URL}/api/v1/auth/register`;
 
-export function setToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-export function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
-}
-
-function buildUrl(path, params) {
-  const url = new URL(`${API_BASE_URL}${path}`);
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value == null || value === '' || (Array.isArray(value) && value.length === 0)) return;
-    url.searchParams.set(key, Array.isArray(value) ? value.join(',') : value);
+async function sendJson(url, body) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
   });
 
-  return url;
-}
-
-async function parseResponse(response) {
-  const text = await response.text();
-  if (!text) return null;
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
-}
-
-export async function apiRequest(path, options = {}) {
-  const {
-    auth = false,
-    body,
-    headers = {},
-    params,
-    ...fetchOptions
-  } = options;
-
-  const requestHeaders = {
-    Accept: 'application/json',
-    ...headers
-  };
-
-  if (body !== undefined) {
-    requestHeaders['Content-Type'] = 'application/json';
-  }
-
-  if (auth) {
-    const token = getToken();
-    if (!token) throw new Error('Accedi per continuare.');
-    requestHeaders.Authorization = `Bearer ${token}`;
-  }
-
-  const response = await fetch(buildUrl(path, params), {
-    ...fetchOptions,
-    headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  });
-
-  const data = await parseResponse(response);
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const message = data?.message || data?.error || `Errore ${response.status}`;
-    throw new Error(message);
+    throw new Error(data.message || 'Operazione non riuscita.');
   }
 
   return data;
 }
 
 export function loginUser(credentials) {
-  return apiRequest('/api/v1/auth/login', {
-    method: 'POST',
-    body: credentials
-  });
+  return sendJson(LOGIN_URL, credentials);
 }
 
 export function registerUser(userData) {
-  return apiRequest('/api/v1/auth/register', {
-    method: 'POST',
-    body: userData
-  });
+  return sendJson(REGISTER_URL, userData);
 }
 
 export async function getCurrentUser() {
-  if (!getToken()) return null;
+  const token = localStorage.getItem('localbrew-token');
+  if (!token) return null;
 
-  try {
-    return await apiRequest('/api/v1/user/me', { auth: true });
-  } catch {
-    clearToken();
+  const response = await fetch(`${API_BASE_URL}/api/v1/user/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    localStorage.removeItem('localbrew-token');
     return null;
   }
+
+  const text = await response.text();
+
+  if (!text) {
+    throw new Error('Il back-end non ha restituito i dati dell utente.');
+  }
+
+  return JSON.parse(text);
 }
 
-export function getActiveVenues() {
-  return apiRequest('/api/v1/public/venues/active');
-}
+async function authenticatedRequest(path, options = {}) {
+  const token = localStorage.getItem('localbrew-token');
 
-export function getActiveVenue(id) {
-  return apiRequest(`/api/v1/public/venues/${id}`);
-}
-
-export function getVenueDrinks(venueId) {
-  return apiRequest(`/api/v1/public/venues/${venueId}/drinks`);
-}
-
-export function getVenueReviews(venueId) {
-  return apiRequest(`/api/v1/public/venues/${venueId}/reviews`);
-}
-
-export function getDrinks({ categories, name } = {}) {
-  return apiRequest('/api/v1/public/drinks', {
-    params: { categories, name }
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...options.headers
+    }
   });
-}
 
-export function getFavoriteVenues() {
-  return apiRequest('/api/v1/user/favorite-venues', { auth: true });
-}
+  const data = await response.json().catch(() => null);
 
-export function addFavoriteVenue(venueId) {
-  return apiRequest('/api/v1/user/favorite-venues', {
-    method: 'POST',
-    auth: true,
-    params: { venueId }
-  });
-}
+  if (!response.ok) {
+    throw new Error(data?.message || 'Operazione non riuscita.');
+  }
 
-export function removeFavoriteVenue(venueId) {
-  return apiRequest(`/api/v1/user/favorite-venues/${venueId}`, {
-    method: 'DELETE',
-    auth: true
-  });
-}
-
-export function createVenueReview(review) {
-  return apiRequest('/api/v1/user/venue-reviews', {
-    method: 'POST',
-    auth: true,
-    body: review
-  });
-}
-
-export function getOwnerVenues() {
-  return apiRequest('/api/v1/owner/venues', { auth: true });
+  return data;
 }
 
 export function createVenue(venue) {
-  return apiRequest('/api/v1/owner/venues', {
+  return authenticatedRequest('/api/v1/owner/venues', {
     method: 'POST',
-    auth: true,
-    body: venue
-  });
-}
-
-export function updateVenue(id, venue) {
-  return apiRequest(`/api/v1/owner/venues/${id}`, {
-    method: 'PUT',
-    auth: true,
-    body: venue
-  });
-}
-
-export function deleteVenue(id) {
-  return apiRequest(`/api/v1/owner/venues/${id}`, {
-    method: 'DELETE',
-    auth: true
-  });
-}
-
-export function createDrink(drink) {
-  return apiRequest('/api/v1/owner/drinks', {
-    method: 'POST',
-    auth: true,
-    body: drink
-  });
-}
-
-export function addDrinkToVenue(venueId, venueDrink) {
-  return apiRequest(`/api/v1/owner/venues/${venueId}/drinks`, {
-    method: 'POST',
-    auth: true,
-    body: venueDrink
-  });
-}
-
-export function removeDrinkFromVenue(venueId, drinkId) {
-  return apiRequest(`/api/v1/owner/venues/${venueId}/drinks/${drinkId}`, {
-    method: 'DELETE',
-    auth: true
+    body: JSON.stringify(venue)
   });
 }
 
 export function getAdminVenues() {
-  return apiRequest('/api/v1/admin/venues', { auth: true });
+  return authenticatedRequest('/api/v1/admin/venues');
 }
 
 export function activateVenue(id) {
-  return apiRequest(`/api/v1/admin/venues/${id}/activate`, {
-    method: 'PATCH',
-    auth: true
-  });
+  return authenticatedRequest(`/api/v1/admin/venues/${id}/activate`, { method: 'PATCH' });
 }
 
 export function suspendVenue(id) {
-  return apiRequest(`/api/v1/admin/venues/${id}/suspend`, {
-    method: 'PATCH',
-    auth: true
-  });
+  return authenticatedRequest(`/api/v1/admin/venues/${id}/suspend`, { method: 'PATCH' });
+}
+
+export function getVenueById(id) {
+  return fetch(`${API_BASE_URL}/api/v1/public/venues/${id}`)
+    .then(response => response.json());
+}
+
+export function searchVenuesByCity(city) {
+  return fetch(`${API_BASE_URL}/api/v1/public/venues/search/city?city=${encodeURIComponent(city)}`)
+    .then(response => response.json());
+}
+
+export function searchVenuesByName(name) {
+  return fetch(`${API_BASE_URL}/api/v1/public/venues/search/name?name=${encodeURIComponent(name)}`)
+    .then(response => response.json());
 }

@@ -1,7 +1,6 @@
 import { getCurrentUser } from './api.js';
 
-export async function requireAnyRole(expectedRoles) {
-  const roles = Array.isArray(expectedRoles) ? expectedRoles : [expectedRoles];
+export async function requireRole(expectedRole) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -9,14 +8,10 @@ export async function requireAnyRole(expectedRoles) {
     return null;
   }
 
-  if (!roles.includes(user.role)) {
+  if (user.role !== expectedRole) {
     window.location.replace('../index.html');
     return null;
   }
 
   return user;
-}
-
-export function requireRole(expectedRole) {
-  return requireAnyRole(expectedRole);
 }

@@ -3,7 +3,7 @@ import './map.js';
 import { loadPubs } from './data.js';
 import { initMarkers } from './markers.js';
 import { initUI } from './ui.js';
-import { clearToken, getCurrentUser } from './api.js';
+import { getCurrentUser } from './api.js';
 import { escapeHtml } from './utils.js';
 
 function updateStatus(message) {
@@ -34,7 +34,7 @@ async function updateHeaderAuth() {
   `;
 
   document.getElementById('logout-button').addEventListener('click', () => {
-    clearToken();
+    localStorage.removeItem('localbrew-token');
     window.location.reload();
   });
 }
@@ -48,6 +48,9 @@ async function initApp() {
     updateStatus('Caricamento locali...');
 
     const pubs = await loadPubs();
+
+    initMarkers(pubs);
+    await initUI(pubs);
 
     if (pubs.length === 0) {
       updateStatus('Nessun locale disponibile.');
