@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard proprietario - Local Brew</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="auth-page">
+  <main class="auth-shell dashboard-shell">
+    <a href="../index.html" class="auth-logo">
+      <img src="../assets/icons/full.png" alt="Local Brew">
+    </a>
+
+    <section class="auth-card dashboard-card">
+      <div class="dashboard-header">
+        <div>
+          <h1>Gestione locali</h1>
+          <p>Crea, aggiorna o elimina i tuoi locali.</p>
+        </div>
+        <a class="dashboard-link" href="../index.html">Mappa</a>
+      </div>
+
+      <p class="auth-message" id="owner-message" aria-live="polite"></p>
+
+      <div class="dashboard-grid">
+        <form class="auth-form" id="venue-form">
+          <input type="hidden" id="venue-id">
+
+          <label for="venue-name">Nome locale</label>
+          <input id="venue-name" type="text" maxlength="50" required>
+
+          <label for="venue-description">Descrizione</label>
+          <textarea id="venue-description" rows="4" maxlength="500"></textarea>
+
+          <label for="venue-city">Citta</label>
+          <input id="venue-city" type="text" maxlength="50" required>
+
+          <label for="venue-address">Indirizzo</label>
+          <input id="venue-address" type="text" maxlength="70" required>
+
+          <label for="venue-type">Tipo locale</label>
+          <select id="venue-type" required>
+            <option value="BAR">Bar</option>
+            <option value="PUB">Pub</option>
+            <option value="BREWERY">Birrificio</option>
+            <option value="RESTAURANT">Ristorante</option>
+            <option value="BEER_STORE">Beer store</option>
+          </select>
+
+          <label for="venue-image-uri">URL immagine</label>
+          <input id="venue-image-uri" type="url" placeholder="https://.../foto.jpg">
+
+          <div class="form-columns">
+            <div>
+              <label for="venue-latitude">Latitudine</label>
+              <input id="venue-latitude" type="number" step="any" min="-90" max="90" required>
+            </div>
+            <div>
+              <label for="venue-longitude">Longitudine</label>
+              <input id="venue-longitude" type="number" step="any" min="-180" max="180" required>
+            </div>
+          </div>
+
+          <div class="dashboard-actions">
+            <button type="submit" class="auth-submit" id="venue-submit">Crea locale</button>
+            <button type="button" class="secondary-button hidden" id="venue-cancel">Annulla modifica</button>
+          </div>
+        </form>
+
+        <section class="dashboard-list" aria-live="polite">
+          <h2>I tuoi locali</h2>
+          <div id="owner-venues">
+            <p class="dashboard-message">Caricamento locali...</p>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="../js/owner-dashboard.js"></script>
+</body>
+
+</html>

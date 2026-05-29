@@ -1,0 +1,173 @@
+/* Griglia responsive delle card dei locali. */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:20px;
+  margin-top:20px;
+}
+
+/* Card singola: contiene immagine, nome, rating, tag e bottone mappa. */
+.card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 12px 30px rgba(44,27,15,.08);
+  transition:.25s;
+}
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 18px 42px rgba(44,27,15,.14);
+}
+
+/* Stato temporaneo usato quando il popup riporta alla card. */
+.card.is-focused{
+  border-color:var(--amber);
+  box-shadow:0 0 0 4px rgba(244,182,61,.24),0 20px 45px rgba(44,27,15,.16);
+}
+
+/* Finestra della fotografia: l'immagine piu' alta viene ritagliata al centro. */
+.card-img{
+  height:170px;
+  background:linear-gradient(135deg,#fff0c8,#ffae22);
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+
+.card-img img{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+}
+
+.card-body{padding:18px}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.card h3{color:var(--green);font-size:20px}
+.rating{
+  background:#fff3d8;
+  color:#7c4a00;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:800;
+}
+
+/* Tag delle birre disponibili nel locale. */
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+.tags span{
+  background:#f7e7c2;
+  color:#65410b;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* Bottone card -> marker sulla mappa. */
+.card-map-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:auto;
+  min-height:36px;
+  margin-top:14px;
+  padding:8px 12px;
+  border-radius:12px;
+  font-size:13px;
+  align-self:flex-start;
+  background:var(--green);
+  color:#fff;
+  font-weight:800;
+  transition:.25s;
+}
+.card-map-button:hover{
+  transform:translateY(-2px);
+  background:var(--green-2);
+}
+
+/* Pulsante finale della sezione card. */
+.all-btn{
+  margin-top:28px;
+  padding:15px 24px;
+  border-radius:999px;
+  background:var(--green);
+  color:white;
+  font-weight:800;
+  box-shadow:0 12px 25px rgba(21,79,31,.22);
+  transition:.25s;
+}
+.all-btn:hover{
+  transform:translateY(-2px);
+  background:var(--green-2);
+}
+
+.card-body{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+/* Nasconde i locali oltre i primi tre finché la lista non viene espansa. */
+.cards:not(.is-expanded):not(.is-filtering) .card-extra{
+  display:none;
+}
+
+/* Nasconde le card che non corrispondono ai filtri selezionati. */
+.card.is-filtered-out{
+  display:none;
+}
+
+.venues-status{
+  margin-top:20px;
+  color:var(--muted);
+  font-weight:700;
+}
+
+/* Riduce le colonne quando non c'e' abbastanza spazio per tre card leggibili. */
+@media(max-width:1000px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:650px){
+  .cards{grid-template-columns:1fr}
+}
+
+/* Raggruppa valutazione e pulsante preferiti nella parte alta della card. */
+.card-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* Pulsante cuore per salvare un locale tra i preferiti. */
+.favorite-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  background:#fff3d8;
+  color:var(--green);
+  transition:.2s;
+}
+
+.favorite-button:hover{
+  background:#ffe4a8;
+}
+
+.favorite-button.is-favorite{
+  background:var(--green);
+  color:white;
+}

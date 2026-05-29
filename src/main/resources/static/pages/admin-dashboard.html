@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard amministratore - Local Brew</title>
+
+  <!-- Stili gia utilizzati dalle pagine login e registrazione. -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="auth-page">
+  <main class="auth-shell dashboard-shell">
+    <a href="../index.html" class="auth-logo">
+      <img src="../assets/icons/full.png" alt="Local Brew">
+    </a>
+
+    <section class="auth-card dashboard-card">
+      <div class="dashboard-header">
+        <div>
+          <h1>Gestione locali</h1>
+          <p>Attiva o sospendi i locali registrati su Local Brew.</p>
+        </div>
+        <a class="dashboard-link" href="../index.html">Mappa</a>
+      </div>
+
+      <div id="admin-venues" aria-live="polite">
+        <p class="dashboard-message">Caricamento locali...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Carica il controllo ruolo ADMIN e la gestione dei locali. -->
+  <script type="module" src="../js/admin-dashboard.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+/* Header: logo a sinistra e pulsanti account a destra. */
+.header{
+  background:rgba(255,255,255,.92);
+  padding:18px 28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+}
+
+.logo-container{display:flex;align-items:center;gap:18px}
+.logo{width:250px;height:auto;object-fit:contain}
+.logo-text p{color:var(--muted);margin-top:4px}
+
+/* Etichetta piccola riutilizzata in header, hero e filtri. */
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:var(--green-2);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-size:12px;
+}
+
+/* Pulsanti principali dell'header. */
+.header-buttons{display:flex;gap:12px}
+.btn{
+  padding:13px 20px;
+  border-radius:999px;
+  font-weight:800;
+  transition:.25s;
+}
+.login{
+  background:#fff;
+  border:1px solid var(--line);
+  color:var(--green);
+}
+.register{
+  background:linear-gradient(135deg,var(--amber),var(--amber-2));
+  color:#2d1900;
+  box-shadow:0 10px 25px rgba(244,182,61,.35);
+}
+.btn:hover{transform:translateY(-2px)}
+
+/* Footer: tre box informativi in griglia. */
+.footer{
+  background:#fff6e7;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  padding:34px;
+  border-top:1px solid var(--line);
+}
+.footer-box{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  background:rgba(255,255,255,.65);
+  padding:18px;
+  border-radius:20px;
+}
+.footer-box i{color:var(--green);font-size:24px}
+.footer-box p{color:var(--muted);margin-top:4px}
+
+/* Layout compatto su mobile. */
+@media(max-width:760px){
+  .header{flex-direction:column;align-items:flex-start}
+  .logo{width:210px}
+  .footer{grid-template-columns:1fr}
+  .header-buttons{width:100%}
+  .btn{flex:1}
+}
