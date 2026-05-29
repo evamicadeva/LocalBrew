@@ -1,0 +1,434 @@
+/* Pagina dedicata ad accesso e registrazione. */
+.auth-page {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: linear-gradient(180deg, #fff8ec, #f2eadf);
+}
+
+.auth-shell {
+    width: min(440px, 100%);
+}
+
+.dashboard-shell {
+    width: min(1080px, 100%);
+}
+
+.auth-logo {
+    display: block;
+    width: 230px;
+    margin: 0 auto 28px;
+}
+
+.auth-card {
+    padding: 30px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: var(--shadow);
+}
+
+.auth-card h1 {
+    color: var(--green);
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.auth-card > p {
+    color: var(--muted);
+}
+
+.auth-message {
+    min-height: 24px;
+    margin: 18px 0 8px;
+    font-weight: 700;
+}
+
+.auth-message.is-error {
+    color: #a12d20;
+}
+
+.auth-message.is-success {
+    color: var(--green);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-form label {
+    margin-top: 10px;
+    color: var(--green);
+    font-weight: 700;
+}
+
+.auth-form input,
+.auth-form textarea,
+.auth-form select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    outline: none;
+    font: inherit;
+}
+
+.auth-form input:focus,
+.auth-form textarea:focus,
+.auth-form select:focus {
+    border-color: var(--green);
+}
+
+.auth-submit {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--green);
+    color: #fff;
+    font-weight: 800;
+}
+
+.auth-switch {
+    margin-top: 22px;
+    text-align: center;
+}
+
+.auth-switch a {
+    color: var(--green);
+    font-weight: 800;
+}
+
+.dashboard-card {
+    width: 100%;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.dashboard-link,
+.secondary-button,
+.dashboard-actions button,
+.detail-review-form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #fff3d8;
+    color: var(--green);
+    font-weight: 800;
+}
+
+#venue-cancel {
+    margin-top: 18px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns:minmax(280px, 420px) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.admin-dashboard-grid {
+    grid-template-columns:minmax(0, 1fr) minmax(280px, 380px);
+}
+
+.drink-dashboard-grid {
+    grid-template-columns:1fr 1fr;
+    margin-top: 18px;
+}
+
+.dashboard-section {
+    margin-top: 34px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+}
+
+.compact-header {
+    margin-bottom: 10px;
+}
+
+.compact-header h2,
+.dashboard-list h2,
+.dashboard-section h2,
+.dashboard-section h3 {
+    color: var(--green);
+}
+
+.dashboard-label {
+    display: block;
+    margin: 14px 0 8px;
+    color: var(--green);
+    font-weight: 800;
+}
+
+.dashboard-control {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font: inherit;
+    outline: none;
+}
+
+.compact-price-label {
+    margin: 10px 0 6px;
+    font-size: 13px;
+}
+
+.compact-price-input {
+    max-width: 150px;
+    padding: 10px 11px;
+}
+
+.form-columns {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    gap: 12px;
+}
+
+.dashboard-list h2 {
+    color: var(--green);
+    margin-bottom: 14px;
+}
+
+.drink-list-panel {
+    margin-top: 22px;
+}
+
+.dashboard-message {
+    color: var(--muted);
+    font-weight: 700;
+}
+
+#admin-venues {
+    max-height: 520px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.dashboard-item {
+    display: grid;
+    grid-template-columns:72px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fffaf2;
+    margin-bottom: 12px;
+}
+
+.dashboard-item > img {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #f7e7c2;
+}
+
+.dashboard-item-wide {
+    grid-template-columns:minmax(0, 1fr) auto;
+}
+
+.dashboard-item h2,
+.dashboard-item h3 {
+    color: var(--green);
+    margin: 6px 0 4px;
+}
+
+.dashboard-item p {
+    color: var(--muted);
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dashboard-actions button:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.auth-submit:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+.danger-button {
+    background: #f9dfd9 !important;
+    color: #9c2d1f !important;
+}
+
+.dashboard-status {
+    display: inline-flex;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    background: #f7e7c2;
+    color: #65410b;
+}
+
+.status-active {
+    background: #dff3df;
+    color: #1c6424;
+}
+
+.status-pending {
+    background: #fff3d8;
+    color: #7c4a00;
+}
+
+.status-suspended {
+    background: #f9dfd9;
+    color: #9c2d1f;
+}
+
+.admin-review-panel {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fffaf2;
+}
+
+.admin-review-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.admin-review-heading h2 {
+    margin-bottom: 6px;
+}
+
+.admin-review-label {
+    display: block;
+    margin: 10px 0 8px;
+    color: var(--green);
+    font-weight: 800;
+}
+
+.admin-review-select {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    outline: none;
+}
+
+.admin-review-select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(21, 79, 31, .12);
+}
+
+.admin-review-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+    max-height: 460px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.admin-review-card {
+    display: grid;
+    grid-template-columns:58px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: start;
+    padding: 14px;
+    border: 1px solid rgba(21, 79, 31, .12);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(44, 27, 15, .06);
+}
+
+.admin-review-score {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: #fff3d8;
+    color: #7c4a00;
+    font-weight: 900;
+}
+
+.admin-review-score span {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.admin-review-score small {
+    font-size: 12px;
+    line-height: 1;
+}
+
+.admin-review-content h3 {
+    margin: 0 0 6px;
+    color: var(--green);
+}
+
+.admin-review-content p {
+    color: var(--text);
+    line-height: 1.45;
+}
+
+.admin-review-content small {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.admin-review-actions {
+    justify-content: flex-end;
+}
+
+@media (max-width: 840px) {
+    .dashboard-grid {
+        grid-template-columns:1fr;
+    }
+
+    .admin-dashboard-grid,
+    .drink-dashboard-grid {
+        grid-template-columns:1fr;
+    }
+
+    .dashboard-item {
+        grid-template-columns:64px minmax(0, 1fr);
+    }
+
+    .dashboard-actions {
+        grid-column: 1 / -1;
+    }
+
+    .admin-review-card {
+        grid-template-columns:52px minmax(0, 1fr);
+    }
+
+    .admin-review-score {
+        width: 52px;
+        height: 52px;
+    }
+
+    .admin-review-actions {
+        grid-column: 1 / -1;
+    }
+}

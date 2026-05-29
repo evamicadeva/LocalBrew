@@ -2,6 +2,7 @@ package com.project.localbrew.service;
 
 import com.project.localbrew.dto.request.VenueReviewRequest;
 import com.project.localbrew.dto.response.VenueReviewResponse;
+import com.project.localbrew.entity.Role;
 import com.project.localbrew.entity.User;
 import com.project.localbrew.entity.Venue;
 import com.project.localbrew.entity.VenueReview;
@@ -101,7 +102,10 @@ public class VenueReviewServiceImpl implements VenueReviewService {
         VenueReview review = findEntityById(id);
         User currentUser = currentUserService.getCurrentUser();
 
-        if (!review.getUser().getId().equals(currentUser.getId())) {
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+        boolean isReviewOwner = review.getUser().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isReviewOwner) {
             throw new AccessDeniedException("Non puoi eliminare recensioni di altri utenti");
         }
 

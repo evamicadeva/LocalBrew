@@ -29,6 +29,12 @@ public class VenueReviewController {
         return ResponseEntity.ok(venueReviewService.findAllReviews());
     }
 
+    @DeleteMapping("/admin/reviews/{id}")
+    public ResponseEntity<Void> deleteReviewByAdmin(@PathVariable @NotNull(message = "ID non puo essere nullo") UUID id) {
+        venueReviewService.deleteReview(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/public/venues/{venueId}/reviews")
     public ResponseEntity<List<VenueReviewResponse>> findReviewsByVenueId(
             @PathVariable @NotNull(message = "Venue ID non puo essere nullo") UUID venueId

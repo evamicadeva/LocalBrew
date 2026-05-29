@@ -19,10 +19,16 @@ public class VenueServiceImpl implements VenueService {
 
     private final VenueRepository venueRepository;
     private final CurrentUserService currentUserService;
+    private final GeocodingService geocodingService;
 
-    public VenueServiceImpl(VenueRepository venueRepository, CurrentUserService currentUserService) {
+    public VenueServiceImpl(
+            VenueRepository venueRepository,
+            CurrentUserService currentUserService,
+            GeocodingService geocodingService
+    ) {
         this.venueRepository = venueRepository;
         this.currentUserService = currentUserService;
+        this.geocodingService = geocodingService;
     }
 
     @Override
@@ -135,6 +141,9 @@ public class VenueServiceImpl implements VenueService {
         }
 
         Venue venue = toEntity(request);
+        Coordinates coordinates = geocodingService.geocode(toFullAddress(venue.getAddress(), venue.getCity()));
+        venue.setLatitude(coordinates.latitude());
+        venue.setLongitude(coordinates.longitude());
         venue.setOwner(currentUser);
         venue.setStatus(VenueStatus.PENDING);
 
@@ -166,23 +175,29 @@ public class VenueServiceImpl implements VenueService {
         if (request.getDescription() != null) {
             existing.setDescription(request.getDescription());
         }
-        if (request.getCity() != null && !request.getCity().isBlank()) {
+        boolean shouldUpdateCoordinates = false;
+
+        if (request.getCity() != null && !request.getCity().isBlank()
+                && !request.getCity().equalsIgnoreCase(existing.getCity())) {
             existing.setCity(request.getCity());
+            shouldUpdateCoordinates = true;
         }
-        if (request.getAddress() != null && !request.getAddress().isBlank()) {
+        if (request.getAddress() != null && !request.getAddress().isBlank()
+                && !request.getAddress().equalsIgnoreCase(existing.getAddress())) {
             existing.setAddress(request.getAddress());
-        }
-        if (request.getLatitude() != null) {
-            existing.setLatitude(request.getLatitude());
-        }
-        if (request.getLongitude() != null) {
-            existing.setLongitude(request.getLongitude());
+            shouldUpdateCoordinates = true;
         }
         if (request.getType() != null) {
             existing.setType(request.getType());
         }
         if (request.getImageUri() != null) {
             existing.setImageUri(request.getImageUri());
+        }
+
+        if (shouldUpdateCoordinates) {
+            Coordinates coordinates = geocodingService.geocode(toFullAddress(existing.getAddress(), existing.getCity()));
+            existing.setLatitude(coordinates.latitude());
+            existing.setLongitude(coordinates.longitude());
         }
 
         return toResponse(venueRepository.save(existing));
@@ -253,11 +268,13 @@ public class VenueServiceImpl implements VenueService {
                 .description(request.getDescription())
                 .city(request.getCity())
                 .address(request.getAddress())
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
                 .type(request.getType())
                 .imageUri(request.getImageUri())
                 .build();
+    }
+
+    private String toFullAddress(String address, String city) {
+        return address + ", " + city + ", Italy";
     }
 
     private VenueResponse toResponse(Venue venue) {
