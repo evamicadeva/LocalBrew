@@ -35,7 +35,7 @@ export function initMarkers(pubs) {
     // data-index collega il pulsante nel popup alla card dello stesso locale.
     marker.bindPopup(`
       <div class="venue-popup">
-        <h3>${pub.name}</h3>
+        <h3>${name}</h3>
         <p class="venue-popup-meta">&#11088; ${rating}</p>
         <p class="venue-popup-beers">&#127866; ${beers}</p>
         <button type="button" class="popup-card-link" data-index="${index}">

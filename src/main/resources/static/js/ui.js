@@ -152,6 +152,10 @@ export async function initUI(pubs) {
     });
   }
 
+  if (searchInput) {
+    searchInput.addEventListener('input', () => applyFilters(pubs));
+  }
+
   // per chiudere il badge più grosso (Overlay)
   if (mapOverlayClose && mapOverlay) {
     mapOverlayClose.addEventListener('click', () => {
@@ -214,18 +218,25 @@ export async function initUI(pubs) {
       const pubId = favoriteButton.dataset.id;
       const wasFavorite = favoriteButton.classList.contains('is-favorite');
 
-      const favorites = await toggleFavorite(pubId, wasFavorite);
-      const isFavorite = favorites.includes(String(pubId));
-      const icon = favoriteButton.querySelector('i');
+      try {
+        favoriteButton.disabled = true;
+        const favorites = await toggleFavorite(pubId, wasFavorite);
+        const isFavorite = favorites.includes(String(pubId));
+        const icon = favoriteButton.querySelector('i');
 
-      favoriteButton.classList.toggle('is-favorite', isFavorite);
-      icon.classList.toggle('fa-regular', !isFavorite);
-      icon.classList.toggle('fa-solid', isFavorite);
+        favoriteButton.classList.toggle('is-favorite', isFavorite);
+        icon.classList.toggle('fa-regular', !isFavorite);
+        icon.classList.toggle('fa-solid', isFavorite);
 
-      favoriteButton.setAttribute(
-        'aria-label',
-        isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'
-      );
+        favoriteButton.setAttribute(
+          'aria-label',
+          isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'
+        );
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        favoriteButton.disabled = false;
+      }
 
       return;
     }

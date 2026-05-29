@@ -6,7 +6,7 @@ export function applyFilters(pubs) {
   const searchInput = document.getElementById('searchInput');
   const beerCheckboxes = document.querySelectorAll('.filter-option input');
 
-  const text = searchInput.value.toLowerCase().trim();
+  const text = (searchInput?.value || '').toLowerCase().trim();
   const selectedBeers = Array.from(beerCheckboxes)
     .filter(box => box.checked)
     .map(box => box.value.toLowerCase());
@@ -27,9 +27,16 @@ export function applyFilters(pubs) {
     const pub = pubs[index];
     if (!pub) return;
 
-    const name = pub.name.toLowerCase();
-    const beers = pub.beers.toLowerCase();
-    const matchText = !text || name.includes(text) || beers.includes(text);
+    const searchArea = [
+      pub.name,
+      pub.city,
+      pub.address,
+      pub.description,
+      pub.beers,
+      pub.type
+    ].join(' ').toLowerCase();
+    const beers = String(pub.beers || '').toLowerCase();
+    const matchText = !text || searchArea.includes(text);
     const matchBeer = selectedBeers.length === 0
       || selectedBeers.some(type => beers.includes(type));
     const match = matchText && matchBeer;

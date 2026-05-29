@@ -1,6 +1,4 @@
-import { loginUser, registerUser } from './api.js';
-
-const TOKEN_KEY = 'localbrew-token';
+import { loginUser, registerUser, setToken } from './api.js';
 
 function redirectByRole(role) {
   if (role === 'ADMIN') return 'admin-dashboard.html';
@@ -31,7 +29,11 @@ async function handleLogin(event) {
 
     const result = await loginUser({ email, password });
 
-    localStorage.setItem(TOKEN_KEY, result.token);
+    if (!result.token || !result.user) {
+      throw new Error(result.message || 'Risposta di login non valida.');
+    }
+
+    setToken(result.token);
 
     showMessage(result.message || 'Accesso effettuato.', 'is-success');
 
@@ -66,7 +68,11 @@ async function handleRegister(event) {
       confirmPassword
     });
 
-    localStorage.setItem(TOKEN_KEY, result.token);
+    if (!result.token || !result.user) {
+      throw new Error(result.message || 'Risposta di registrazione non valida.');
+    }
+
+    setToken(result.token);
 
     showMessage('Account creato. Vai alla pagina di accesso.', 'is-success');
 
