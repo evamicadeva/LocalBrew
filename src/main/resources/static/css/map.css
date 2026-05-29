@@ -1,0 +1,154 @@
+/* Sezione mappa: contiene overlay, sidebar e il contenitore Leaflet. */
+.map-section{
+  position:relative;
+  background:#fff;
+  overflow:hidden;
+}
+
+/* Sfumatura finale che addolcisce il passaggio tra mappa e contenuto sotto. */
+.map-section:after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:110px;
+  background:linear-gradient(180deg,transparent,rgba(255,255,255,.9));
+  z-index:400;
+  pointer-events:none;
+}
+
+/* Altezza fissa della mappa: Leaflet ha bisogno di un contenitore con dimensioni esplicite. */
+#map{
+  height:680px;
+  width:100%;
+  z-index:1;
+}
+/* Box testuale sopra la mappa. */
+.map-overlay{
+  position:absolute;
+  left:28px;
+  top:28px;
+  z-index:800;
+  max-width:390px;
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:22px;
+  box-shadow:0 14px 35px rgba(0,0,0,.12);
+  backdrop-filter:blur(10px);
+}
+.map-overlay h1{
+  font-size:34px;
+  line-height:1.05;
+  color:var(--green);
+  margin:10px 0;
+}
+.map-overlay p{color:var(--muted);line-height:1.5}
+.badge{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  background:#fff3d8;
+  color:#7c4a00;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:800;
+}
+
+/* Personalizzazione cluster marker Leaflet. */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large{
+  background:rgba(21,79,31,.22);
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div{
+  background:linear-gradient(135deg,var(--green),var(--green-2));
+  color:#fff8ec;
+  font-weight:800;
+  box-shadow:0 8px 18px rgba(21,79,31,.22);
+}
+
+/* Personalizzazione popup Leaflet. */
+.leaflet-popup-content-wrapper{
+  border-radius:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.16);
+}
+.leaflet-popup-content{margin:16px}
+.leaflet-popup-content h3{color:var(--green);margin-bottom:8px}
+.venue-popup{min-width:190px}
+.venue-popup-meta,.venue-popup-beers{
+  color:var(--muted);
+  line-height:1.4;
+  margin-top:6px;
+}
+
+/* Bottone dentro il popup: riporta alla card corrispondente. */
+.popup-card-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  min-height:40px;
+  margin-top:14px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--amber),var(--amber-2));
+  color:#2d1900;
+  font-weight:800;
+  box-shadow:0 10px 20px rgba(244,182,61,.28);
+  transition:.25s;
+}
+.popup-card-link:hover{transform:translateY(-2px)}
+
+/* Adattamenti della mappa per schermi stretti. */
+@media(max-width:760px){
+  #map{height:560px}
+  .map-overlay{
+    left:14px;
+    right:14px;
+    top:14px;
+    max-width:none;
+  }
+  .map-overlay h1{font-size:26px}
+}
+
+/* Pulsante di chiusura del badge sopra la mappa. */
+.badge-close{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  margin-left:4px;
+  border-radius:999px;
+  background:rgba(124,74,0,.12);
+  color:#7c4a00;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.badge-close:hover{
+  background:rgba(124,74,0,.22);
+}
+
+/* Stile della chiusura del badge più grosso (Overlay)*/
+.map-overlay-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  background:rgba(21,79,31,.08);
+  color:var(--green);
+}
+
+.map-overlay-close:hover{
+  background:rgba(21,79,31,.16);
+}

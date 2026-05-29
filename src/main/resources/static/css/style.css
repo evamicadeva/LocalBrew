@@ -1,0 +1,10 @@
+/* File centrale: importa i fogli in ordine logico, dalle basi ai componenti specifici. */
+@import "base.css";
+@import "layout.css";
+@import "components.css";
+@import "map.css";
+@import "sidebar.css";
+@import "cards.css";
+@import "filters.css";
+@import "popup.css";
+@import "utilities.css";

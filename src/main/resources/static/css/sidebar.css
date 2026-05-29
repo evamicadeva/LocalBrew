@@ -1,0 +1,96 @@
+/* Sidebar flottante sopra la mappa: ricerca + pulsanti rapidi. */
+.sidebar{
+  position:absolute;
+  top:28px;
+  right:28px;
+  z-index:1000;
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:14px;
+}
+
+/* Colonna dei pulsanti principali sulla mappa. */
+.sidebar-buttons{
+  background:rgba(255,255,255,.94);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  box-shadow:0 14px 35px rgba(0,0,0,.14);
+  backdrop-filter:blur(10px);
+}
+.sidebar-item{
+  width:82px;
+  min-height:76px;
+  background:transparent;
+  color:var(--green);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  border-radius:18px;
+  font-weight:800;
+  transition:.25s;
+}
+.sidebar-item:hover,.sidebar-item.active{
+  background:linear-gradient(135deg,var(--amber),var(--amber-2));
+  color:#2d1900;
+  transform:translateY(-2px);
+}
+.sidebar-item i{font-size:23px}
+.sidebar-item span{font-size:12px}
+
+/* Pannello di ricerca che si apre accanto ai pulsanti. */
+.search-panel{
+  width:310px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 14px 35px rgba(0,0,0,.14);
+  backdrop-filter:blur(10px);
+}
+.search-panel h3{color:var(--green);margin-bottom:12px}
+.search-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#f7f3ec;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px 14px;
+}
+.search-box i{color:var(--green)}
+.search-box input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+}
+
+/* Su mobile la sidebar diventa una barra inferiore. */
+@media(max-width:760px){
+  .sidebar{
+    top:auto;
+    left:12px;
+    right:12px;
+    bottom:14px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .sidebar-buttons{
+    flex-direction:row;
+    justify-content:space-between;
+  }
+  .sidebar-item{
+    width:auto;
+    flex:1;
+    min-height:62px;
+  }
+  .search-panel{width:100%}
+}
