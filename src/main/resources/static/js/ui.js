@@ -1,10 +1,11 @@
 import { applyFilters } from './filters.js';
-import { map } from './map.js';
+import { fitItaly, map } from './map.js';
 import { markers, markersCluster } from './markers.js';
 import { escapeHtml } from './utils.js';
 import { getFavorites, toggleFavorite } from './favorites.js';
 import { openVenueDetails } from './details.js';
 import { getToken } from './api.js';
+import { showToast } from './feedback.js';
 
 // Genera le card partendo dai dati in data.js.
 const INITIAL_VISIBLE_CARDS = 3;
@@ -88,22 +89,6 @@ function renderCards(pubs, favorites) {
   }).join('');
 }
 
-function highlightCard(card) {
-  // Mantiene evidenziata una sola card alla volta dopo il salto dal popup.
-  document.querySelectorAll('.card.is-focused').forEach(item => item.classList.remove('is-focused'));
-  card.classList.add('is-focused');
-  window.setTimeout(() => card.classList.remove('is-focused'), 1800);
-}
-
-function focusCard(index) {
-  // Scorre fino alla card corrispondente al marker selezionato.
-  const card = document.querySelector(`.card[data-index="${index}"]`);
-  if (!card) return;
-
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  highlightCard(card);
-}
-
 function focusMarker(index) {
   // Apre il marker anche quando è dentro un cluster, poi mostra il suo popup.
   const marker = markers[index];
@@ -134,9 +119,24 @@ export async function initUI(pubs) {
   const detailsPanel = document.getElementById('venue-details');
   const detailsClose = document.getElementById('details-close');
 
+  function closeDetailsPanel() {
+    detailsPanel?.classList.add('hidden');
+    map.closePopup();
+  }
+
   if (detailsPanel && detailsClose) {
-    detailsClose.addEventListener('click', () => {
-      detailsPanel.classList.add('hidden');
+    detailsClose.addEventListener('click', closeDetailsPanel);
+
+    detailsPanel.addEventListener('click', event => {
+      if (event.target === detailsPanel) {
+        closeDetailsPanel();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !detailsPanel.classList.contains('hidden')) {
+        closeDetailsPanel();
+      }
     });
   }
 
@@ -163,8 +163,8 @@ export async function initUI(pubs) {
   });
 
   document.getElementById('btn-reset').addEventListener('click', () => {
-    // Torna alla vista iniziale di Milano e pulisce tutti i filtri.
-    map.setView([45.4642, 9.1900], 12);
+    // Torna alla vista iniziale sull'Italia e pulisce tutti i filtri.
+    fitItaly({ animate: true });
     searchInput.value = '';
     beerCheckboxes.forEach(box => box.checked = false);
     showFavoritesOnly = false;
@@ -195,9 +195,10 @@ export async function initUI(pubs) {
           'aria-label',
           isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'
         );
+        showToast(isFavorite ? 'Locale aggiunto ai preferiti.' : 'Locale rimosso dai preferiti.');
         applyCurrentFilters();
       } catch (error) {
-        alert(error.message);
+        showToast(error.message, 'error');
       } finally {
         favoriteButton.disabled = false;
       }
@@ -218,9 +219,9 @@ export async function initUI(pubs) {
       return;
     }
 
-    const cardButton = event.target.closest('.popup-card-link');
-    if (cardButton) {
-      focusCard(Number(cardButton.dataset.index));
+    const popupDetailsButton = event.target.closest('.popup-details-link');
+    if (popupDetailsButton) {
+      openVenueDetails(popupDetailsButton.dataset.id);
     }
   });
 

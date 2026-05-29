@@ -16,6 +16,11 @@ function averageRating(reviews) {
   return (total / reviews.length).toFixed(1);
 }
 
+function ratingValue(pub) {
+  const rating = Number(pub.rating);
+  return Number.isNaN(rating) ? 0 : rating;
+}
+
 function uniqueTags(drinks, type) {
   const categories = drinks
     .map(drink => drink.category || drink.drinkName)
@@ -48,6 +53,7 @@ async function enrichVenue(venue) {
     lat: Number(venue.latitude),
     lng: Number(venue.longitude),
     rating: averageRating(reviews),
+    reviewCount: reviews.length,
     beers: uniqueTags(drinks, venue.type),
     type: venue.type,
     image: venue.imageUri || FALLBACK_IMAGE,
@@ -59,5 +65,11 @@ async function enrichVenue(venue) {
 export async function loadPubs() {
   const venues = await getActiveVenues();
   const withCoordinates = venues.filter(venue => venue.latitude != null && venue.longitude != null);
-  return Promise.all(withCoordinates.map(enrichVenue));
+  const pubs = await Promise.all(withCoordinates.map(enrichVenue));
+
+  return pubs.sort((a, b) =>
+    ratingValue(b) - ratingValue(a)
+    || b.reviewCount - a.reviewCount
+    || a.name.localeCompare(b.name, 'it')
+  );
 }

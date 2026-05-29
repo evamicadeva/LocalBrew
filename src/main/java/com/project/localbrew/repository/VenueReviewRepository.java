@@ -15,4 +15,6 @@ public interface VenueReviewRepository extends JpaRepository<VenueReview, UUID> 
     List<VenueReview> findAllByVenueId(UUID venueId);
 
     List<VenueReview> findAllByUserId(UUID userId);
+
+    void deleteAllByVenueId(UUID venueId);
 }

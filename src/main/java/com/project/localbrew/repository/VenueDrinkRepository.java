@@ -16,4 +16,6 @@ public interface VenueDrinkRepository extends JpaRepository<VenueDrink, UUID> {
     boolean existsByVenueIdAndDrinkId(UUID venueId, UUID drinkId);
 
     Optional<VenueDrink> findByVenueIdAndDrinkId(UUID venueId, UUID drinkId);
+
+    void deleteAllByVenueId(UUID venueId);
 }

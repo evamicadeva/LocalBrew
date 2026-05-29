@@ -91,6 +91,7 @@ public class SecurityConfig {
                                 "/index.html",
                                 "/css/**",
                                 "/js/**",
+                                "/assets/**",
                                 "/images/**",
                                 "/static/**",
                                 "/pages/**"

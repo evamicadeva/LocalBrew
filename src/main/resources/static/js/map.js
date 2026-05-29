@@ -3,12 +3,21 @@ const WORLD_BOUNDS = L.latLngBounds(
     [85, 180]
 );
 
-// Crea la mappa centrata su Milano con uno zoom iniziale cittadino.
+export const ITALY_BOUNDS = L.latLngBounds(
+    [35.2, 5.8],
+    [47.6, 19.0]
+);
+
+const ITALY_CENTER = [42.7, 12.4];
+const ITALY_ZOOM = 6;
+const USER_AREA_ZOOM = 10;
+
+// Crea la mappa con una vista iniziale ampia sull'Italia.
 export const map = L.map('map', {
-    center: [45.4642, 9.1900],
-    zoom: 12,
+    center: ITALY_CENTER,
+    zoom: ITALY_ZOOM,
     maxZoom: 18,
-    minZoom: 6,
+    minZoom: 5,
     maxBounds: WORLD_BOUNDS,
     maxBoundsViscosity: 1,
     worldCopyJump: false,
@@ -16,10 +25,37 @@ export const map = L.map('map', {
     scrollWheelZoom: false
 });
 
-// Usa una base Carto chiara, leggibile sotto marker e popup.
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+// Usa una base chiara e blocca la ripetizione infinita del mondo.
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
 }).addTo(map);
+
+export function fitItaly(options = {}) {
+    map.setView(ITALY_CENTER, ITALY_ZOOM, {animate: false, ...options});
+}
+
+function focusUserArea(position) {
+    const lat = Number(position.coords.latitude.toFixed(1));
+    const lng = Number(position.coords.longitude.toFixed(1));
+
+    map.setView([lat, lng], USER_AREA_ZOOM, {animate: true});
+}
+
+function requestUserPosition() {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(focusUserArea, () => {
+    }, {
+        enableHighAccuracy: false,
+        timeout: 8000,
+        maximumAge: 300000
+    });
+}
+
+fitItaly();
+requestUserPosition();
 
 function setMouseMapInteraction(isEnabled) {
     if (isEnabled) {

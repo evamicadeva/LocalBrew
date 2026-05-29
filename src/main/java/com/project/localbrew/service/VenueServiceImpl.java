@@ -3,7 +3,10 @@ package com.project.localbrew.service;
 import com.project.localbrew.dto.request.VenueRequest;
 import com.project.localbrew.dto.response.VenueResponse;
 import com.project.localbrew.entity.*;
+import com.project.localbrew.repository.FavoriteVenueRepository;
+import com.project.localbrew.repository.VenueDrinkRepository;
 import com.project.localbrew.repository.VenueRepository;
+import com.project.localbrew.repository.VenueReviewRepository;
 import com.project.localbrew.security.CurrentUserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -18,15 +21,24 @@ import java.util.UUID;
 public class VenueServiceImpl implements VenueService {
 
     private final VenueRepository venueRepository;
+    private final VenueDrinkRepository venueDrinkRepository;
+    private final VenueReviewRepository venueReviewRepository;
+    private final FavoriteVenueRepository favoriteVenueRepository;
     private final CurrentUserService currentUserService;
     private final GeocodingService geocodingService;
 
     public VenueServiceImpl(
             VenueRepository venueRepository,
+            VenueDrinkRepository venueDrinkRepository,
+            VenueReviewRepository venueReviewRepository,
+            FavoriteVenueRepository favoriteVenueRepository,
             CurrentUserService currentUserService,
             GeocodingService geocodingService
     ) {
         this.venueRepository = venueRepository;
+        this.venueDrinkRepository = venueDrinkRepository;
+        this.venueReviewRepository = venueReviewRepository;
+        this.favoriteVenueRepository = favoriteVenueRepository;
         this.currentUserService = currentUserService;
         this.geocodingService = geocodingService;
     }
@@ -250,6 +262,9 @@ public class VenueServiceImpl implements VenueService {
             throw new AccessDeniedException("Non puoi eliminare questo locale");
         }
 
+        venueDrinkRepository.deleteAllByVenueId(id);
+        venueReviewRepository.deleteAllByVenueId(id);
+        favoriteVenueRepository.deleteAllByVenueId(id);
         venueRepository.delete(venue);
     }
 

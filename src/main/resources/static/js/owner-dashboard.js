@@ -10,6 +10,7 @@ import {
   updateDrinkInVenue,
   updateVenue
 } from './api.js';
+import { confirmAction, showToast } from './feedback.js';
 import { requireRole } from './role-guard.js';
 import { escapeHtml } from './utils.js';
 
@@ -297,9 +298,11 @@ if (user) {
       if (fields.id.value) {
         await updateVenue(fields.id.value, payload);
         showMessage('Locale aggiornato.', 'is-success');
+        showToast('Locale aggiornato.');
       } else {
         await createVenue(payload);
         showMessage('Locale creato e inviato in approvazione.', 'is-success');
+        showToast('Locale creato.');
       }
 
       resetForm();
@@ -307,6 +310,7 @@ if (user) {
       await loadSelectedVenueDrinks();
     } catch (error) {
       showMessage(error.message, 'is-error');
+      showToast(error.message, 'error');
     } finally {
       submitButton.disabled = false;
     }
@@ -323,9 +327,11 @@ if (user) {
       });
       existingDrinkForm.reset();
       showDrinkMessage('Drink aggiunto al locale.', 'is-success');
+      showToast('Drink aggiunto al locale.');
       await loadSelectedVenueDrinks();
     } catch (error) {
       showDrinkMessage(error.message, 'is-error');
+      showToast(error.message, 'error');
     }
   });
 
@@ -343,9 +349,11 @@ if (user) {
 
       newDrinkForm.reset();
       showDrinkMessage('Drink creato e aggiunto al locale.', 'is-success');
+      showToast('Drink creato e aggiunto al locale.');
       await refreshDrinkArea();
     } catch (error) {
       showDrinkMessage(error.message, 'is-error');
+      showToast(error.message, 'error');
     }
   });
 
@@ -380,9 +388,11 @@ if (user) {
         await updateDrinkInVenue(selectedVenueId(), drinkId, { drinkId, price });
         editingVenueDrinkId = null;
         showDrinkMessage('Prezzo del drink aggiornato.', 'is-success');
+        showToast('Prezzo aggiornato.');
         await loadSelectedVenueDrinks();
       } catch (error) {
         showDrinkMessage(error.message, 'is-error');
+        showToast(error.message, 'error');
       }
       return;
     }
@@ -390,12 +400,23 @@ if (user) {
     const button = event.target.closest('.remove-venue-drink');
     if (!button) return;
 
+    const drink = selectedVenueDrinks.find(item => String(item.drinkId) === String(drinkId));
+    const confirmed = await confirmAction({
+      title: 'Rimuovere il drink?',
+      message: `${drink?.drinkName || 'Questo drink'} verra rimosso dal menu del locale.`,
+      confirmText: 'Rimuovi',
+      danger: true
+    });
+    if (!confirmed) return;
+
     try {
       await removeDrinkFromVenue(selectedVenueId(), drinkId);
       showDrinkMessage('Drink rimosso dal locale.', 'is-success');
+      showToast('Drink rimosso dal locale.');
       await loadSelectedVenueDrinks();
     } catch (error) {
       showDrinkMessage(error.message, 'is-error');
+      showToast(error.message, 'error');
     }
   });
 
@@ -412,16 +433,23 @@ if (user) {
     }
 
     if (event.target.closest('.delete-venue')) {
-      const confirmed = window.confirm(`Eliminare ${venue.name}?`);
+      const confirmed = await confirmAction({
+        title: 'Eliminare il locale?',
+        message: `${venue.name} verra eliminato definitivamente.`,
+        confirmText: 'Elimina',
+        danger: true
+      });
       if (!confirmed) return;
 
       try {
         await deleteVenue(venue.id);
         showMessage('Locale eliminato.', 'is-success');
+        showToast('Locale eliminato.');
         await loadOwnerVenues();
         await loadSelectedVenueDrinks();
       } catch (error) {
         showMessage(error.message, 'is-error');
+        showToast(error.message, 'error');
       }
     }
   });

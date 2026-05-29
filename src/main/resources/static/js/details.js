@@ -5,6 +5,7 @@ import {
   getVenueDrinks,
   getVenueReviews
 } from './api.js';
+import { showToast } from './feedback.js';
 import { escapeHtml } from './utils.js';
 
 const FALLBACK_IMAGE = 'assets/icons/Minimal.png';
@@ -87,9 +88,11 @@ function bindReviewForm(venueId) {
         rating: Number(form.elements.rating.value),
         comment: form.elements.comment.value.trim()
       });
+      showToast('Recensione pubblicata.');
       await openVenueDetails(venueId);
     } catch (error) {
       message.textContent = error.message;
+      showToast(error.message, 'error');
     }
   });
 }

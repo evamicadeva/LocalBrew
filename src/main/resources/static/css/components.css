@@ -53,18 +53,13 @@
 }
 
 .logged-user {
-    min-height: 51px;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 0 16px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: rgba(255, 248, 236, .78);
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 800;
-    line-height: 1;
+    padding: 0 4px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
     white-space: nowrap;
 }
 
@@ -141,7 +136,8 @@
     }
 
     .logged-user {
-        width: 100%
+        width: 100%;
+        padding: 0
     }
 
     .btn {

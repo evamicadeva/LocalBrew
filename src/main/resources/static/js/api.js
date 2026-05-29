@@ -1,4 +1,4 @@
-export const API_BASE_URL = window.LOCALBREW_API_BASE_URL || 'http://localhost:8080';
+export const API_BASE_URL = window.LOCALBREW_API_BASE_URL || window.location.origin;
 export const TOKEN_KEY = 'localbrew-token';
 
 export function getToken() {

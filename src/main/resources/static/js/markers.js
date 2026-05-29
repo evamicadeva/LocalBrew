@@ -20,27 +20,39 @@ const beerIcon = L.icon({
   popupAnchor: [0, -42]
 });
 
+function shortText(text, maxLength = 110) {
+  const value = String(text || '').trim();
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, maxLength).trim()}...`;
+}
+
 // Crea un marker per ciascun locale ricevuto dal back-end.
 export function initMarkers(pubs) {
   // Consente di richiamare la funzione senza duplicare i marker esistenti.
   markers.length = 0;
   markersCluster.clearLayers();
 
-  pubs.forEach((pub, index) => {
+  pubs.forEach(pub => {
+    const id = escapeHtml(pub.id);
     const name = escapeHtml(pub.name);
     const rating = escapeHtml(pub.rating);
     const beers = escapeHtml(pub.beers);
+    const city = escapeHtml(pub.city);
+    const address = escapeHtml(pub.address);
+    const description = escapeHtml(shortText(pub.description));
     const marker = L.marker([pub.lat, pub.lng], { icon: beerIcon });
 
-    // data-index collega il pulsante nel popup alla card dello stesso locale.
+    // Il popup mostra gia le informazioni principali senza rimandare alla card.
     marker.bindPopup(`
       <div class="venue-popup">
         <h3>${name}</h3>
-        <p class="venue-popup-meta">&#11088; ${rating}</p>
+        <p class="venue-popup-meta">&#11088; ${rating} - ${city}</p>
+        <p class="venue-popup-address">${address}</p>
+        ${description ? `<p class="venue-popup-description">${description}</p>` : ''}
         <p class="venue-popup-beers">&#127866; ${beers}</p>
-        <button type="button" class="popup-card-link" data-index="${index}">
-          <i class="fa-solid fa-arrow-down"></i>
-          Vai alla card
+        <button type="button" class="popup-details-link" data-id="${id}">
+          <i class="fa-solid fa-circle-info"></i>
+          Dettagli
         </button>
       </div>
     `);

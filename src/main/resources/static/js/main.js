@@ -28,7 +28,7 @@ async function updateHeaderAuth() {
       : '';
 
   headerButtons.innerHTML = `
-    <span class="logged-user">Ciao, ${username}</span>
+    <span class="logged-user">Benvenuto, ${username}</span>
     ${dashboardLink ? `<a class="btn register" href="${dashboardLink}">Dashboard</a>` : ''}
     <button type="button" class="btn login" id="logout-button">Esci</button>
   `;

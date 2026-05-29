@@ -1,9 +1,8 @@
 /* Griglia responsive delle card dei locali. */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(230px,270px));
-  justify-content:start;
-  gap:18px;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:20px;
   margin-top:20px;
 }
 
@@ -178,7 +177,7 @@
 
 /* Riduce le colonne quando non c'e' abbastanza spazio per tre card leggibili. */
 @media(max-width:1000px){
-  .cards{grid-template-columns:repeat(auto-fill,minmax(220px,270px))}
+  .cards{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 }
 
 @media(max-width:650px){
