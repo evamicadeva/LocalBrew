@@ -21,4 +21,6 @@ public interface VenueReviewService {
     List<VenueReviewResponse> findReviewsByVenueId(UUID venueId);
 
     List<VenueReviewResponse> findReviewsByUserId(UUID userId);
+
+    List<VenueReviewResponse> findMyReviews();
 }

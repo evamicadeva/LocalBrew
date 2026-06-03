@@ -31,17 +31,34 @@
         <input type="email" id="register-email" required autocomplete="email">
 
         <label for="register-password">Password</label>
-        <input type="password" id="register-password" required autocomplete="new-password">
+        <div class="pw-field">
+          <input type="password" id="register-password" required autocomplete="new-password">
+          <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
 
         <label for="register-confirm-password">Conferma password</label>
-        <input type="password" id="register-confirm-password" required autocomplete="new-password">
+        <div class="pw-field">
+          <input type="password" id="register-confirm-password" required autocomplete="new-password">
+          <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
 
         <button type="submit" class="auth-submit">Crea account</button>
       </form>
 
       <p class="auth-switch">
-        Hai gia un account?
+        Hai già un account?
         <a href="login.html">Accedi</a>
+      </p>
+
+      <p class="auth-home">
+        <a href="../index.html">
+          <i class="fa-solid fa-arrow-left"></i>
+          Torna alla home
+        </a>
       </p>
     </section>
   </main>

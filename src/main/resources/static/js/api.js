@@ -68,7 +68,11 @@ export async function apiRequest(path, options = {}) {
   const data = await parseResponse(response);
 
   if (!response.ok) {
-    const message = data?.message || data?.error || `Errore ${response.status}`;
+    let message = data?.message || data?.error || `Errore ${response.status}`;
+    if (data?.errors && typeof data.errors === 'object') {
+      const details = Object.values(data.errors).join('; ');
+      if (details) message = details;
+    }
     throw new Error(message);
   }
 
@@ -98,6 +102,21 @@ export async function getCurrentUser() {
     clearToken();
     return null;
   }
+}
+
+export function updateMe(data) {
+  return apiRequest('/api/v1/user/me', {
+    method: 'PUT',
+    auth: true,
+    body: data
+  });
+}
+
+export function deleteMe() {
+  return apiRequest('/api/v1/user/me', {
+    method: 'DELETE',
+    auth: true
+  });
 }
 
 export function getActiveVenues() {
@@ -153,6 +172,14 @@ export function createVenueReview(review) {
     method: 'POST',
     auth: true,
     body: review
+  });
+}
+
+export function updateMyReview(id, data) {
+  return apiRequest(`/api/v1/user/venue-reviews/${id}`, {
+    method: 'PUT',
+    auth: true,
+    body: data
   });
 }
 
@@ -230,4 +257,34 @@ export function suspendVenue(id) {
     method: 'PATCH',
     auth: true
   });
+}
+
+export async function uploadVenueImage(file) {
+  const token = getToken();
+  if (!token) throw new Error('Accedi per continuare.');
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await fetch(`${API_BASE_URL}/api/v1/owner/images/venue`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData
+  });
+  const data = await parseResponse(response);
+  if (!response.ok) throw new Error(data?.message || `Errore ${response.status}`);
+  return data.url;
+}
+
+export async function uploadDrinkImage(file) {
+  const token = getToken();
+  if (!token) throw new Error('Accedi per continuare.');
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await fetch(`${API_BASE_URL}/api/v1/owner/images/drink`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData
+  });
+  const data = await parseResponse(response);
+  if (!response.ok) throw new Error(data?.message || `Errore ${response.status}`);
+  return data.url;
 }

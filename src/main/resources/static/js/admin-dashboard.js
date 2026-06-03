@@ -5,169 +5,224 @@ import {
   deleteVenueReview,
   getAdminVenues,
   getVenueReviews,
-  suspendVenue
+  suspendVenue,
+  uploadDrinkImage
 } from './api.js';
 import {confirmAction, showToast} from './feedback.js';
 import {requireRole} from './role-guard.js';
 import {escapeHtml} from './utils.js';
 
-const container = document.getElementById('admin-venues');
-const drinkForm = document.getElementById('admin-drink-form');
-const drinkMessage = document.getElementById('admin-drink-message');
-const dashboardGrid = document.querySelector('.admin-dashboard-grid');
+// ── DOM refs ─────────────────────────────────────────────────
+const container        = document.getElementById('admin-venues');
+const venueSearch      = document.getElementById('admin-venue-search');
+const statusPills      = document.querySelectorAll('.admin-status-pill');
+const reviewHint       = document.getElementById('admin-review-hint');
+const reviewVenueName  = document.getElementById('admin-review-venue-name');
+const reviewList       = document.getElementById('admin-reviews');
+const openDrawerBtn    = document.getElementById('admin-open-drawer');
+const closeDrawerBtn   = document.getElementById('admin-close-drawer');
+const drawer           = document.getElementById('admin-drink-drawer');
+const overlay          = document.getElementById('admin-drawer-overlay');
+const drinkForm        = document.getElementById('admin-drink-form');
+const drinkMessage     = document.getElementById('admin-drink-message');
 
 const drinkFields = {
-    name: document.getElementById('admin-drink-name'),
+    name:        document.getElementById('admin-drink-name'),
     description: document.getElementById('admin-drink-description'),
-    category: document.getElementById('admin-drink-category'),
-    abv: document.getElementById('admin-drink-abv'),
-    origin: document.getElementById('admin-drink-origin'),
-    imageUri: document.getElementById('admin-drink-image-uri')
+    category:    document.getElementById('admin-drink-category'),
+    abv:         document.getElementById('admin-drink-abv'),
+    origin:      document.getElementById('admin-drink-origin'),
+    imageUri:    document.getElementById('admin-drink-image-uri')
 };
 
-let adminVenues = [];
-let reviewPanel;
-let reviewVenueSelect;
-let reviewList;
+const drinkImageFile     = document.getElementById('admin-drink-image-file');
+const drinkImagePreview  = document.getElementById('admin-drink-image-preview');
+const drinkImageFilename = document.getElementById('admin-drink-image-filename');
+const drinkImageRemove   = document.getElementById('admin-drink-image-remove');
 
-function statusLabel(status) {
-    const labels = {
-        ACTIVE: 'Attivo',
-        PENDING: 'In attesa',
-        SUSPENDED: 'Sospeso'
-    };
+const DRINK_IMAGE_LABEL = 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)';
 
-    return labels[status] || status;
+// ── Stato ────────────────────────────────────────────────────
+let adminVenues   = [];
+let activeStatus  = '';        // '' | 'ACTIVE' | 'SUSPENDED' | 'PENDING'
+const reviewCache = {};
+
+// ── Drawer ───────────────────────────────────────────────────
+function openDrawer()  {
+    drawer.classList.add('admin-drawer--open');
+    overlay.classList.add('admin-drawer-overlay--visible');
+    document.body.style.overflow = 'hidden';
+    drinkFields.name.focus();
 }
 
+function closeDrawer() {
+    drawer.classList.remove('admin-drawer--open');
+    overlay.classList.remove('admin-drawer-overlay--visible');
+    document.body.style.overflow = '';
+}
+
+openDrawerBtn.addEventListener('click', openDrawer);
+closeDrawerBtn.addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+// ── Upload helpers ───────────────────────────────────────────
+function setupImageUpload({ fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel }) {
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        filename.textContent = file.name;
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+        removeBtn.classList.remove('hidden');
+        hiddenInput.value = '';
+    });
+    removeBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        preview.src = '';
+        preview.classList.add('hidden');
+        removeBtn.classList.add('hidden');
+        filename.textContent = defaultLabel;
+        hiddenInput.value = '';
+    });
+}
+
+async function resolveImageUri(fileInput, hiddenInput, uploadFn) {
+    if (fileInput.files[0]) return await uploadFn(fileInput.files[0]);
+    return hiddenInput.value.trim() || null;
+}
+
+function resetImageField({ fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel }) {
+    fileInput.value = '';
+    preview.src = '';
+    preview.classList.add('hidden');
+    removeBtn.classList.add('hidden');
+    filename.textContent = defaultLabel;
+    hiddenInput.value = '';
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function statusLabel(status) {
+    return { ACTIVE: 'Attivo', PENDING: 'In attesa', SUSPENDED: 'Sospeso' }[status] || status;
+}
+
+function starsHtml(avg) {
+    const full = Math.round(avg);
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        html += `<i class="fa-${i <= full ? 'solid' : 'regular'} fa-star admin-star"></i>`;
+    }
+    return html;
+}
+
+function reviewBadge(venueId) {
+    const r = reviewCache[venueId];
+    if (!r) return '';
+    if (r.count === 0) return `<span class="admin-review-badge admin-review-badge--empty">Nessuna rec.</span>`;
+    return `
+        <span class="admin-review-badge">
+            ${starsHtml(r.avg)}
+            <span class="admin-review-badge-text">${r.avg.toFixed(1)} · ${r.count} rec.</span>
+        </span>`;
+}
+
+// ── Render locali ─────────────────────────────────────────────
 function renderVenues(venues) {
     if (!venues.length) {
-        container.innerHTML = '<p class="dashboard-message">Nessun locale registrato.</p>';
+        container.innerHTML = '<p class="dashboard-message">Nessun locale trovato.</p>';
         return;
     }
 
     container.innerHTML = venues.map(venue => {
-        const id = escapeHtml(venue.id);
-        const name = escapeHtml(venue.name);
-        const city = escapeHtml(venue.city);
+        const id     = escapeHtml(venue.id);
+        const name   = escapeHtml(venue.name);
+        const city   = escapeHtml(venue.city);
         const status = escapeHtml(statusLabel(venue.status));
-        const owner = escapeHtml(venue.ownerUsername || 'Owner non disponibile');
+        const owner  = escapeHtml(venue.ownerUsername || '—');
 
         return `
-      <article class="dashboard-item dashboard-item-wide" data-id="${id}">
-        <div>
+      <article class="admin-venue-card" data-id="${id}">
+        <div class="admin-venue-card-header">
           <span class="dashboard-status status-${escapeHtml(venue.status).toLowerCase()}">${status}</span>
-          <h2>${name}</h2>
-          <p>${city} - ${owner}</p>
+          ${reviewBadge(venue.id)}
         </div>
-        <div class="dashboard-actions">
-          <button type="button" class="activate" ${venue.status === 'ACTIVE' ? 'disabled' : ''}>Attiva</button>
-          <button type="button" class="suspend" ${venue.status === 'SUSPENDED' ? 'disabled' : ''}>Sospendi</button>
+        <h3 class="admin-venue-name">${name}</h3>
+        <p class="admin-venue-meta">
+          <i class="fa-solid fa-location-dot"></i> ${city}
+          &nbsp;·&nbsp;
+          <i class="fa-solid fa-user"></i> ${owner}
+        </p>
+        <div class="dashboard-actions admin-venue-actions">
+          <button type="button" class="activate"      ${venue.status === 'ACTIVE'    ? 'disabled' : ''}>Attiva</button>
+          <button type="button" class="suspend"       ${venue.status === 'SUSPENDED' ? 'disabled' : ''}>Sospendi</button>
+          <button type="button" class="show-reviews"><i class="fa-solid fa-comments"></i> Recensioni</button>
           <button type="button" class="delete-venue danger-button">Elimina</button>
         </div>
-      </article>
-    `;
+      </article>`;
     }).join('');
 }
 
+// ── Caricamento ───────────────────────────────────────────────
 async function loadVenues() {
     container.innerHTML = '<p class="dashboard-message">Caricamento locali...</p>';
     adminVenues = await getAdminVenues();
-    renderVenues(adminVenues);
-    renderReviewVenueOptions();
-    await loadSelectedVenueReviews();
-}
 
-function showDrinkMessage(text, type = '') {
-    drinkMessage.textContent = text;
-    drinkMessage.classList.remove('is-error', 'is-success');
-    if (type) drinkMessage.classList.add(type);
-}
-
-function readDrinkForm() {
-    const imageUri = drinkFields.imageUri.value.trim();
-    const abv = drinkFields.abv.value;
-
-    return {
-        name: drinkFields.name.value.trim(),
-        description: drinkFields.description.value.trim() || null,
-        category: drinkFields.category.value,
-        abv: abv === '' ? null : Number(abv),
-        origin: drinkFields.origin.value.trim() || null,
-        imageUri: imageUri || null
-    };
-}
-
-function ensureReviewPanel() {
-    if (reviewPanel) return;
-
-    reviewPanel = document.createElement('section');
-    reviewPanel.className = 'dashboard-list admin-review-panel';
-    reviewPanel.innerHTML = `
-    <div class="admin-review-heading">
-      <div>
-        <h2>Commenti locali</h2>
-        <p class="dashboard-message">Seleziona un locale per vedere e moderare le recensioni.</p>
-      </div>
-    </div>
-    <label class="admin-review-label" for="admin-review-venue-select">Locale</label>
-    <select class="admin-review-select" id="admin-review-venue-select"></select>
-    <div class="admin-review-list" id="admin-reviews" aria-live="polite"></div>
-  `;
-
-    dashboardGrid.appendChild(reviewPanel);
-    reviewVenueSelect = document.getElementById('admin-review-venue-select');
-    reviewList = document.getElementById('admin-reviews');
-
-    reviewVenueSelect.addEventListener('change', loadSelectedVenueReviews);
-
-    reviewList.addEventListener('click', async event => {
-        const button = event.target.closest('.delete-review');
-        if (!button) return;
-
-        const confirmed = await confirmAction({
-            title: 'Eliminare la recensione?',
-            message: 'La recensione verrà rimossa definitivamente.',
-            confirmText: 'Elimina',
-            danger: true
-        });
-        if (!confirmed) return;
-
-        button.disabled = true;
-
+    await Promise.allSettled(adminVenues.map(async v => {
         try {
-            await deleteVenueReview(button.dataset.id);
-            showToast('Recensione eliminata.');
-            await loadSelectedVenueReviews();
-        } catch (error) {
-            showToast(error.message, 'error');
-            button.disabled = false;
+            const reviews = await getVenueReviews(v.id);
+            const count = reviews.length;
+            const avg   = count ? reviews.reduce((s, r) => s + r.rating, 0) / count : 0;
+            reviewCache[v.id] = { count, avg, reviews };
+        } catch {
+            reviewCache[v.id] = { count: 0, avg: 0, reviews: [] };
         }
+    }));
+
+    applyFilters();
+}
+
+// ── Filtri ────────────────────────────────────────────────────
+function applyFilters() {
+    const q = venueSearch.value.trim().toLowerCase();
+    let filtered = adminVenues;
+
+    if (activeStatus) {
+        filtered = filtered.filter(v => v.status === activeStatus);
+    }
+
+    if (q) {
+        filtered = filtered.filter(v =>
+            v.name.toLowerCase().includes(q) ||
+            (v.ownerUsername || '').toLowerCase().includes(q) ||
+            (v.city || '').toLowerCase().includes(q)
+        );
+    }
+
+    renderVenues(filtered);
+}
+
+venueSearch.addEventListener('input', applyFilters);
+
+statusPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+        statusPills.forEach(p => p.classList.remove('admin-status-pill--active'));
+        pill.classList.add('admin-status-pill--active');
+        activeStatus = pill.dataset.status;
+        applyFilters();
     });
-}
+});
 
-function renderReviewVenueOptions() {
-    ensureReviewPanel();
+// ── Pannello recensioni ───────────────────────────────────────
+function renderReviews(venue) {
+    const { reviews } = reviewCache[venue.id] || { reviews: [] };
 
-    if (!adminVenues.length) {
-        reviewVenueSelect.innerHTML = '<option value="">Nessun locale disponibile</option>';
-        reviewVenueSelect.disabled = true;
-        reviewList.innerHTML = '<p class="dashboard-message">Nessun locale disponibile.</p>';
-        return;
-    }
+    reviewHint.classList.add('hidden');
+    reviewVenueName.classList.remove('hidden');
+    reviewVenueName.innerHTML = `
+        <span class="admin-review-venue-label">
+            <i class="fa-solid fa-store"></i> ${escapeHtml(venue.name)}
+        </span>`;
 
-    const previousValue = reviewVenueSelect.value;
-    reviewVenueSelect.disabled = false;
-    reviewVenueSelect.innerHTML = adminVenues.map(venue => `
-    <option value="${escapeHtml(venue.id)}">${escapeHtml(venue.name)} - ${escapeHtml(statusLabel(venue.status))}</option>
-  `).join('');
-
-    if (adminVenues.some(venue => String(venue.id) === previousValue)) {
-        reviewVenueSelect.value = previousValue;
-    }
-}
-
-function renderReviews(reviews) {
     if (!reviews.length) {
         reviewList.innerHTML = '<p class="dashboard-message">Nessuna recensione per questo locale.</p>';
         return;
@@ -182,44 +237,58 @@ function renderReviews(reviews) {
       <div class="admin-review-content">
         <h3>${escapeHtml(review.username || 'Utente')}</h3>
         <p>${escapeHtml(review.comment || 'Nessun commento')}</p>
-        <small>${escapeHtml(review.venueName || '')}</small>
       </div>
       <div class="dashboard-actions admin-review-actions">
         <button type="button" class="delete-review danger-button" data-id="${escapeHtml(review.id)}">Elimina</button>
       </div>
-    </article>
-  `).join('');
+    </article>`).join('');
 }
 
-async function loadSelectedVenueReviews() {
-    ensureReviewPanel();
-
-    if (!reviewVenueSelect.value) return;
-
-    reviewList.innerHTML = '<p class="dashboard-message">Caricamento recensioni...</p>';
-
-    try {
-        const reviews = await getVenueReviews(reviewVenueSelect.value);
-        renderReviews(reviews);
-    } catch (error) {
-        reviewList.innerHTML = `<p class="dashboard-message">${escapeHtml(error.message)}</p>`;
-    }
+// ── Drink form ────────────────────────────────────────────────
+function showDrinkMessage(text, type = '') {
+    drinkMessage.textContent = text;
+    drinkMessage.classList.remove('is-error', 'is-success');
+    if (type) drinkMessage.classList.add(type);
 }
 
+function readDrinkForm() {
+    const abv = drinkFields.abv.value;
+    return {
+        name:        drinkFields.name.value.trim(),
+        description: drinkFields.description.value.trim() || null,
+        category:    drinkFields.category.value,
+        abv:         abv === '' ? null : Number(abv),
+        origin:      drinkFields.origin.value.trim() || null
+    };
+}
+
+// ── Init ──────────────────────────────────────────────────────
 const user = await requireRole('ADMIN');
 
 if (user) {
     await loadVenues();
 
+    setupImageUpload({
+        fileInput: drinkImageFile, preview: drinkImagePreview,
+        filename: drinkImageFilename, removeBtn: drinkImageRemove,
+        hiddenInput: drinkFields.imageUri, defaultLabel: DRINK_IMAGE_LABEL
+    });
+
     drinkForm.addEventListener('submit', async event => {
         event.preventDefault();
         showDrinkMessage('Creazione drink...');
-
         try {
-            await createDrink(readDrinkForm());
+            const imageUri = await resolveImageUri(drinkImageFile, drinkFields.imageUri, uploadDrinkImage);
+            await createDrink({ ...readDrinkForm(), imageUri });
             drinkForm.reset();
+            resetImageField({
+                fileInput: drinkImageFile, preview: drinkImagePreview,
+                filename: drinkImageFilename, removeBtn: drinkImageRemove,
+                hiddenInput: drinkFields.imageUri, defaultLabel: DRINK_IMAGE_LABEL
+            });
             showDrinkMessage('Drink creato.', 'is-success');
             showToast('Drink creato.');
+            closeDrawer();
         } catch (error) {
             showDrinkMessage(error.message, 'is-error');
             showToast(error.message, 'error');
@@ -227,20 +296,25 @@ if (user) {
     });
 
     container.addEventListener('click', async event => {
-        const card = event.target.closest('.dashboard-item');
+        const card = event.target.closest('.admin-venue-card');
         if (!card) return;
-
         const button = event.target.closest('button');
         if (!button) return;
 
-        const venue = adminVenues.find(item => String(item.id) === String(card.dataset.id));
+        const venue = adminVenues.find(v => String(v.id) === String(card.dataset.id));
+
+        if (button.classList.contains('show-reviews')) {
+            document.querySelectorAll('.admin-venue-card').forEach(c => c.classList.remove('admin-venue-card--active'));
+            card.classList.add('admin-venue-card--active');
+            renderReviews(venue);
+            return;
+        }
 
         if (button.classList.contains('suspend')) {
             const confirmed = await confirmAction({
                 title: 'Sospendere il locale?',
-                message: `${venue?.name || 'Questo locale'} non sarà piu visibile pubblicamente.`,
-                confirmText: 'Sospendi',
-                danger: true
+                message: `${venue?.name || 'Questo locale'} non sarà più visibile pubblicamente.`,
+                confirmText: 'Sospendi', danger: true
             });
             if (!confirmed) return;
         }
@@ -249,8 +323,7 @@ if (user) {
             const confirmed = await confirmAction({
                 title: 'Eliminare il locale?',
                 message: `${venue?.name || 'Questo locale'} verrà eliminato definitivamente.`,
-                confirmText: 'Elimina',
-                danger: true
+                confirmText: 'Elimina', danger: true
             });
             if (!confirmed) return;
         }
@@ -258,22 +331,43 @@ if (user) {
         button.disabled = true;
 
         try {
-            if (button.classList.contains('activate')) {
-                await activateVenue(card.dataset.id);
-                showToast('Locale attivato.');
-            }
-
-            if (button.classList.contains('suspend')) {
-                await suspendVenue(card.dataset.id);
-                showToast('Locale sospeso.');
-            }
-
-            if (button.classList.contains('delete-venue')) {
-                await deleteVenue(card.dataset.id);
-                showToast('Locale eliminato.');
-            }
-
+            if (button.classList.contains('activate'))     { await activateVenue(card.dataset.id); showToast('Locale attivato.'); }
+            if (button.classList.contains('suspend'))      { await suspendVenue(card.dataset.id);  showToast('Locale sospeso.'); }
+            if (button.classList.contains('delete-venue')) { await deleteVenue(card.dataset.id);   showToast('Locale eliminato.'); }
             await loadVenues();
+        } catch (error) {
+            showToast(error.message, 'error');
+            button.disabled = false;
+        }
+    });
+
+    reviewList.addEventListener('click', async event => {
+        const button = event.target.closest('.delete-review');
+        if (!button) return;
+
+        const confirmed = await confirmAction({
+            title: 'Eliminare la recensione?',
+            message: 'La recensione verrà rimossa definitivamente.',
+            confirmText: 'Elimina', danger: true
+        });
+        if (!confirmed) return;
+
+        button.disabled = true;
+        try {
+            await deleteVenueReview(button.dataset.id);
+            showToast('Recensione eliminata.');
+            const activeCard = document.querySelector('.admin-venue-card--active');
+            if (activeCard) {
+                const venue = adminVenues.find(v => String(v.id) === String(activeCard.dataset.id));
+                if (venue) {
+                    const reviews = await getVenueReviews(venue.id);
+                    const count = reviews.length;
+                    const avg   = count ? reviews.reduce((s, r) => s + r.rating, 0) / count : 0;
+                    reviewCache[venue.id] = { count, avg, reviews };
+                    renderReviews(venue);
+                    applyFilters();
+                }
+            }
         } catch (error) {
             showToast(error.message, 'error');
             button.disabled = false;

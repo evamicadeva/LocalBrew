@@ -130,6 +130,13 @@ public class VenueReviewServiceImpl implements VenueReviewService {
         return venueReviewRepository.findAllByUserId(userId).stream().map(this::toResponse).toList();
     }
 
+    @Override
+    public List<VenueReviewResponse> findMyReviews() {
+        User currentUser = currentUserService.getCurrentUser();
+        return venueReviewRepository.findAllByUserId(currentUser.getId())
+                .stream().map(this::toResponse).toList();
+    }
+
     private VenueReview findEntityById(UUID id) {
         return venueReviewRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Recensione non trovata con ID: " + id));
     }

@@ -35,8 +35,14 @@
           <h3>Cerca locale o birra</h3>
           <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Es. IPA, Lambrate...">
+            <input type="text" id="searchInput" placeholder="Cerca locale, birra, città…">
           </div>
+
+        </div>
+
+        <div class="favorites-panel hidden" id="favorites-panel">
+          <h3>Locali preferiti</h3>
+          <div class="favorites-list" id="favorites-list"></div>
         </div>
 
         <div class="sidebar-buttons">
@@ -51,6 +57,11 @@
           </button>
         </div>
       </aside>
+
+      <div class="map-interaction-hint">
+        <i class="fa-solid fa-computer-mouse"></i>
+        <span>Ctrl + mouse</span>
+      </div>
 
       <div id="map"></div>
     </section>
@@ -70,9 +81,8 @@
 
       <aside class="right-section">
         <div class="filter-card">
-          <span class="eyebrow">Filtri rapidi</span>
-          <h2>Trova la tua birra</h2>
-          <p>Seleziona uno o piu stili e aggiorna mappa e card.</p>
+          <h2>Filtra per birra</h2>
+          <p>Seleziona uno o più stili per trovare il locale giusto.</p>
           <div class="beer-filter-list">
             <label class="filter-option"><input type="checkbox" value="IPA"><span>IPA</span></label>
             <label class="filter-option"><input type="checkbox" value="LAGER"><span>Lager</span></label>
@@ -85,38 +95,29 @@
       </aside>
     </main>
 
+    <!-- Drawer dettagli locale -->
+    <div class="details-overlay hidden" id="details-overlay"></div>
     <section class="venue-details hidden" id="venue-details">
-      <button type="button" id="details-close" aria-label="Chiudi dettagli">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <div class="venue-details-header">
+        <button type="button" id="details-close" aria-label="Chiudi dettagli">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
       <div id="venue-details-content"></div>
     </section>
 
     <footer class="footer">
-      <div class="footer-box"><i class="fa-solid fa-location-dot"></i>
-        <div>
-          <h4>Mappa interattiva</h4>
-          <p>Esplora i locali intorno a te.</p>
-        </div>
+      <div class="footer-brand">
+        <img src="assets/icons/full.png" alt="Local Brew" class="footer-logo">
+        <p class="footer-tagline">La mappa birraria italiana.<br>Scopri locali, birre artigianali e pub vicino a te.</p>
       </div>
-      <div class="footer-box"><i class="fa-solid fa-heart"></i>
-        <div>
-          <h4>I tuoi preferiti</h4>
-          <p>Salva i locali che ami.</p>
-        </div>
-      </div>
-      <div class="footer-box"><i class="fa-solid fa-comment"></i>
-        <div>
-          <h4>Recensioni</h4>
-          <p>Leggi e lascia recensioni.</p>
-        </div>
-      </div>
+      <p class="footer-copy">© 2025 Local Brew — Tutti i diritti riservati</p>
     </footer>
   </div>
 
   <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script defer src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-  <script defer type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 
 </html>

@@ -38,6 +38,5 @@ public class VenueRequest {
     private Double longitude;
 
     @Size(max = 500)
-    @Pattern(regexp = "^(https?://).+\\.(jpg|jpeg|png|webp)$", message = "Image URL non valida")
     private String imageUri;
 }

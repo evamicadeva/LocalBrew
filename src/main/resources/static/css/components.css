@@ -86,34 +86,52 @@
     transform: translateY(-2px)
 }
 
-/* Footer: tre box informativi in griglia. */
+/* Footer ────────────────────────────────────────────────── */
 .footer {
-    background: #fff6e7;
-    display: grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap: 18px;
-    padding: 34px;
-    border-top: 1px solid var(--line);
-}
-
-.footer-box {
+    background: #1c1c1c;
+    padding: 36px 42px;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
     gap: 14px;
-    align-items: flex-start;
-    background: rgba(255, 255, 255, .65);
-    padding: 18px;
-    border-radius: 20px;
 }
 
-.footer-box i {
-    color: var(--green);
-    font-size: 24px
+.footer-logo {
+    width: 110px;
+    filter: brightness(0) invert(1) opacity(.7);
 }
 
-.footer-box p {
-    color: var(--muted);
-    margin-top: 4px
+.footer-tagline {
+    color: rgba(255,255,255,.4);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
 }
+
+.footer-copy {
+    color: rgba(255,255,255,.25);
+    font-size: 12px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Nascondi le parti non più usate */
+.footer-top,
+.footer-nav,
+.footer-nav-title,
+.footer-divider,
+.footer-bottom,
+.footer-box {
+    display: none;
+}
+
 
 /* Layout compatto su mobile. */
 @media (max-width: 760px) {
@@ -127,7 +145,14 @@
     }
 
     .footer {
-        grid-template-columns:1fr
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 28px 24px;
+        gap: 16px;
+    }
+
+    .footer-copy {
+        width: 100%;
     }
 
     .header-buttons {

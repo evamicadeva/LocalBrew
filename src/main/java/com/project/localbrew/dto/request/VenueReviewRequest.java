@@ -15,7 +15,6 @@ import java.util.UUID;
 @Builder
 public class VenueReviewRequest {
 
-    @NotNull(message = "Venue ID obbligatorio")
     private UUID venueId;
 
     @NotNull(message = "Rating obbligatorio")

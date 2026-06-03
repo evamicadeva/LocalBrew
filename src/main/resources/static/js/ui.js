@@ -50,7 +50,7 @@ function renderCards(pubs, favorites) {
         <div class="card-img">
           <img src="${image}" alt="Foto di ${name}">
           <h3>${name}</h3>
-          <span class="rating">&#11088; ${rating}</span>
+          <span class="rating"><i class="fa-solid fa-star card-star"></i> ${rating}</span>
         </div>
 
         <div class="card-body">
@@ -58,7 +58,7 @@ function renderCards(pubs, favorites) {
             <h3>${name}</h3>
 
             <div class="card-actions">
-              <span class="rating">&#11088; ${rating}</span>
+              <span class="rating"><i class="fa-solid fa-star card-star"></i> ${rating}</span>
 
               <button
                 type="button"
@@ -94,11 +94,69 @@ function focusMarker(index) {
   const marker = markers[index];
   if (!marker) return;
 
+  if (!markersCluster.hasLayer(marker)) {
+    markersCluster.addLayer(marker);
+  }
+
+  document.querySelector('.map-section')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
   markersCluster.zoomToShowLayer(marker, () => {
     map.setView(marker.getLatLng(), Math.max(map.getZoom(), 15), { animate: true });
     marker.openPopup();
   });
 }
+
+function updateFavoriteButtons(favoriteIds) {
+  const favorites = new Set(favoriteIds.map(id => String(id)));
+
+  document.querySelectorAll('.favorite-button').forEach(button => {
+    const isFavorite = favorites.has(String(button.dataset.id));
+    const icon = button.querySelector('i');
+
+    button.classList.toggle('is-favorite', isFavorite);
+    icon?.classList.toggle('fa-regular', !isFavorite);
+    icon?.classList.toggle('fa-solid', isFavorite);
+    button.setAttribute(
+      'aria-label',
+      isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'
+    );
+  });
+}
+
+function renderFavoritesList(pubs, favoriteIds) {
+  const list = document.getElementById('favorites-list');
+  if (!list) return;
+
+  const favorites = new Set(favoriteIds.map(id => String(id)));
+  const favoritePubs = pubs.filter(pub => favorites.has(String(pub.id)));
+
+  if (!favoritePubs.length) {
+    list.innerHTML = '<p class="favorites-empty">Non hai ancora salvato locali preferiti.</p>';
+    return;
+  }
+
+  list.innerHTML = favoritePubs.map(pub => `
+    <article class="favorite-panel-card">
+      <img src="${escapeHtml(pub.image)}" alt="Foto di ${escapeHtml(pub.name)}">
+      <div class="favorite-panel-main">
+        <strong>${escapeHtml(pub.name)}</strong>
+        <small>${escapeHtml(pub.city || '')} &middot; <i class="fa-solid fa-star card-star"></i> ${escapeHtml(pub.rating)}</small>
+      </div>
+      <div class="favorite-panel-actions">
+        <button type="button" class="favorite-panel-map-button" data-id="${escapeHtml(pub.id)}" aria-label="Vai sulla mappa">
+          <i class="fa-solid fa-map-location-dot"></i>
+        </button>
+        <button type="button" class="favorite-panel-details-button" data-id="${escapeHtml(pub.id)}" aria-label="Apri dettagli">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+    </article>
+  `).join('');
+}
+
 
 export async function initUI(pubs) {
   let favoriteIds = await getFavorites();
@@ -111,27 +169,38 @@ export async function initUI(pubs) {
   renderCards(pubs, favoriteIds);
   updateCardsVisibility();
 
-  // Riferimenti agli elementi principali controllati dalla UI.
-  const searchInput = document.getElementById('searchInput');
-  const searchPanel = document.getElementById('search-panel');
-  const beerCheckboxes = document.querySelectorAll('.filter-option input');
+  const searchInput     = document.getElementById('searchInput');
+  const searchPanel     = document.getElementById('search-panel');
+  const searchButton    = document.getElementById('btn-search');
+  const favoritesPanel  = document.getElementById('favorites-panel');
+  const beerCheckboxes  = document.querySelectorAll('.filter-option input');
   const favoritesButton = document.getElementById('btn-favorites');
-  const detailsPanel = document.getElementById('venue-details');
-  const detailsClose = document.getElementById('details-close');
+  const detailsPanel    = document.getElementById('venue-details');
+  const detailsClose    = document.getElementById('details-close');
+  const detailsOverlay  = document.getElementById('details-overlay');
 
   function closeDetailsPanel() {
     detailsPanel?.classList.add('hidden');
+    detailsOverlay?.classList.add('hidden');
     map.closePopup();
+  }
+
+  function openDetailsPanel() {
+    detailsPanel?.classList.remove('hidden');
+    detailsOverlay?.classList.remove('hidden');
+  }
+
+  function focusVenueById(venueId) {
+    const index = pubs.findIndex(pub => String(pub.id) === String(venueId));
+
+    if (index >= 0) {
+      focusMarker(index);
+    }
   }
 
   if (detailsPanel && detailsClose) {
     detailsClose.addEventListener('click', closeDetailsPanel);
-
-    detailsPanel.addEventListener('click', event => {
-      if (event.target === detailsPanel) {
-        closeDetailsPanel();
-      }
-    });
+    detailsOverlay?.addEventListener('click', closeDetailsPanel);
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !detailsPanel.classList.contains('hidden')) {
@@ -147,15 +216,40 @@ export async function initUI(pubs) {
   if (favoritesButton && getToken()) {
     favoritesButton.classList.remove('hidden');
     favoritesButton.addEventListener('click', () => {
-      showFavoritesOnly = !showFavoritesOnly;
-      favoritesButton.classList.toggle('active', showFavoritesOnly);
+      const shouldOpen = favoritesPanel?.classList.contains('hidden');
+
+      searchPanel?.classList.add('hidden');
+      searchButton?.classList.remove('active');
+      favoritesPanel?.classList.toggle('hidden', !shouldOpen);
+      favoritesButton.classList.toggle('active', shouldOpen);
       favoritesButton.setAttribute(
         'aria-label',
-        showFavoritesOnly ? 'Mostra tutti i locali' : 'Mostra preferiti'
+        shouldOpen ? 'Nascondi preferiti' : 'Mostra preferiti'
       );
-      applyCurrentFilters();
+
+      if (shouldOpen) {
+        renderFavoritesList(pubs, favoriteIds);
+      }
     });
   }
+
+  window.addEventListener('localbrew:favorites-changed', event => {
+    favoriteIds = event.detail?.favoriteIds || [];
+    updateFavoriteButtons(favoriteIds);
+
+    if (favoritesPanel && !favoritesPanel.classList.contains('hidden')) {
+      renderFavoritesList(pubs, favoriteIds);
+    }
+
+    if (showFavoritesOnly) {
+      applyCurrentFilters();
+    }
+  });
+
+  window.addEventListener('localbrew:focus-venue', event => {
+    closeDetailsPanel();
+    focusVenueById(event.detail?.venueId);
+  });
 
   // Ogni cambio dei filtri aggiorna insieme card e marker.
   beerCheckboxes.forEach(box => {
@@ -163,14 +257,13 @@ export async function initUI(pubs) {
   });
 
   document.getElementById('btn-reset').addEventListener('click', () => {
-    // Torna alla vista iniziale sull'Italia e pulisce tutti i filtri.
     fitItaly({ animate: true });
     searchInput.value = '';
     beerCheckboxes.forEach(box => box.checked = false);
     showFavoritesOnly = false;
+    favoritesPanel?.classList.add('hidden');
     favoritesButton?.classList.remove('active');
     favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
-
     applyCurrentFilters();
   });
 
@@ -195,6 +288,9 @@ export async function initUI(pubs) {
           'aria-label',
           isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'
         );
+        window.dispatchEvent(new CustomEvent('localbrew:favorites-changed', {
+          detail: { favoriteIds }
+        }));
         showToast(isFavorite ? 'Locale aggiunto ai preferiti.' : 'Locale rimosso dai preferiti.');
         applyCurrentFilters();
       } catch (error) {
@@ -206,9 +302,26 @@ export async function initUI(pubs) {
       return;
     }
 
+    const favoritePanelMapButton = event.target.closest('.favorite-panel-map-button');
+    if (favoritePanelMapButton) {
+      favoritesPanel?.classList.add('hidden');
+      favoritesButton?.classList.remove('active');
+      favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
+      focusVenueById(favoritePanelMapButton.dataset.id);
+      return;
+    }
+
+    const favoritePanelDetailsButton = event.target.closest('.favorite-panel-details-button');
+    if (favoritePanelDetailsButton) {
+      openDetailsPanel();
+      openVenueDetails(favoritePanelDetailsButton.dataset.id);
+      return;
+    }
+
     const detailsButton = event.target.closest('.card-details-button');
 
     if (detailsButton) {
+      openDetailsPanel();
       openVenueDetails(detailsButton.dataset.id);
       return;
     }
@@ -221,13 +334,31 @@ export async function initUI(pubs) {
 
     const popupDetailsButton = event.target.closest('.popup-details-link');
     if (popupDetailsButton) {
+      openDetailsPanel();
       openVenueDetails(popupDetailsButton.dataset.id);
     }
   });
 
-  document.getElementById('btn-search').addEventListener('click', () => {
-    // Mostra o nasconde il pannello di ricerca sopra la mappa.
-    searchPanel.classList.toggle('hidden');
+  searchButton?.addEventListener('click', () => {
+    const shouldOpen = searchPanel.classList.contains('hidden');
+
+    searchPanel.classList.toggle('hidden', !shouldOpen);
+    searchButton.classList.toggle('active', shouldOpen);
+    favoritesPanel?.classList.add('hidden');
+    favoritesButton?.classList.remove('active');
+    favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
+  });
+
+  document.addEventListener('click', event => {
+    if (!searchPanel || searchPanel.classList.contains('hidden')) return;
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && !sidebar.contains(event.target)) {
+      const query = searchInput?.value.trim() || '';
+      if (!query) {
+        searchPanel.classList.add('hidden');
+        searchButton?.classList.remove('active');
+      }
+    }
   });
 
   // aggiorna le card per aagiungerne altre

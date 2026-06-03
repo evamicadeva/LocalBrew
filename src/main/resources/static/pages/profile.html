@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Il mio profilo - Local Brew</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="auth-page">
+<main class="auth-shell profile-shell">
+  <section class="auth-card profile-card">
+
+    <div class="dashboard-header">
+      <div class="profile-header-user">
+        <div class="profile-avatar-lg"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <h1 id="profile-heading-name">Profilo</h1>
+          <p id="profile-heading-email" class="profile-heading-email"></p>
+          <span id="profile-heading-role" class="profile-role-badge"></span>
+        </div>
+      </div>
+      <a class="dashboard-link" href="../index.html">
+        <i class="fa-solid fa-map-location-dot"></i> Mappa
+      </a>
+    </div>
+
+    <div class="profile-layout">
+
+      <nav class="profile-nav" id="profile-nav" aria-label="Sezioni profilo">
+        <!-- Generalità: tutti -->
+        <button class="profile-nav-item profile-nav-item--active" data-section="generalita">
+          <i class="fa-solid fa-user-pen"></i> Generalità
+        </button>
+        <!-- Solo USER -->
+        <button class="profile-nav-item hidden" data-section="recensioni">
+          <i class="fa-solid fa-comments"></i> Le mie recensioni
+        </button>
+        <!-- Solo OWNER -->
+        <button class="profile-nav-item hidden" data-section="locali">
+          <i class="fa-solid fa-store"></i> I miei locali
+        </button>
+        <!-- Solo ADMIN -->
+        <button class="profile-nav-item hidden" data-section="admin">
+          <i class="fa-solid fa-shield-halved"></i> Amministrazione
+        </button>
+        <!-- Tutti -->
+        <button class="profile-nav-item profile-nav-item--danger" data-section="pericolo">
+          <i class="fa-solid fa-triangle-exclamation"></i> Zona pericolosa
+        </button>
+      </nav>
+
+      <div class="profile-content" id="profile-content">
+        <p class="dashboard-message">Caricamento...</p>
+      </div>
+
+    </div>
+
+  </section>
+</main>
+
+<script type="module" src="../js/profile.js"></script>
+</body>
+</html>

@@ -94,3 +94,14 @@ if (loginForm) {
 if (registerForm) {
   registerForm.addEventListener('submit', handleRegister);
 }
+
+// ── Toggle visibilità password ─────────────────────────────────
+document.querySelectorAll('.pw-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = btn.closest('.pw-field').querySelector('input');
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    btn.querySelector('i').className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    btn.setAttribute('aria-label', isHidden ? 'Nascondi password' : 'Mostra password');
+  });
+});

@@ -26,7 +26,12 @@
         <input type="email" id="login-email" required autocomplete="email">
 
         <label for="login-password">Password</label>
-        <input type="password" id="login-password" required autocomplete="current-password">
+        <div class="pw-field">
+          <input type="password" id="login-password" required autocomplete="current-password">
+          <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
 
         <button type="submit" class="auth-submit">Accedi</button>
       </form>
@@ -34,6 +39,13 @@
       <p class="auth-switch">
         Non hai un account?
         <a href="register.html">Registrati</a>
+      </p>
+
+      <p class="auth-home">
+        <a href="../index.html">
+          <i class="fa-solid fa-arrow-left"></i>
+          Torna alla home
+        </a>
       </p>
     </section>
   </main>

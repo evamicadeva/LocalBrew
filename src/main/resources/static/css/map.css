@@ -35,6 +35,30 @@
     font-size: 11px;
 }
 
+.map-interaction-hint{
+    position:absolute;
+    left:28px;
+    bottom:28px;
+    z-index:800;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    max-width:min(390px,calc(100% - 56px));
+    padding:11px 14px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:rgba(255,255,255,.94);
+    color:var(--green);
+    font-size:13px;
+    font-weight:800;
+    box-shadow:0 14px 35px rgba(0,0,0,.12);
+    backdrop-filter:blur(10px);
+}
+
+.map-interaction-hint i{
+    color:#7c4a00;
+}
+
 /* Box testuale sopra la mappa. */
 .map-overlay {
     position: absolute;
@@ -164,6 +188,16 @@
 
     .map-overlay h1 {
         font-size: 26px
+    }
+
+    .map-interaction-hint{
+        left:12px;
+        right:12px;
+        bottom:92px;
+        max-width:none;
+        border-radius:18px;
+        justify-content:center;
+        text-align:center;
     }
 }
 

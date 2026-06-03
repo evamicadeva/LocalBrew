@@ -46,7 +46,7 @@ export function initMarkers(pubs) {
     marker.bindPopup(`
       <div class="venue-popup">
         <h3>${name}</h3>
-        <p class="venue-popup-meta">&#11088; ${rating} - ${city}</p>
+        <p class="venue-popup-meta"><i class="fa-solid fa-star popup-star"></i> ${rating} - ${city}</p>
         <p class="venue-popup-address">${address}</p>
         ${description ? `<p class="venue-popup-description">${description}</p>` : ''}
         <p class="venue-popup-beers">&#127866; ${beers}</p>

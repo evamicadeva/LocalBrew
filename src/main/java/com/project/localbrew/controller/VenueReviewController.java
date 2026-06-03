@@ -42,6 +42,11 @@ public class VenueReviewController {
         return ResponseEntity.ok(venueReviewService.findReviewsByVenueId(venueId));
     }
 
+    @GetMapping("/user/venue-reviews")
+    public ResponseEntity<List<VenueReviewResponse>> findMyReviews() {
+        return ResponseEntity.ok(venueReviewService.findMyReviews());
+    }
+
     @PostMapping("/user/venue-reviews")
     public ResponseEntity<VenueReviewResponse> saveReview(@Valid @RequestBody VenueReviewRequest request) {
         return ResponseEntity

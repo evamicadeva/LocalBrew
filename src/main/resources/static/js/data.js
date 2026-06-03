@@ -55,6 +55,7 @@ async function enrichVenue(venue) {
     rating: averageRating(reviews),
     reviewCount: reviews.length,
     beers: uniqueTags(drinks, venue.type),
+    drinkNames: drinks.map(d => d.drinkName || '').filter(Boolean).join(' '),
     type: venue.type,
     image: venue.imageUri || FALLBACK_IMAGE,
     drinks,

@@ -29,6 +29,5 @@ public class DrinkRequest {
     private String origin;
 
     @Size(max = 500)
-    @Pattern(regexp = "^(https?://).+\\.(jpg|jpeg|png|webp)$", message = "Image URL non valida")
     private String imageUri;
 }

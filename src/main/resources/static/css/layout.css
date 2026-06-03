@@ -37,6 +37,6 @@
     grid-template-columns:1fr;
     padding:24px;
   }
-  .right-section{order:-1}
+  .right-section{order:1}
   .page-shell{border-radius:20px}
 }
