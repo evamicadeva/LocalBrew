@@ -1,42 +1,58 @@
-/* Contenitore generale: crea il blocco bianco arrotondato al centro della pagina. */
-.page-shell{
-  max-width:calc(100vw - 32px);
-  margin:auto;
-  border-radius:28px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-  background:var(--paper);
+/* Contenitore generale: crea il blocco bianco al centro della pagina. */
+.page-shell {
+    max-width: calc(100vw - 32px);
+    margin: auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--paper);
 }
 
 /* Griglia principale sotto la mappa: contenuto largo + colonna filtri. */
-.content{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 340px;
-  gap:34px;
-  padding:42px;
-  background:linear-gradient(180deg,#fff,#fff8ec);
+.content {
+    display: grid;
+    grid-template-columns:minmax(0, 1fr) 340px;
+    gap: 34px;
+    padding: 42px;
+    background: linear-gradient(180deg, #fff, #fff8ec);
 }
 
 /* Evita overflow nelle due colonne e definisce lo stile dei titoli di sezione. */
-.left-section,.right-section{min-width:0}
-.section-heading{margin-bottom:20px}
-.section-heading h2,.filter-card h2{
-  font-size:32px;
-  color:var(--green);
-  margin:6px 0;
+.left-section, .right-section {
+    min-width: 0
 }
-.section-heading p,.filter-card p{
-  color:var(--muted);
-  line-height:1.55;
+
+.section-heading {
+    margin-bottom: 20px
+}
+
+.section-heading h2, .filter-card h2 {
+    font-size: 32px;
+    color: var(--green);
+    margin: 6px 0;
+}
+
+.section-heading p, .filter-card p {
+    color: var(--muted);
+    line-height: 1.55;
 }
 
 /* Su tablet/mobile la colonna filtri passa sopra la lista dei locali. */
-@media(max-width:900px){
-  body{padding:10px}
-  .content{
-    grid-template-columns:1fr;
-    padding:24px;
-  }
-  .right-section{order:1}
-  .page-shell{border-radius:20px}
+@media (max-width: 900px) {
+    body {
+        padding: 10px
+    }
+
+    .content {
+        grid-template-columns:1fr;
+        padding: 24px;
+    }
+
+    .right-section {
+        order: 1
+    }
+
+    .page-shell {
+        border-radius: 20px
+    }
 }

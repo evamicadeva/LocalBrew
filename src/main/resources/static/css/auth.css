@@ -866,7 +866,6 @@
 }
 
 .admin-star {
-    color: var(--amber-2);
     font-size: 11px;
 }
 
@@ -1197,7 +1196,7 @@
     line-height: 1.5;
 }
 
-.profile-star { color: var(--amber-2); font-size: 14px; }
+.profile-star { font-size: 14px; }
 
 /* ── Link dashboard owner ─────────────────────────────────── */
 .profile-dashboard-link {

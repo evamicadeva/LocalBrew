@@ -18,5 +18,7 @@ public interface FavoriteVenueRepository extends JpaRepository<FavoriteVenue, UU
 
     Optional<FavoriteVenue> findByUserIdAndVenueId(UUID userId, UUID venueId);
 
+    void deleteAllByUserId(UUID userId);
+
     void deleteAllByVenueId(UUID venueId);
 }

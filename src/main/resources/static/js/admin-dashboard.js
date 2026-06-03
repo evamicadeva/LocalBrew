@@ -110,7 +110,7 @@ function starsHtml(avg) {
     const full = Math.round(avg);
     let html = '';
     for (let i = 1; i <= 5; i++) {
-        html += `<i class="fa-${i <= full ? 'solid' : 'regular'} fa-star admin-star"></i>`;
+        html += `<i class="fa-solid fa-beer-mug-empty admin-star rating-icon ${i <= full ? 'rating-icon--filled' : 'rating-icon--empty'}"></i>`;
     }
     return html;
 }

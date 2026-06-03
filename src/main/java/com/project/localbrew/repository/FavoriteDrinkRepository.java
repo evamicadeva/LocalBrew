@@ -14,4 +14,6 @@ public interface FavoriteDrinkRepository extends JpaRepository<FavoriteDrink, UU
 
     List<FavoriteDrink> findAllByUserId(UUID userId);
     Optional<FavoriteDrink> findByUserIdAndDrinkId(UUID userId, UUID drinkId);
+
+    void deleteAllByUserId(UUID userId);
 }

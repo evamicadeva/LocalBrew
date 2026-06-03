@@ -3,11 +3,11 @@
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:20px;
-  margin-top:20px;
+  margin-top:14px;
   max-height:640px;
   overflow:hidden auto;
   align-content:start;
-  padding:2px 10px 8px 2px;
+  padding:12px 18px 24px 10px;
   scrollbar-width:thin;
   scrollbar-color:rgba(21,79,31,.45) transparent;
 }
@@ -84,6 +84,8 @@
   padding:16px;
   flex:1;
   gap:14px;
+  width:100%;
+  min-width:0;
 }
 .card-top{
   display:flex;
@@ -91,11 +93,14 @@
   gap:12px;
   align-items:flex-start;
   width:100%;
+  min-width:0;
 }
 .card h3{
   color:var(--green);
   font-size:18px;
   line-height:1.2;
+  min-width:0;
+  overflow-wrap:anywhere;
 }
 .rating{
   background:#fff3d8;
@@ -107,12 +112,40 @@
   white-space:nowrap;
 }
 
+.card-location{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:-4px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  line-height:1.35;
+  width:100%;
+  min-width:0;
+}
+
+.card-location i{
+  color:var(--green);
+  font-size:12px;
+  flex:0 0 auto;
+}
+
+.card-location span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
 /* Tag delle birre disponibili nel locale. */
 .tags{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
   margin-top:0;
+  width:100%;
+  min-width:0;
 }
 .tags span{
   background:#f7e7c2;
@@ -126,14 +159,15 @@
 .card-buttons{
   width:100%;
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:8px;
   margin-top:auto;
 }
 
 /* Bottoni rapidi della card. */
 .card-map-button,
-.card-details-button{
+.card-details-button,
+.card-google-button{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -144,9 +178,25 @@
   border-radius:14px;
   font-size:13px;
   font-weight:800;
+  min-width:0;
   transition:.25s;
 }
-.card-map-button{
+
+.card-map-button span,
+.card-details-button span,
+.card-google-button span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.card-details-button{
+  grid-column:1 / -1;
+}
+
+.card-map-button,
+.card-google-button{
   background:#f7f3ec;
   border:1px solid var(--line);
   color:var(--green);
@@ -157,10 +207,12 @@
   box-shadow:0 8px 18px rgba(244,182,61,.22);
 }
 .card-map-button:hover,
-.card-details-button:hover{
+.card-details-button:hover,
+.card-google-button:hover{
   transform:translateY(-2px);
 }
-.card-map-button:hover{
+.card-map-button:hover,
+.card-google-button:hover{
   background:var(--green-2);
   color:#fff;
 }
@@ -207,11 +259,11 @@
 }
 
 /* Riduce le colonne quando non c'e' abbastanza spazio per tre card leggibili. */
-@media(max-width:1000px){
+@media(max-width:1100px){
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
-@media(max-width:650px){
+@media(max-width:720px){
   .cards{
     grid-template-columns:1fr;
     max-height:620px;
@@ -224,6 +276,7 @@
   display:flex;
   align-items:center;
   gap:8px;
+  flex:0 0 auto;
 }
 
 /* Pulsante cuore per salvare un locale tra i preferiti. */

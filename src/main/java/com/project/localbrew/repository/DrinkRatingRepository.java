@@ -14,4 +14,6 @@ public interface DrinkRatingRepository extends JpaRepository<DrinkRating, UUID> 
     List<DrinkRating> findAllByUserId(UUID id);
 
     List<DrinkRating> findAllByDrinkId(UUID id);
+
+    void deleteAllByUserId(UUID userId);
 }

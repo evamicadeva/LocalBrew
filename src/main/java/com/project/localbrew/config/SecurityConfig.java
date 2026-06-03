@@ -73,6 +73,7 @@ public class SecurityConfig {
                                 "/favicon.ico",
                                 "/css/**", "/js/**",
                                 "/assets/**", "/images/**",
+                                "/uploads/**",
                                 "/static/**", "/pages/**"
                         ).permitAll()
                         // AUTH PUBBLICA

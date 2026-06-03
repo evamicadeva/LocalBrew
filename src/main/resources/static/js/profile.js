@@ -9,6 +9,7 @@ const deleteMyReview = id      => apiRequest(`/api/v1/user/venue-reviews/${id}`,
 
 // ── Nav ───────────────────────────────────────────────────────
 const content = document.getElementById('profile-content');
+const RATING_ICON = 'fa-solid fa-beer-mug-empty';
 
 function setActiveNav(section) {
   document.querySelectorAll('.profile-nav-item').forEach(btn =>
@@ -24,9 +25,13 @@ document.getElementById('profile-nav').addEventListener('click', e => {
 });
 
 // ── Helpers ───────────────────────────────────────────────────
+function ratingIconHtml(filled, extraClass = '') {
+  return `<i class="${RATING_ICON} rating-icon ${filled ? 'rating-icon--filled' : 'rating-icon--empty'} ${extraClass}"></i>`;
+}
+
 function starsHtml(rating) {
   return Array.from({ length: 5 }, (_, i) =>
-    `<i class="fa-${i < rating ? 'solid' : 'regular'} fa-star profile-star"></i>`
+    ratingIconHtml(i < rating, 'profile-star')
   ).join('');
 }
 
@@ -210,10 +215,20 @@ async function renderRecensioni() {
 
 function editStarsHtml(current, reviewId) {
   return Array.from({ length: 5 }, (_, i) =>
-    `<button type="button" class="star-btn star-btn--xl edit-star" data-value="${i+1}" data-review="${escapeHtml(reviewId)}" aria-label="Voto ${i+1}">
-      <i class="fa-${i < current ? 'solid' : 'regular'} fa-star"></i>
+    `<button type="button" class="star-btn star-btn--xl edit-star ${i < current ? 'is-filled' : ''}" data-value="${i+1}" data-review="${escapeHtml(reviewId)}" aria-label="Voto ${i+1}">
+      ${ratingIconHtml(i < current)}
     </button>`
   ).join('');
+}
+
+function setEditStars(editDiv, value) {
+  editDiv.querySelectorAll('.edit-star').forEach((btn, i) => {
+    const position = i + 1;
+    const filled = position <= value;
+    const icon = btn.querySelector('i');
+    icon.className = `${RATING_ICON} rating-icon`;
+    btn.classList.toggle('is-filled', filled);
+  });
 }
 
 function bindReviewActions() {
@@ -250,10 +265,7 @@ function bindReviewActions() {
       const val    = Number(btn.dataset.value);
       const editDiv = card.querySelector('.profile-review-edit');
       editDiv.querySelector('.edit-rating-input').value = val;
-      editDiv.querySelectorAll('.edit-star').forEach((s, i) => {
-        s.querySelector('i').className = `fa-${i < val ? 'solid' : 'regular'} fa-star`;
-        s.classList.toggle('star-btn--lit', i < val);
-      });
+      setEditStars(editDiv, val);
       return;
     }
 
@@ -305,11 +317,11 @@ function bindReviewActions() {
     stars.forEach(btn => {
       btn.addEventListener('mouseenter', () => {
         const v = Number(btn.dataset.value);
-        stars.forEach((s, i) => s.querySelector('i').className = `fa-${i < v ? 'solid' : 'regular'} fa-star`);
+        setEditStars(editDiv, v);
       });
       btn.addEventListener('mouseleave', () => {
         const v = Number(input.value);
-        stars.forEach((s, i) => s.querySelector('i').className = `fa-${i < v ? 'solid' : 'regular'} fa-star`);
+        setEditStars(editDiv, v);
       });
     });
   });

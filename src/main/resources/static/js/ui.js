@@ -24,6 +24,18 @@ function updateCardsVisibility() {
   allButton.textContent = showAllVenues ? 'Mostra meno locali' : 'Vedi tutti i locali';
 }
 
+function googleMapsUrl(pub) {
+  const lat = Number(pub.lat);
+  const lng = Number(pub.lng);
+
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  }
+
+  const query = [pub.name, pub.address, pub.city].filter(Boolean).join(', ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 function renderCards(pubs, favorites) {
   const container = document.getElementById('venue-container');
   if (!container) return;
@@ -35,6 +47,8 @@ function renderCards(pubs, favorites) {
     const name = escapeHtml(pub.name);
     const image = escapeHtml(pub.image);
     const rating = escapeHtml(pub.rating);
+    const city = escapeHtml(pub.city || 'Citta non disponibile');
+    const mapsUrl = escapeHtml(googleMapsUrl(pub));
     const isFavorite = favorites.includes(id);
 
     // Le card dopo la terza vengono nascoste finche l'utente non apre la lista.
@@ -50,7 +64,7 @@ function renderCards(pubs, favorites) {
         <div class="card-img">
           <img src="${image}" alt="Foto di ${name}">
           <h3>${name}</h3>
-          <span class="rating"><i class="fa-solid fa-star card-star"></i> ${rating}</span>
+          <span class="rating"><i class="fa-solid fa-beer-mug-empty card-star rating-icon rating-icon--filled"></i> ${rating}</span>
         </div>
 
         <div class="card-body">
@@ -58,7 +72,7 @@ function renderCards(pubs, favorites) {
             <h3>${name}</h3>
 
             <div class="card-actions">
-              <span class="rating"><i class="fa-solid fa-star card-star"></i> ${rating}</span>
+              <span class="rating"><i class="fa-solid fa-beer-mug-empty card-star rating-icon rating-icon--filled"></i> ${rating}</span>
 
               <button
                 type="button"
@@ -70,6 +84,11 @@ function renderCards(pubs, favorites) {
             </div>
           </div>
 
+          <p class="card-location">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>${city}</span>
+          </p>
+
           <div class="tags">${tags}</div>
 
           <div class="card-buttons">
@@ -77,6 +96,11 @@ function renderCards(pubs, favorites) {
               <i class="fa-solid fa-map-location-dot"></i>
               <span>Mappa</span>
             </button>
+
+            <a class="card-google-button" href="${mapsUrl}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${name} su Google Maps">
+              <i class="fa-solid fa-location-arrow"></i>
+              <span>Maps</span>
+            </a>
 
             <button type="button" class="card-details-button" data-id="${safeId}">
               <i class="fa-solid fa-circle-info"></i>
@@ -143,7 +167,7 @@ function renderFavoritesList(pubs, favoriteIds) {
       <img src="${escapeHtml(pub.image)}" alt="Foto di ${escapeHtml(pub.name)}">
       <div class="favorite-panel-main">
         <strong>${escapeHtml(pub.name)}</strong>
-        <small>${escapeHtml(pub.city || '')} &middot; <i class="fa-solid fa-star card-star"></i> ${escapeHtml(pub.rating)}</small>
+        <small>${escapeHtml(pub.city || '')} &middot; <i class="fa-solid fa-beer-mug-empty card-star rating-icon rating-icon--filled"></i> ${escapeHtml(pub.rating)}</small>
       </div>
       <div class="favorite-panel-actions">
         <button type="button" class="favorite-panel-map-button" data-id="${escapeHtml(pub.id)}" aria-label="Vai sulla mappa">
@@ -178,6 +202,12 @@ export async function initUI(pubs) {
   const detailsPanel    = document.getElementById('venue-details');
   const detailsClose    = document.getElementById('details-close');
   const detailsOverlay  = document.getElementById('details-overlay');
+
+  function closeFavoritesPanel() {
+    favoritesPanel?.classList.add('hidden');
+    favoritesButton?.classList.remove('active');
+    favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
+  }
 
   function closeDetailsPanel() {
     detailsPanel?.classList.add('hidden');
@@ -261,9 +291,7 @@ export async function initUI(pubs) {
     searchInput.value = '';
     beerCheckboxes.forEach(box => box.checked = false);
     showFavoritesOnly = false;
-    favoritesPanel?.classList.add('hidden');
-    favoritesButton?.classList.remove('active');
-    favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
+    closeFavoritesPanel();
     applyCurrentFilters();
   });
 
@@ -304,15 +332,14 @@ export async function initUI(pubs) {
 
     const favoritePanelMapButton = event.target.closest('.favorite-panel-map-button');
     if (favoritePanelMapButton) {
-      favoritesPanel?.classList.add('hidden');
-      favoritesButton?.classList.remove('active');
-      favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
+      closeFavoritesPanel();
       focusVenueById(favoritePanelMapButton.dataset.id);
       return;
     }
 
     const favoritePanelDetailsButton = event.target.closest('.favorite-panel-details-button');
     if (favoritePanelDetailsButton) {
+      closeFavoritesPanel();
       openDetailsPanel();
       openVenueDetails(favoritePanelDetailsButton.dataset.id);
       return;
@@ -321,6 +348,7 @@ export async function initUI(pubs) {
     const detailsButton = event.target.closest('.card-details-button');
 
     if (detailsButton) {
+      closeFavoritesPanel();
       openDetailsPanel();
       openVenueDetails(detailsButton.dataset.id);
       return;
@@ -334,6 +362,7 @@ export async function initUI(pubs) {
 
     const popupDetailsButton = event.target.closest('.popup-details-link');
     if (popupDetailsButton) {
+      closeFavoritesPanel();
       openDetailsPanel();
       openVenueDetails(popupDetailsButton.dataset.id);
     }
@@ -344,9 +373,7 @@ export async function initUI(pubs) {
 
     searchPanel.classList.toggle('hidden', !shouldOpen);
     searchButton.classList.toggle('active', shouldOpen);
-    favoritesPanel?.classList.add('hidden');
-    favoritesButton?.classList.remove('active');
-    favoritesButton?.setAttribute('aria-label', 'Mostra preferiti');
+    closeFavoritesPanel();
   });
 
   document.addEventListener('click', event => {
@@ -358,6 +385,16 @@ export async function initUI(pubs) {
         searchPanel.classList.add('hidden');
         searchButton?.classList.remove('active');
       }
+    }
+  });
+
+  document.addEventListener('click', event => {
+    if (!favoritesPanel || favoritesPanel.classList.contains('hidden')) return;
+    const clickedFavoritesPanel = favoritesPanel.contains(event.target);
+    const clickedFavoritesButton = favoritesButton?.contains(event.target);
+
+    if (!clickedFavoritesPanel && !clickedFavoritesButton) {
+      closeFavoritesPanel();
     }
   });
 

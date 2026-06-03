@@ -42,11 +42,15 @@ export function initMarkers(pubs) {
     const description = escapeHtml(shortText(pub.description));
     const marker = L.marker([pub.lat, pub.lng], { icon: beerIcon });
 
+    marker.on('click', () => {
+      map.panTo(marker.getLatLng(), { animate: true });
+    });
+
     // Il popup mostra gia le informazioni principali senza rimandare alla card.
     marker.bindPopup(`
       <div class="venue-popup">
         <h3>${name}</h3>
-        <p class="venue-popup-meta"><i class="fa-solid fa-star popup-star"></i> ${rating} - ${city}</p>
+        <p class="venue-popup-meta"><i class="fa-solid fa-beer-mug-empty popup-star rating-icon rating-icon--filled"></i> ${rating} - ${city}</p>
         <p class="venue-popup-address">${address}</p>
         ${description ? `<p class="venue-popup-description">${description}</p>` : ''}
         <p class="venue-popup-beers">&#127866; ${beers}</p>
@@ -55,7 +59,7 @@ export function initMarkers(pubs) {
           Dettagli
         </button>
       </div>
-    `);
+    `, { autoPan: false });
 
     // Salva lo stesso marker sia per la UI sia per la visualizzazione in cluster.
     markers.push(marker);

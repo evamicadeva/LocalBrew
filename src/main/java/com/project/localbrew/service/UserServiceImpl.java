@@ -4,7 +4,14 @@ import com.project.localbrew.dto.request.UserUpdateRequest;
 import com.project.localbrew.dto.response.UserResponse;
 import com.project.localbrew.entity.Role;
 import com.project.localbrew.entity.User;
+import com.project.localbrew.entity.Venue;
+import com.project.localbrew.repository.DrinkRatingRepository;
+import com.project.localbrew.repository.FavoriteDrinkRepository;
+import com.project.localbrew.repository.FavoriteVenueRepository;
 import com.project.localbrew.repository.UserRepository;
+import com.project.localbrew.repository.VenueDrinkRepository;
+import com.project.localbrew.repository.VenueRepository;
+import com.project.localbrew.repository.VenueReviewRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,10 +26,31 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VenueRepository venueRepository;
+    private final VenueDrinkRepository venueDrinkRepository;
+    private final VenueReviewRepository venueReviewRepository;
+    private final FavoriteVenueRepository favoriteVenueRepository;
+    private final FavoriteDrinkRepository favoriteDrinkRepository;
+    private final DrinkRatingRepository drinkRatingRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            VenueRepository venueRepository,
+            VenueDrinkRepository venueDrinkRepository,
+            VenueReviewRepository venueReviewRepository,
+            FavoriteVenueRepository favoriteVenueRepository,
+            FavoriteDrinkRepository favoriteDrinkRepository,
+            DrinkRatingRepository drinkRatingRepository
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.venueRepository = venueRepository;
+        this.venueDrinkRepository = venueDrinkRepository;
+        this.venueReviewRepository = venueReviewRepository;
+        this.favoriteVenueRepository = favoriteVenueRepository;
+        this.favoriteDrinkRepository = favoriteDrinkRepository;
+        this.drinkRatingRepository = drinkRatingRepository;
     }
 
     @Override
@@ -166,6 +194,19 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(UUID id) {
 
         User userToDelete = findById(id);
+
+        favoriteDrinkRepository.deleteAllByUserId(id);
+        favoriteVenueRepository.deleteAllByUserId(id);
+        venueReviewRepository.deleteAllByUserId(id);
+        drinkRatingRepository.deleteAllByUserId(id);
+
+        for (Venue venue : venueRepository.findAllByOwnerId(id)) {
+            UUID venueId = venue.getId();
+            venueDrinkRepository.deleteAllByVenueId(venueId);
+            venueReviewRepository.deleteAllByVenueId(venueId);
+            favoriteVenueRepository.deleteAllByVenueId(venueId);
+            venueRepository.delete(venue);
+        }
 
         userRepository.delete(userToDelete);
     }

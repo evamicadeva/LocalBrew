@@ -17,7 +17,7 @@
 }
 
 .logo {
-    width: 250px;
+    width: 150px;
     height: auto;
     object-fit: contain
 }
@@ -28,7 +28,7 @@
 }
 
 .logo-text {
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 /* Etichetta piccola riutilizzata in header, hero e filtri. */
@@ -89,7 +89,7 @@
 /* Footer ────────────────────────────────────────────────── */
 .footer {
     background: #1c1c1c;
-    padding: 36px 42px;
+    padding: 18px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -109,14 +109,14 @@
 }
 
 .footer-tagline {
-    color: rgba(255,255,255,.4);
+    color: rgba(255, 255, 255, .4);
     font-size: 13px;
     line-height: 1.5;
     margin: 0;
 }
 
 .footer-copy {
-    color: rgba(255,255,255,.25);
+    color: rgba(255, 255, 255, .25);
     font-size: 12px;
     margin: 0;
     white-space: nowrap;
