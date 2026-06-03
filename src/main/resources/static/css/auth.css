@@ -100,6 +100,19 @@
     font-weight: 800;
 }
 
+.auth-legal {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.auth-legal a {
+    color: var(--green);
+    font-weight: 800;
+}
+
 .auth-home {
     margin-top: 14px;
     text-align: center;
@@ -117,6 +130,89 @@
 
 .auth-home a:hover {
     color: var(--green);
+}
+
+.privacy-page {
+    place-items: start center;
+}
+
+.privacy-shell {
+    width: min(920px, 100%);
+}
+
+.privacy-logo {
+    margin-bottom: 22px;
+}
+
+.privacy-card {
+    padding: 34px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: var(--shadow);
+}
+
+.privacy-card h1 {
+    margin: 10px 0 8px;
+    color: var(--green);
+    font-size: 36px;
+    line-height: 1.12;
+}
+
+.privacy-card h2 {
+    margin: 30px 0 10px;
+    color: var(--green);
+    font-size: 21px;
+}
+
+.privacy-card p,
+.privacy-card li {
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.privacy-card ul {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 0 20px;
+}
+
+.privacy-updated {
+    font-weight: 800;
+}
+
+.privacy-notice {
+    margin-top: 24px;
+    padding: 16px;
+    border: 1px solid rgba(244, 182, 61, .55);
+    border-radius: 16px;
+    background: #fff8ec;
+}
+
+.privacy-notice h2 {
+    margin-top: 0;
+}
+
+.privacy-back {
+    margin-top: 30px;
+}
+
+.privacy-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green);
+    font-weight: 800;
+}
+
+@media (max-width: 760px) {
+    .privacy-card {
+        padding: 24px;
+    }
+
+    .privacy-card h1 {
+        font-size: 28px;
+    }
 }
 
 .dashboard-card {

@@ -122,6 +122,15 @@
     white-space: nowrap;
 }
 
+.footer-copy a {
+    color: rgba(255, 255, 255, .7);
+    font-weight: 800;
+}
+
+.footer-copy a:hover {
+    color: #fff;
+}
+
 /* Nascondi le parti non più usate */
 .footer-top,
 .footer-nav,
