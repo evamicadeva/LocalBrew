@@ -12,6 +12,8 @@ export const markersCluster = L.markerClusterGroup({
 
 map.addLayer(markersCluster);
 
+const MARKER_CLICK_ZOOM = 13;
+
 // Icona comune a tutti i locali presenti sulla mappa.
 const beerIcon = L.icon({
   iconUrl: 'assets/icons/Minimal.png',
@@ -43,7 +45,8 @@ export function initMarkers(pubs) {
     const marker = L.marker([pub.lat, pub.lng], { icon: beerIcon });
 
     marker.on('click', () => {
-      map.panTo(marker.getLatLng(), { animate: true });
+      const targetZoom = Math.max(map.getZoom(), MARKER_CLICK_ZOOM);
+      map.setView(marker.getLatLng(), targetZoom, { animate: true });
     });
 
     // Il popup mostra gia le informazioni principali senza rimandare alla card.
@@ -59,7 +62,13 @@ export function initMarkers(pubs) {
           Dettagli
         </button>
       </div>
-    `, { autoPan: false });
+    `, {
+      autoPan: true,
+      keepInView: true,
+      autoPanPadding: [24, 24],
+      maxWidth: 240,
+      minWidth: 190
+    });
 
     // Salva lo stesso marker sia per la UI sia per la visualizzazione in cluster.
     markers.push(marker);

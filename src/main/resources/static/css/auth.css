@@ -228,18 +228,24 @@
 }
 
 .dashboard-link,
+.admin-new-drink-btn,
 .secondary-button,
 .dashboard-actions button,
 .detail-review-form button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     min-height: 40px;
     padding: 10px 14px;
     border-radius: 12px;
     background: #fff3d8;
     color: var(--green);
     font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    box-sizing: border-box;
 }
 
 #venue-cancel {
@@ -251,6 +257,10 @@
     grid-template-columns:minmax(280px, 420px) minmax(0, 1fr);
     gap: 28px;
     align-items: start;
+}
+
+.owner-dashboard-grid {
+    grid-template-columns:minmax(280px, 400px) minmax(0, 1fr);
 }
 
 .admin-dashboard-grid {
@@ -538,6 +548,15 @@
 }
 
 @media (max-width: 840px) {
+    .dashboard-header {
+        flex-direction: column;
+    }
+
+    .dashboard-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
     .dashboard-grid {
         grid-template-columns:1fr;
     }
@@ -588,6 +607,26 @@
     position: sticky;
     top: 22px;
     align-self: start;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding-right: 6px;
+    scrollbar-gutter: stable;
+}
+
+.owner-dashboard-list {
+    min-height: 0;
+}
+
+#owner-venues {
+    max-height: clamp(360px, calc(100vh - 220px), 680px);
+    overflow-y: auto;
+    padding-right: 8px;
+    padding-bottom: 4px;
+    scrollbar-gutter: stable;
+}
+
+.owner-dashboard-list .dashboard-actions {
+    justify-content: flex-end;
 }
 
 /* ── Pannello birre (accordion) ───────────────────────────── */
@@ -596,6 +635,7 @@
     padding-top: 28px;
     border-top: 1px solid var(--line);
     animation: panel-in .22s ease;
+    position: relative;
 }
 
 @keyframes panel-in {
@@ -608,7 +648,14 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 22px;
+    margin-bottom: 16px;
+    min-height: 46px;
+    padding-right: 56px;
+    position: relative;
+}
+
+.drink-panel-header .dashboard-col-title {
+    margin-bottom: 4px;
 }
 
 .drink-panel-sub {
@@ -621,6 +668,9 @@
 .drink-panel-close {
     display: grid;
     place-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
     width: 38px;
     height: 38px;
     border-radius: 999px;
@@ -637,7 +687,7 @@
 
 .drink-panel-body {
     display: grid;
-    grid-template-columns: minmax(280px, 480px) minmax(0, 1fr);
+    grid-template-columns: minmax(260px, 400px) minmax(320px, 1fr);
     gap: 28px;
     align-items: start;
 }
@@ -646,6 +696,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    min-width: 0;
 }
 
 .drink-form-block {
@@ -665,6 +716,21 @@
     margin-bottom: 14px;
 }
 
+.drink-list-col {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fffaf2;
+}
+
+#venue-drinks {
+    max-height: clamp(320px, 55vh, 640px);
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-gutter: stable;
+}
+
 /* Bottone "Birre" nella card locale */
 .manage-drinks {
     display: inline-flex;
@@ -679,6 +745,20 @@
 
     .venue-form-col {
         position: static;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    #owner-venues,
+    #venue-drinks {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    .owner-dashboard-list .dashboard-actions {
+        justify-content: flex-start;
     }
 }
 
@@ -787,26 +867,33 @@
     align-items: center;
     gap: 10px;
     flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .admin-new-drink-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
     background: var(--green);
     color: var(--cream);
     border: none;
-    border-radius: 8px;
-    padding: 9px 16px;
     font-size: 14px;
-    font-weight: 600;
     cursor: pointer;
     transition: background .18s;
-    white-space: nowrap;
 }
 
 .admin-new-drink-btn:hover {
     background: var(--green-2);
+}
+
+.dashboard-logout-button {
+    border: 1px solid #efc8bd;
+    background: #fff5f1;
+    color: #9c2d1f;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.dashboard-logout-button:hover {
+    background: #ffe7df;
 }
 
 /* ── Ricerca locale ───────────────────────────────────────── */

@@ -1,4 +1,5 @@
 import { clearToken, updateMe, deleteMe, apiRequest, updateMyReview } from './api.js';
+import './logout.js';
 import { confirmAction, showToast } from './feedback.js';
 import { escapeHtml } from './utils.js';
 import { requireAnyRole } from './role-guard.js';
@@ -397,6 +398,12 @@ if (user) {
   document.getElementById('profile-heading-name').textContent  = user.username;
   document.getElementById('profile-heading-email').textContent = user.email;
   document.getElementById('profile-heading-role').textContent  = roleLabel(user.role);
+
+  const dashboardLink = document.getElementById('profile-dashboard-link');
+  if (dashboardLink && (user.role === 'ADMIN' || user.role === 'OWNER')) {
+    dashboardLink.href = user.role === 'ADMIN' ? 'admin-dashboard.html' : 'owner-dashboard.html';
+    dashboardLink.classList.remove('hidden');
+  }
 
   // Mostra voci nav in base al ruolo
   if (user.role === 'USER' || user.role === 'ADMIN') {

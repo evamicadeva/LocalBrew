@@ -2,73 +2,77 @@
 <html lang="it">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrati - Local Brew</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrati - Local Brew</title>
 
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/auth.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="shortcut icon" href="../assets/icons/favicon.png" type="image/x-icon">
 </head>
 
 <body class="auth-page">
-  <main class="auth-shell">
+<main class="auth-shell">
     <a href="../index.html" class="auth-logo">
-      <img src="../assets/icons/full.png" alt="Local Brew">
+        <img src="../assets/icons/full.png" alt="Local Brew">
     </a>
 
     <section class="auth-card">
-      <h1>Registrati</h1>
-      <p>Crea il tuo account Local Brew.</p>
+        <h1>Registrati</h1>
+        <p>Crea il tuo account Local Brew.</p>
 
-      <p class="auth-message" id="auth-message" aria-live="polite"></p>
+        <p class="auth-message" id="auth-message" aria-live="polite"></p>
 
-      <form class="auth-form" id="register-form">
-        <label for="register-name">Nome utente</label>
-        <input type="text" id="register-name" required autocomplete="username">
+        <form class="auth-form" id="register-form">
+            <label for="register-name">Nome utente</label>
+            <input type="text" id="register-name" required autocomplete="username">
 
-        <label for="register-email">Email</label>
-        <input type="email" id="register-email" required autocomplete="email">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" required autocomplete="email">
 
-        <label for="register-password">Password</label>
-        <div class="pw-field">
-          <input type="password" id="register-password" required autocomplete="new-password">
-          <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
-            <i class="fa-regular fa-eye"></i>
-          </button>
-        </div>
+            <label for="register-password">Password</label>
+            <div class="pw-field">
+                <input type="password" id="register-password" required autocomplete="new-password">
+                <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
 
-        <label for="register-confirm-password">Conferma password</label>
-        <div class="pw-field">
-          <input type="password" id="register-confirm-password" required autocomplete="new-password">
-          <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
-            <i class="fa-regular fa-eye"></i>
-          </button>
-        </div>
+            <label for="register-confirm-password">Conferma password</label>
+            <div class="pw-field">
+                <input type="password" id="register-confirm-password" required autocomplete="new-password">
+                <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
 
-        <button type="submit" class="auth-submit">Crea account</button>
-      </form>
+            <button type="submit" class="auth-submit">Crea account</button>
+        </form>
 
-      <p class="auth-switch">
-        Hai già un account?
-        <a href="login.html">Accedi</a>
-      </p>
+        <p class="auth-switch">
+            Hai già un account?
+            <a href="login.html">Accedi</a>
+        </p>
 
-      <p class="auth-legal">
-        Creando un account accetti il trattamento dei dati come descritto
-        nell'<a href="privacy.html">informativa privacy</a>.
-      </p>
+        <p class="auth-legal">
+            Creando un account accetti il trattamento dei dati come descritto
+            nell'<a href="privacy.html">informativa privacy</a>.
+        </p>
 
-      <p class="auth-home">
-        <a href="../index.html">
-          <i class="fa-solid fa-arrow-left"></i>
-          Torna alla home
-        </a>
-      </p>
+        <p class="auth-home">
+            <a href="../index.html">
+                <i class="fa-solid fa-arrow-left"></i>
+                Torna alla home
+            </a>
+        </p>
     </section>
-  </main>
+</main>
 
-  <script type="module" src="../js/auth.js"></script>
+  <button type="button" class="theme-toggle-floating" id="theme-toggle" aria-label="Passa alla modalità notte"><i class="fa-solid fa-moon"></i></button>
+  <script type="module" src="../js/theme-init.js"></script>
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/auth.js"></script>
 </body>
 
 </html>

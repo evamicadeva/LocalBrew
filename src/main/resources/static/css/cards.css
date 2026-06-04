@@ -28,7 +28,7 @@
 }
 
 .cards::-webkit-scrollbar-thumb{
-  border:2px solid #fff8ec;
+  border:2px solid var(--cream);
   border-radius:999px;
   background:rgba(21,79,31,.42);
 }
@@ -39,7 +39,7 @@
 
 /* Card singola: contiene immagine, nome, rating, tag e bottone mappa. */
 .card{
-  background:white;
+  background:var(--paper);
   border:1px solid var(--line);
   border-radius:18px;
   overflow:hidden;
@@ -222,18 +222,24 @@
 
 /* Pulsante finale della sezione card. */
 .all-btn{
-  margin-top:28px;
-  padding:15px 24px;
-  border-radius:999px;
-  background:var(--green);
-  color:white;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:22px;
+  padding:11px 18px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--paper);
+  color:var(--green);
   font-weight:800;
-  box-shadow:0 12px 25px rgba(21,79,31,.22);
-  transition:.25s;
+  box-shadow:0 8px 18px rgba(44,27,15,.08);
+  transition:background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
 }
 .all-btn:hover{
   transform:translateY(-2px);
-  background:var(--green-2);
+  border-color:var(--green);
+  background:#fff8ec;
+  box-shadow:0 12px 24px rgba(44,27,15,.12);
 }
 
 .card-body{

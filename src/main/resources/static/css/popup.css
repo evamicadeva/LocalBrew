@@ -41,7 +41,7 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--paper);
   box-shadow: -6px 0 32px rgba(44,27,15,.18);
   transform: translateX(0);
 }

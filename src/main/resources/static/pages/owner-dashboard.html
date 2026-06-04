@@ -2,201 +2,221 @@
 <html lang="it">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard proprietario - Local Brew</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard proprietario - Local Brew</title>
 
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/auth.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="shortcut icon" href="../assets/icons/favicon.png" type="image/x-icon">
 </head>
 
 <body class="auth-page">
 <main class="auth-shell dashboard-shell">
-  <section class="auth-card dashboard-card">
+    <section class="auth-card dashboard-card">
 
-    <div class="dashboard-header">
-      <div>
-        <h1>Gestione locali</h1>
-        <p>Crea, aggiorna o elimina i tuoi locali.</p>
-      </div>
-      <a class="dashboard-link" href="../index.html"><i class="fa-solid fa-map-location-dot"></i> Mappa</a>
-    </div>
-
-    <p class="auth-message" id="owner-message" aria-live="polite"></p>
-
-    <div class="dashboard-grid">
-
-      <!-- COLONNA SX: form crea/aggiorna -->
-      <div class="venue-form-col">
-        <h2 class="dashboard-col-title">
-          <i class="fa-solid fa-store"></i>
-          <span id="form-col-label">Nuovo locale</span>
-        </h2>
-        <form class="auth-form" id="venue-form">
-          <input type="hidden" id="venue-id">
-
-          <label for="venue-name">Nome locale</label>
-          <input id="venue-name" type="text" maxlength="50" required>
-
-          <label for="venue-description">Descrizione</label>
-          <textarea id="venue-description" rows="4" maxlength="500"></textarea>
-
-          <label for="venue-city">Città</label>
-          <input id="venue-city" type="text" maxlength="50" required>
-
-          <label for="venue-address">Indirizzo</label>
-          <input id="venue-address" type="text" maxlength="70" required>
-
-          <label for="venue-type">Tipo locale</label>
-          <select id="venue-type" required>
-            <option value="BAR">Bar</option>
-            <option value="PUB">Pub</option>
-            <option value="BREWERY">Birrificio</option>
-            <option value="RESTAURANT">Ristorante</option>
-            <option value="BEER_STORE">Beer store</option>
-          </select>
-
-          <label for="venue-image-uri">Immagine locale</label>
-          <div class="upload-field" id="venue-image-upload-field">
-            <input type="file" id="venue-image-file" accept="image/jpeg,image/png,image/webp" class="upload-file-input">
-            <label for="venue-image-file" class="upload-file-label">
-              <i class="fa-solid fa-arrow-up-from-bracket"></i>
-              <span id="venue-image-filename">Scegli immagine (JPG, PNG, WEBP · max 5 MB)</span>
-            </label>
-            <img id="venue-image-preview" class="upload-preview hidden" alt="Anteprima immagine locale">
-            <button type="button" class="upload-remove hidden" id="venue-image-remove" aria-label="Rimuovi immagine">
-              <i class="fa-solid fa-xmark"></i> Rimuovi
-            </button>
-          </div>
-          <input type="hidden" id="venue-image-uri">
-
-          <div class="dashboard-actions">
-            <button type="submit" class="auth-submit" id="venue-submit">Crea locale</button>
-            <button type="button" class="secondary-button hidden" id="venue-cancel">Annulla modifica</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- COLONNA DX: lista locali + accordion birre per ciascuno -->
-      <section class="dashboard-list" aria-live="polite">
-        <h2 class="dashboard-col-title">
-          <i class="fa-solid fa-list"></i>
-          I tuoi locali
-        </h2>
-        <div id="owner-venues">
-          <p class="dashboard-message">Caricamento locali...</p>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- PANNELLO BIRRE — reso visibile via JS quando si apre un accordion -->
-    <p class="auth-message" id="drink-message" aria-live="polite"></p>
-
-    <!-- select nascosto, usato solo dal JS per tracciare il locale attivo -->
-    <select id="drink-venue-select" class="hidden" aria-hidden="true"></select>
-
-    <div class="drink-accordion-panel hidden" id="drink-accordion-panel">
-
-      <div class="drink-panel-header">
-        <div>
-          <h2 class="dashboard-col-title" id="drink-panel-title">
-            <i class="fa-solid fa-beer-mug-empty"></i>
-            Birre del locale
-          </h2>
-          <p class="drink-panel-sub" id="drink-panel-sub"></p>
-        </div>
-        <button type="button" class="drink-panel-close" id="drink-panel-close" aria-label="Chiudi pannello birre">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="drink-panel-body">
-
-        <!-- Colonna sx: aggiungi drink -->
-        <div class="drink-panel-forms">
-
-          <div class="drink-form-block">
-            <h3>Aggiungi drink esistente</h3>
-            <form class="auth-form" id="existing-drink-form">
-              <label for="existing-drink-id">Drink</label>
-              <select id="existing-drink-id" required></select>
-
-              <label for="existing-drink-price">Prezzo</label>
-              <input id="existing-drink-price" type="number" step="0.01" min="0" required>
-
-              <button type="submit" class="auth-submit">Aggiungi al locale</button>
-            </form>
-          </div>
-
-          <div class="drink-form-block">
-            <h3>Crea nuovo drink</h3>
-            <form class="auth-form" id="new-drink-form">
-              <label for="new-drink-name">Nome</label>
-              <input id="new-drink-name" type="text" maxlength="100" required>
-
-              <label for="new-drink-description">Descrizione</label>
-              <textarea id="new-drink-description" rows="3" maxlength="300"></textarea>
-
-              <div class="form-columns">
-                <div>
-                  <label for="new-drink-category">Categoria</label>
-                  <select id="new-drink-category" required>
-                    <option value="IPA">IPA</option>
-                    <option value="LAGER">Lager</option>
-                    <option value="STOUT">Stout</option>
-                    <option value="ALE">Ale</option>
-                    <option value="WHEAT">Wheat</option>
-                    <option value="SOUR">Sour</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="new-drink-abv">ABV</label>
-                  <input id="new-drink-abv" type="number" step="0.1" min="0" max="100">
-                </div>
-              </div>
-
-              <label for="new-drink-origin">Origine</label>
-              <input id="new-drink-origin" type="text" maxlength="100">
-
-              <label for="new-drink-image-uri">Immagine birra</label>
-              <div class="upload-field" id="drink-image-upload-field">
-                <input type="file" id="new-drink-image-file" accept="image/jpeg,image/png,image/webp" class="upload-file-input">
-                <label for="new-drink-image-file" class="upload-file-label">
-                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                  <span id="new-drink-image-filename">Scegli immagine (JPG, PNG, WEBP · max 5 MB)</span>
-                </label>
-                <img id="new-drink-image-preview" class="upload-preview hidden" alt="Anteprima immagine birra">
-                <button type="button" class="upload-remove hidden" id="new-drink-image-remove" aria-label="Rimuovi immagine">
-                  <i class="fa-solid fa-xmark"></i> Rimuovi
+        <div class="dashboard-header">
+            <div>
+                <h1>Gestione locali</h1>
+                <p>Crea, aggiorna o elimina i tuoi locali.</p>
+            </div>
+            <div class="dashboard-header-actions">
+                <a class="dashboard-link" href="profile.html">
+                    <i class="fa-solid fa-user"></i> Profilo
+                </a>
+                <a class="dashboard-link" href="../index.html">
+                    <i class="fa-solid fa-map-location-dot"></i> Mappa
+                </a>
+                <button type="button" class="dashboard-link dashboard-logout-button" data-logout-button>
+                    <i class="fa-solid fa-right-from-bracket"></i> Esci
                 </button>
-              </div>
-              <input type="hidden" id="new-drink-image-uri">
+            </div>
+        </div>
 
-              <label for="new-drink-price">Prezzo nel locale</label>
-              <input id="new-drink-price" type="number" step="0.01" min="0" required>
+        <p class="auth-message" id="owner-message" aria-live="polite"></p>
 
-              <button type="submit" class="auth-submit">Crea e aggiungi</button>
-            </form>
-          </div>
+        <div class="dashboard-grid owner-dashboard-grid">
+
+            <!-- COLONNA SX: form crea/aggiorna -->
+            <div class="venue-form-col">
+                <h2 class="dashboard-col-title">
+                    <i class="fa-solid fa-store"></i>
+                    <span id="form-col-label">Nuovo locale</span>
+                </h2>
+                <form class="auth-form" id="venue-form">
+                    <input type="hidden" id="venue-id">
+
+                    <label for="venue-name">Nome locale</label>
+                    <input id="venue-name" type="text" maxlength="50" required>
+
+                    <label for="venue-description">Descrizione</label>
+                    <textarea id="venue-description" rows="4" maxlength="500"></textarea>
+
+                    <label for="venue-city">Città</label>
+                    <input id="venue-city" type="text" maxlength="50" required>
+
+                    <label for="venue-address">Indirizzo</label>
+                    <input id="venue-address" type="text" maxlength="70" required>
+
+                    <label for="venue-type">Tipo locale</label>
+                    <select id="venue-type" required>
+                        <option value="BAR">Bar</option>
+                        <option value="PUB">Pub</option>
+                        <option value="BREWERY">Birrificio</option>
+                        <option value="RESTAURANT">Ristorante</option>
+                        <option value="BEER_STORE">Beer store</option>
+                    </select>
+
+                    <label for="venue-image-uri">Immagine locale</label>
+                    <div class="upload-field" id="venue-image-upload-field">
+                        <input type="file" id="venue-image-file" accept="image/jpeg,image/png,image/webp"
+                               class="upload-file-input">
+                        <label for="venue-image-file" class="upload-file-label">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            <span id="venue-image-filename">Scegli immagine (JPG, PNG, WEBP · max 5 MB)</span>
+                        </label>
+                        <img id="venue-image-preview" class="upload-preview hidden" alt="Anteprima immagine locale">
+                        <button type="button" class="upload-remove hidden" id="venue-image-remove"
+                                aria-label="Rimuovi immagine">
+                            <i class="fa-solid fa-xmark"></i> Rimuovi
+                        </button>
+                    </div>
+                    <input type="hidden" id="venue-image-uri">
+
+                    <div class="dashboard-actions">
+                        <button type="submit" class="auth-submit" id="venue-submit">Crea locale</button>
+                        <button type="button" class="secondary-button hidden" id="venue-cancel">Annulla modifica
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- COLONNA DX: lista locali + accordion birre per ciascuno -->
+            <section class="dashboard-list owner-dashboard-list" aria-live="polite">
+                <h2 class="dashboard-col-title">
+                    <i class="fa-solid fa-list"></i>
+                    I tuoi locali
+                </h2>
+                <div id="owner-venues">
+                    <p class="dashboard-message">Caricamento locali...</p>
+                </div>
+            </section>
 
         </div>
 
-        <!-- Colonna dx: lista birre del locale -->
-        <section class="drink-list-col">
-          <h3>Menu attuale</h3>
-          <div id="venue-drinks">
-            <p class="dashboard-message">Seleziona un locale.</p>
-          </div>
-        </section>
+        <!-- PANNELLO BIRRE — reso visibile via JS quando si apre un accordion -->
+        <p class="auth-message" id="drink-message" aria-live="polite"></p>
 
-      </div>
-    </div>
+        <!-- select nascosto, usato solo dal JS per tracciare il locale attivo -->
+        <select id="drink-venue-select" class="hidden" aria-hidden="true"></select>
 
-  </section>
+        <div class="drink-accordion-panel hidden" id="drink-accordion-panel">
+
+            <div class="drink-panel-header">
+                <div>
+                    <h2 class="dashboard-col-title" id="drink-panel-title">
+                        <i class="fa-solid fa-beer-mug-empty"></i>
+                        Birre del locale
+                    </h2>
+                    <p class="drink-panel-sub" id="drink-panel-sub"></p>
+                </div>
+                <button type="button" class="drink-panel-close" id="drink-panel-close"
+                        aria-label="Chiudi pannello birre">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="drink-panel-body">
+
+                <!-- Colonna sx: aggiungi drink -->
+                <div class="drink-panel-forms">
+
+                    <div class="drink-form-block">
+                        <h3>Aggiungi drink esistente</h3>
+                        <form class="auth-form" id="existing-drink-form">
+                            <label for="existing-drink-id">Drink</label>
+                            <select id="existing-drink-id" required></select>
+
+                            <label for="existing-drink-price">Prezzo</label>
+                            <input id="existing-drink-price" type="number" step="0.01" min="0" required>
+
+                            <button type="submit" class="auth-submit">Aggiungi al locale</button>
+                        </form>
+                    </div>
+
+                    <div class="drink-form-block">
+                        <h3>Crea nuovo drink</h3>
+                        <form class="auth-form" id="new-drink-form">
+                            <label for="new-drink-name">Nome</label>
+                            <input id="new-drink-name" type="text" maxlength="100" required>
+
+                            <label for="new-drink-description">Descrizione</label>
+                            <textarea id="new-drink-description" rows="3" maxlength="300"></textarea>
+
+                            <div class="form-columns">
+                                <div>
+                                    <label for="new-drink-category">Categoria</label>
+                                    <select id="new-drink-category" required>
+                                        <option value="IPA">IPA</option>
+                                        <option value="LAGER">Lager</option>
+                                        <option value="STOUT">Stout</option>
+                                        <option value="ALE">Ale</option>
+                                        <option value="WHEAT">Wheat</option>
+                                        <option value="SOUR">Sour</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="new-drink-abv">ABV</label>
+                                    <input id="new-drink-abv" type="number" step="0.1" min="0" max="100">
+                                </div>
+                            </div>
+
+                            <label for="new-drink-origin">Origine</label>
+                            <input id="new-drink-origin" type="text" maxlength="100">
+
+                            <label for="new-drink-image-uri">Immagine birra</label>
+                            <div class="upload-field" id="drink-image-upload-field">
+                                <input type="file" id="new-drink-image-file" accept="image/jpeg,image/png,image/webp"
+                                       class="upload-file-input">
+                                <label for="new-drink-image-file" class="upload-file-label">
+                                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                    <span id="new-drink-image-filename">Scegli immagine (JPG, PNG, WEBP · max 5 MB)</span>
+                                </label>
+                                <img id="new-drink-image-preview" class="upload-preview hidden"
+                                     alt="Anteprima immagine birra">
+                                <button type="button" class="upload-remove hidden" id="new-drink-image-remove"
+                                        aria-label="Rimuovi immagine">
+                                    <i class="fa-solid fa-xmark"></i> Rimuovi
+                                </button>
+                            </div>
+                            <input type="hidden" id="new-drink-image-uri">
+
+                            <label for="new-drink-price">Prezzo nel locale</label>
+                            <input id="new-drink-price" type="number" step="0.01" min="0" required>
+
+                            <button type="submit" class="auth-submit">Crea e aggiungi</button>
+                        </form>
+                    </div>
+
+                </div>
+
+                <!-- Colonna dx: lista birre del locale -->
+                <section class="drink-list-col">
+                    <h3>Menu attuale</h3>
+                    <div id="venue-drinks">
+                        <p class="dashboard-message">Seleziona un locale.</p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+    </section>
 </main>
 
+<button type="button" class="theme-toggle-floating" id="theme-toggle" aria-label="Passa alla modalità notte"><i class="fa-solid fa-moon"></i></button>
+  <script type="module" src="../js/theme-init.js"></script>
 <script type="module" src="../js/owner-dashboard.js"></script>
 </body>
 </html>

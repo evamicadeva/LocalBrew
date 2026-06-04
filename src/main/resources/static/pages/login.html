@@ -1,59 +1,62 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accedi - Local Brew</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accedi - Local Brew</title>
 
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/auth.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="shortcut icon" href="../assets/icons/favicon.png" type="image/x-icon">
 </head>
 <body class="auth-page">
-  <main class="auth-shell">
+<main class="auth-shell">
     <a href="../index.html" class="auth-logo">
-      <img src="../assets/icons/full.png" alt="Local Brew">
+        <img src="../assets/icons/full.png" alt="Local Brew">
     </a>
 
     <section class="auth-card">
-      <h1>Accedi</h1>
-      <p>Entra nel tuo account Local Brew.</p>
+        <h1>Accedi</h1>
+        <p>Entra nel tuo account Local Brew.</p>
 
-      <p class="auth-message" id="auth-message" aria-live="polite"></p>
+        <p class="auth-message" id="auth-message" aria-live="polite"></p>
 
-      <form class="auth-form" id="login-form">
-        <label for="login-email">Email</label>
-        <input type="email" id="login-email" required autocomplete="email">
+        <form class="auth-form" id="login-form">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" required autocomplete="email">
 
-        <label for="login-password">Password</label>
-        <div class="pw-field">
-          <input type="password" id="login-password" required autocomplete="current-password">
-          <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
-            <i class="fa-regular fa-eye"></i>
-          </button>
-        </div>
+            <label for="login-password">Password</label>
+            <div class="pw-field">
+                <input type="password" id="login-password" required autocomplete="current-password">
+                <button type="button" class="pw-toggle" aria-label="Mostra password" tabindex="-1">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
 
-        <button type="submit" class="auth-submit">Accedi</button>
-      </form>
+            <button type="submit" class="auth-submit">Accedi</button>
+        </form>
 
-      <p class="auth-switch">
-        Non hai un account?
-        <a href="register.html">Registrati</a>
-      </p>
+        <p class="auth-switch">
+            Non hai un account?
+            <a href="register.html">Registrati</a>
+        </p>
 
-      <p class="auth-legal">
-        Consulta l'<a href="privacy.html">informativa privacy</a>.
-      </p>
+        <p class="auth-legal">
+            Consulta l'<a href="privacy.html">informativa privacy</a>.
+        </p>
 
-      <p class="auth-home">
-        <a href="../index.html">
-          <i class="fa-solid fa-arrow-left"></i>
-          Torna alla home
-        </a>
-      </p>
+        <p class="auth-home">
+            <a href="../index.html">
+                <i class="fa-solid fa-arrow-left"></i>
+                Torna alla home
+            </a>
+        </p>
     </section>
-  </main>
+</main>
 
-  <script type="module" src="../js/auth.js"></script>
+  <button type="button" class="theme-toggle-floating" id="theme-toggle" aria-label="Passa alla modalità notte"><i class="fa-solid fa-moon"></i></button>
+  <script type="module" src="../js/theme-init.js"></script>
+<script type="module" src="../js/auth.js"></script>
 </body>
 </html>

@@ -42,6 +42,21 @@
   border-left-color:#9c2d1f;
 }
 
+[data-theme="dark"] .toast{
+  background:var(--surface-2, #233029);
+  color:var(--text);
+  border-color:var(--line);
+  border-left-color:var(--green);
+  box-shadow:0 20px 44px rgba(0,0,0,.42);
+}
+
+[data-theme="dark"] .toast-error{
+  background:var(--danger-soft);
+  border-color:var(--danger-line);
+  border-left-color:var(--danger);
+  color:#f7d3cd;
+}
+
 .toast.is-hiding{
   opacity:0;
   transform:translateY(-8px);

@@ -71,7 +71,7 @@
 }
 
 .login {
-    background: #fff;
+    background: var(--paper);
     border: 1px solid var(--line);
     color: var(--green);
 }
@@ -88,7 +88,6 @@
 
 /* Footer ────────────────────────────────────────────────── */
 .footer {
-    background: #1c1c1c;
     padding: 18px 32px;
     display: flex;
     align-items: center;
@@ -105,30 +104,27 @@
 
 .footer-logo {
     width: 110px;
-    filter: brightness(0) invert(1) opacity(.7);
 }
 
 .footer-tagline {
-    color: rgba(255, 255, 255, .4);
     font-size: 13px;
     line-height: 1.5;
     margin: 0;
 }
 
 .footer-copy {
-    color: rgba(255, 255, 255, .25);
     font-size: 12px;
     margin: 0;
     white-space: nowrap;
 }
 
 .footer-copy a {
-    color: rgba(255, 255, 255, .7);
+    color: var(--green);
     font-weight: 800;
 }
 
 .footer-copy a:hover {
-    color: #fff;
+    color: var(--green-2);
 }
 
 /* Nascondi le parti non più usate */

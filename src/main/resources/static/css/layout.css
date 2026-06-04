@@ -14,7 +14,8 @@
     grid-template-columns:minmax(0, 1fr) 340px;
     gap: 34px;
     padding: 42px;
-    background: linear-gradient(180deg, #fff, #fff8ec);
+    background: linear-gradient(180deg, var(--paper), var(--cream));
+    transition: background .3s;
 }
 
 /* Evita overflow nelle due colonne e definisce lo stile dei titoli di sezione. */

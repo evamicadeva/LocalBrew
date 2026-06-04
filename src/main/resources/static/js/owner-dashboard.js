@@ -12,6 +12,7 @@ import {
   uploadVenueImage,
   uploadDrinkImage
 } from './api.js';
+import './logout.js';
 import { confirmAction, showToast } from './feedback.js';
 import { requireRole } from './role-guard.js';
 import { escapeHtml } from './utils.js';

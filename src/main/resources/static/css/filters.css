@@ -2,7 +2,7 @@
 .filter-card{
   position:sticky;
   top:22px;
-  background:white;
+  background:var(--paper);
   border:1px solid var(--line);
   border-radius:28px;
   padding:24px;
