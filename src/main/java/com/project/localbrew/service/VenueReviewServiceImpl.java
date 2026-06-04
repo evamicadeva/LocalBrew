@@ -47,6 +47,22 @@ public class VenueReviewServiceImpl implements VenueReviewService {
     }
 
     @Override
+    public double findAverageVenueReviewRatingByVenueId(UUID venueId) {
+        if (venueId == null) {
+            throw new IllegalArgumentException("ID nullo");
+        }
+
+        venueRepository.findById(venueId)
+                .orElseThrow(() -> new EntityNotFoundException("Venue non trovata con ID: " + venueId));
+
+        return venueReviewRepository.findAllByVenueId(venueId)
+                .stream()
+                .mapToInt(VenueReview::getRating)
+                .average()
+                .orElse(0.0);
+    }
+
+    @Override
     public VenueReviewResponse saveReview(VenueReviewRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Request non puo essere null");

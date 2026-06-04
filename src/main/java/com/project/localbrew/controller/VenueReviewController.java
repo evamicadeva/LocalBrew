@@ -35,6 +35,13 @@ public class VenueReviewController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/public/venues/{venueId}/reviews/average")
+    public ResponseEntity<Double> findAverageRatingByVenueId(@PathVariable @NotNull(message = "ID non puo essere nullo") UUID venueId) {
+        Double average = venueReviewService.findAverageVenueReviewRatingByVenueId(venueId);
+
+        return ResponseEntity.ok(average);
+    }
+
     @GetMapping("/public/venues/{venueId}/reviews")
     public ResponseEntity<List<VenueReviewResponse>> findReviewsByVenueId(
             @PathVariable @NotNull(message = "Venue ID non puo essere nullo") UUID venueId

@@ -12,6 +12,8 @@ public interface VenueReviewService {
 
     VenueReviewResponse findReviewById(UUID id);
 
+    double findAverageVenueReviewRatingByVenueId(UUID venueId);
+
     VenueReviewResponse saveReview(VenueReviewRequest request);
 
     VenueReviewResponse updateReviewById(VenueReviewRequest request, UUID id);
