@@ -4,7 +4,7 @@ import {
   deleteVenue,
   deleteVenueReview,
   getAdminVenues,
-  getVenueDrinks,
+  getOwnerVenueDrinks,
   getVenueReviews,
   getDrinks,
   suspendVenue,
@@ -14,7 +14,7 @@ import {
 } from './api.js';
 import './logout.js';
 import {confirmAction, showToast} from './feedback.js';
-import {requireRole} from './role-guard.js';
+import {requireAnyRole} from './role-guard.js';
 import {escapeHtml} from './utils.js';
 
 // ── DOM refs ─────────────────────────────────────────────────
@@ -274,7 +274,7 @@ function readDrinkForm() {
 }
 
 // ── Init ──────────────────────────────────────────────────────
-const user = await requireRole('ADMIN');
+const user = await requireAnyRole('ADMIN');
 
 if (user) {
     await loadVenues();
@@ -442,7 +442,7 @@ function renderDrinkCards(drinks) {
     }
     drinksList.innerHTML = '<div class="admin-drinks-grid">' + drinks.map(d => {
         const count = (drinkVenueMap && drinkVenueMap.get(String(d.id))) || 0;
-        const venueLabel = count === 0 ? 'Nessun locale' : `Presente in ${count} locale${count === 1 ? '' : 'i'}`;
+        const venueLabel = count === 0 ? 'Nessun locale' : `Presente in ${count} ${count === 1 ? 'locale' : 'locali'}`;
         return `
         <article class="admin-drink-card" data-id="${escapeHtml(String(d.id))}">
             ${d.imageUri ? `<img class="admin-drink-img" src="${escapeHtml(d.imageUri)}" alt="${escapeHtml(d.name)}">` : '<div class="admin-drink-img admin-drink-img--placeholder"><i class="fa-solid fa-beer-mug-empty"></i></div>'}
@@ -451,7 +451,7 @@ function renderDrinkCards(drinks) {
                     <strong>${escapeHtml(d.name)}</strong>
                     <span class="admin-drink-badge">${escapeHtml(d.category || '-')}</span>
                 </div>
-                ${d.description ? `<p class="admin-drink-desc">${escapeHtml(d.description)}</p>` : ''}
+                <p class="admin-drink-desc">${escapeHtml(d.description || 'Nessuna descrizione disponibile.')}</p>
                 <div class="admin-drink-meta">
                     ${d.abv != null ? `<span><i class="fa-solid fa-percent"></i> ${escapeHtml(String(d.abv))} ABV</span>` : ''}
                     <span class="admin-drink-venue-count"><i class="fa-solid fa-store"></i> ${venueLabel}</span>
@@ -544,7 +544,7 @@ async function renderDrinksTab() {
             const countMap = new Map();
             await Promise.all(venues.map(async v => {
                 try {
-                    const vd = await getVenueDrinks(v.id);
+                    const vd = await getOwnerVenueDrinks(v.id);
                     vd.forEach(d => { const k = String(d.drinkId); countMap.set(k, (countMap.get(k) || 0) + 1); });
                 } catch { /* nessun drink */ }
             }));

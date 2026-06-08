@@ -127,7 +127,16 @@
 }
 
 .confirm-submit.is-danger{
-  background:#9c2d1f;
+  background:var(--danger-bg);
+  color:var(--danger-text);
+  border:1.5px solid var(--danger-border);
+  transition:none;
+}
+
+.confirm-submit.is-danger:hover{
+  background:var(--danger-bg-hover);
+  color:var(--danger-text);
+  border-color:var(--danger-border-hover);
 }
 
 @media(max-width:640px){

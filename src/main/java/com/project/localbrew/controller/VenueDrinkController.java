@@ -31,6 +31,13 @@ public class VenueDrinkController {
         return ResponseEntity.ok(venueDrinkService.findAllByVenueId(venueId));
     }
 
+    @GetMapping("/owner/venues/{venueId}/drinks")
+    public ResponseEntity<List<VenueDrinkResponse>> findManageableVenueDrinks(
+            @PathVariable @NotNull(message = "Venue ID non puo essere nullo") UUID venueId
+    ) {
+        return ResponseEntity.ok(venueDrinkService.findAllByManageableVenueId(venueId));
+    }
+
     @PostMapping("/owner/venues/{venueId}/drinks")
     public ResponseEntity<VenueDrinkResponse> addDrinkToVenue(
             @PathVariable @NotNull(message = "Venue ID non puo essere nullo") UUID venueId,

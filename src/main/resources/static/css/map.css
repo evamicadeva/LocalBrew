@@ -1,6 +1,7 @@
 /* Sezione mappa: contiene overlay, sidebar e il contenitore Leaflet. */
 .map-section {
     position: relative;
+    min-height: calc(100vh - var(--header-height, 91px) - 96px);
     background: #fff;
     overflow: hidden;
 }
@@ -17,7 +18,8 @@
 
 /* Altezza fissa della mappa: Leaflet ha bisogno di un contenitore con dimensioni esplicite. */
 #map {
-    height: 80vh;
+    height: calc(100vh - var(--header-height, 91px) - 96px);
+    min-height: 500px;
     width: 100%;
     z-index: 1;
 }
@@ -239,7 +241,8 @@
 /* Adattamenti della mappa per schermi stretti. */
 @media (max-width: 760px) {
     #map {
-        height: 560px
+        height: calc(100vh - var(--header-height, 176px) - 72px);
+        min-height: 460px;
     }
 
     .map-overlay {

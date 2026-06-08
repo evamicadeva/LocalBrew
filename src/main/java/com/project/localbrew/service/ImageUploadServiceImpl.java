@@ -23,9 +23,6 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     @Value("${upload.base-path}")
     private String basePath;
 
-    @Value("${upload.base-url}")
-    private String baseUrl;
-
     @Override
     public String uploadVenueImage(MultipartFile file) {
         return save(file, "venues");
@@ -61,6 +58,6 @@ public class ImageUploadServiceImpl implements ImageUploadService {
             throw new BadRequestException("Errore durante il salvataggio del file");
         }
 
-        return baseUrl + "/" + subfolder + "/" + filename;
+        return "/uploads/" + subfolder + "/" + filename;
     }
 }

@@ -131,6 +131,10 @@ export function getVenueDrinks(venueId) {
   return apiRequest(`/api/v1/public/venues/${venueId}/drinks`);
 }
 
+export function getOwnerVenueDrinks(venueId) {
+  return apiRequest(`/api/v1/owner/venues/${venueId}/drinks`, { auth: true });
+}
+
 export function getVenueReviews(venueId) {
   return apiRequest(`/api/v1/public/venues/${venueId}/reviews`);
 }

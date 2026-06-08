@@ -5,17 +5,17 @@ import {
   deleteVenue,
   getDrinks,
   getOwnerVenues,
-  getVenueDrinks,
+  getOwnerVenueDrinks,
   removeDrinkFromVenue,
   updateDrinkInVenue,
   updateVenue,
-  uploadVenueImage,
-  uploadDrinkImage
+  uploadDrinkImage,
+  uploadVenueImage
 } from './api.js';
 import './logout.js';
-import { confirmAction, showToast } from './feedback.js';
-import { requireRole } from './role-guard.js';
-import { escapeHtml } from './utils.js';
+import {confirmAction, showToast} from './feedback.js';
+import {requireAnyRole} from './role-guard.js';
+import {escapeHtml} from './utils.js';
 
 const form = document.getElementById('venue-form');
 const list = document.getElementById('owner-venues');
@@ -34,39 +34,62 @@ const newDrinkSubmit = newDrinkForm.querySelector('button');
 const venueDrinksContainer = document.getElementById('venue-drinks');
 
 // Upload immagine — venue
-const venueImageFile     = document.getElementById('venue-image-file');
-const venueImagePreview  = document.getElementById('venue-image-preview');
+const venueImageFile = document.getElementById('venue-image-file');
+const venueImagePreview = document.getElementById('venue-image-preview');
 const venueImageFilename = document.getElementById('venue-image-filename');
-const venueImageRemove   = document.getElementById('venue-image-remove');
+const venueImageRemove = document.getElementById('venue-image-remove');
 
 // Upload immagine — drink
-const drinkImageFile     = document.getElementById('new-drink-image-file');
-const drinkImagePreview  = document.getElementById('new-drink-image-preview');
+const drinkImageFile = document.getElementById('new-drink-image-file');
+const drinkImagePreview = document.getElementById('new-drink-image-preview');
 const drinkImageFilename = document.getElementById('new-drink-image-filename');
-const drinkImageRemove   = document.getElementById('new-drink-image-remove');
+const drinkImageRemove = document.getElementById('new-drink-image-remove');
 const drinkAccordionPanel = document.getElementById('drink-accordion-panel');
 const drinkPanelTitle = document.getElementById('drink-panel-title');
 const drinkPanelSub = document.getElementById('drink-panel-sub');
 const drinkPanelClose = document.getElementById('drink-panel-close');
 
+// ── Accordion form birre ─────────────────────────────────────────────────
+document.querySelectorAll('.drink-accordion-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        const bodyId = trigger.getAttribute('aria-controls');
+        const body = document.getElementById(bodyId);
+        if (!body) return;
+        const isOpen = !body.classList.contains('hidden');
+        // Chiudi tutti gli altri
+        document.querySelectorAll('.drink-accordion-body').forEach(b => b.classList.add('hidden'));
+        document.querySelectorAll('.drink-accordion-trigger').forEach(t => {
+            t.setAttribute('aria-expanded', 'false');
+            t.querySelector('.drink-chevron')?.classList.remove('drink-chevron--open');
+        });
+        if (!isOpen) {
+            body.classList.remove('hidden');
+            trigger.setAttribute('aria-expanded', 'true');
+            trigger.querySelector('.drink-chevron')?.classList.add('drink-chevron--open');
+        }
+    });
+});
+
+
+
 const fields = {
-  id: document.getElementById('venue-id'),
-  name: document.getElementById('venue-name'),
-  description: document.getElementById('venue-description'),
-  city: document.getElementById('venue-city'),
-  address: document.getElementById('venue-address'),
-  type: document.getElementById('venue-type'),
-  imageUri: document.getElementById('venue-image-uri')
+    id: document.getElementById('venue-id'),
+    name: document.getElementById('venue-name'),
+    description: document.getElementById('venue-description'),
+    city: document.getElementById('venue-city'),
+    address: document.getElementById('venue-address'),
+    type: document.getElementById('venue-type'),
+    imageUri: document.getElementById('venue-image-uri')
 };
 
 const newDrinkFields = {
-  name: document.getElementById('new-drink-name'),
-  description: document.getElementById('new-drink-description'),
-  category: document.getElementById('new-drink-category'),
-  abv: document.getElementById('new-drink-abv'),
-  origin: document.getElementById('new-drink-origin'),
-  imageUri: document.getElementById('new-drink-image-uri'),
-  price: document.getElementById('new-drink-price')
+    name: document.getElementById('new-drink-name'),
+    description: document.getElementById('new-drink-description'),
+    category: document.getElementById('new-drink-category'),
+    abv: document.getElementById('new-drink-abv'),
+    origin: document.getElementById('new-drink-origin'),
+    imageUri: document.getElementById('new-drink-image-uri'),
+    price: document.getElementById('new-drink-price')
 };
 
 let ownerVenues = [];
@@ -75,163 +98,161 @@ let selectedVenueDrinks = [];
 let editingVenueDrinkId = null;
 
 function showMessage(text, type = '') {
-  message.textContent = text;
-  message.classList.remove('is-error', 'is-success');
-  if (type) message.classList.add(type);
+    showToast(text, type === 'is-error' ? 'error' : undefined);
 }
 
 function showDrinkMessage(text, type = '') {
-  drinkMessage.textContent = text;
-  drinkMessage.classList.remove('is-error', 'is-success');
-  if (type) drinkMessage.classList.add(type);
+    drinkMessage.textContent = text;
+    drinkMessage.classList.remove('is-error', 'is-success');
+    if (type) drinkMessage.classList.add(type);
 }
 
 function statusLabel(status) {
-  const labels = { ACTIVE: 'Attivo', PENDING: 'In attesa', SUSPENDED: 'Sospeso' };
-  return labels[status] || status;
+    const labels = {ACTIVE: 'Attivo', PENDING: 'In attesa', SUSPENDED: 'Sospeso'};
+    return labels[status] || status;
 }
 
 function formatPrice(price) {
-  if (price == null || price === '') return '-';
-  return Number(price).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+    if (price == null || price === '') return '-';
+    return Number(price).toLocaleString('it-IT', {style: 'currency', currency: 'EUR'});
 }
 
-function setupImageUpload({ fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel }) {
-  fileInput.addEventListener('change', () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-    filename.textContent = file.name;
-    preview.src = URL.createObjectURL(file);
-    preview.classList.remove('hidden');
-    removeBtn.classList.remove('hidden');
-    hiddenInput.value = '';
-  });
+function setupImageUpload({fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel}) {
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        filename.textContent = file.name;
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+        removeBtn.classList.remove('hidden');
+        hiddenInput.value = '';
+    });
 
-  removeBtn.addEventListener('click', () => {
+    removeBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        preview.src = '';
+        preview.classList.add('hidden');
+        removeBtn.classList.add('hidden');
+        filename.textContent = defaultLabel;
+        hiddenInput.value = '';
+    });
+}
+
+async function resolveImageUri(fileInput, hiddenInput, uploadFn) {
+    if (fileInput.files[0]) {
+        return await uploadFn(fileInput.files[0]);
+    }
+    return hiddenInput.value || null;
+}
+
+function resetImageField({fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel}) {
     fileInput.value = '';
     preview.src = '';
     preview.classList.add('hidden');
     removeBtn.classList.add('hidden');
     filename.textContent = defaultLabel;
     hiddenInput.value = '';
-  });
 }
 
-async function resolveImageUri(fileInput, hiddenInput, uploadFn) {
-  if (fileInput.files[0]) {
-    return await uploadFn(fileInput.files[0]);
-  }
-  return hiddenInput.value || null;
-}
-
-function resetImageField({ fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel }) {
-  fileInput.value = '';
-  preview.src = '';
-  preview.classList.add('hidden');
-  removeBtn.classList.add('hidden');
-  filename.textContent = defaultLabel;
-  hiddenInput.value = '';
-}
-
-function fillImageField({ preview, filename, removeBtn, hiddenInput, url }) {
-  if (url) {
-    preview.src = url;
-    preview.classList.remove('hidden');
-    removeBtn.classList.remove('hidden');
-    filename.textContent = url.split('/').pop();
-    hiddenInput.value = url;
-  }
+function fillImageField({preview, filename, removeBtn, hiddenInput, url}) {
+    if (url) {
+        preview.src = url;
+        preview.classList.remove('hidden');
+        removeBtn.classList.remove('hidden');
+        filename.textContent = url.split('/').pop();
+        hiddenInput.value = url;
+    }
 }
 
 function readVenueForm() {
-  const imageUri = fields.imageUri.value.trim();
-  return {
-    name: fields.name.value.trim(),
-    description: fields.description.value.trim() || null,
-    city: fields.city.value.trim(),
-    address: fields.address.value.trim(),
-    type: fields.type.value,
-    imageUri: imageUri || null
-  };
+    const imageUri = fields.imageUri.value.trim();
+    return {
+        name: fields.name.value.trim(),
+        description: fields.description.value.trim() || null,
+        city: fields.city.value.trim(),
+        address: fields.address.value.trim(),
+        type: fields.type.value,
+        imageUri: imageUri || null
+    };
 }
 
 function readNewDrinkForm() {
-  const imageUri = newDrinkFields.imageUri.value.trim();
-  const abv = newDrinkFields.abv.value;
-  return {
-    name: newDrinkFields.name.value.trim(),
-    description: newDrinkFields.description.value.trim() || null,
-    category: newDrinkFields.category.value,
-    abv: abv === '' ? null : Number(abv),
-    origin: newDrinkFields.origin.value.trim() || null,
-    imageUri: imageUri || null
-  };
+    const imageUri = newDrinkFields.imageUri.value.trim();
+    const abv = newDrinkFields.abv.value;
+    return {
+        name: newDrinkFields.name.value.trim(),
+        description: newDrinkFields.description.value.trim() || null,
+        category: newDrinkFields.category.value,
+        abv: abv === '' ? null : Number(abv),
+        origin: newDrinkFields.origin.value.trim() || null,
+        imageUri: imageUri || null
+    };
 }
 
 function selectedVenueId() {
-  return venueSelect.value;
+    return venueSelect.value;
 }
 
 function resetForm() {
-  form.reset();
-  fields.id.value = '';
-  submitButton.textContent = 'Crea locale';
-  formColLabel.textContent = 'Nuovo locale';
-  cancelButton.classList.add('hidden');
-  resetImageField({
-    fileInput: venueImageFile, preview: venueImagePreview,
-    filename: venueImageFilename, removeBtn: venueImageRemove,
-    hiddenInput: fields.imageUri,
-    defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
-  });
+    form.reset();
+    fields.id.value = '';
+    submitButton.textContent = 'Crea locale';
+    formColLabel.textContent = 'Nuovo locale';
+    cancelButton.classList.add('hidden');
+    resetImageField({
+        fileInput: venueImageFile, preview: venueImagePreview,
+        filename: venueImageFilename, removeBtn: venueImageRemove,
+        hiddenInput: fields.imageUri,
+        defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
+    });
 }
 
 function fillForm(venue) {
-  fields.id.value = venue.id;
-  fields.name.value = venue.name || '';
-  fields.description.value = venue.description || '';
-  fields.city.value = venue.city || '';
-  fields.address.value = venue.address || '';
-  fields.type.value = venue.type || 'PUB';
-  fields.imageUri.value = venue.imageUri || '';
-  submitButton.textContent = 'Aggiorna locale';
-  formColLabel.textContent = 'Modifica locale';
-  cancelButton.classList.remove('hidden');
-  fillImageField({
-    preview: venueImagePreview, filename: venueImageFilename,
-    removeBtn: venueImageRemove, hiddenInput: fields.imageUri,
-    url: venue.imageUri
-  });
-  fields.name.focus();
+    fields.id.value = venue.id;
+    fields.name.value = venue.name || '';
+    fields.description.value = venue.description || '';
+    fields.city.value = venue.city || '';
+    fields.address.value = venue.address || '';
+    fields.type.value = venue.type || 'PUB';
+    fields.imageUri.value = venue.imageUri || '';
+    submitButton.textContent = 'Aggiorna locale';
+    formColLabel.textContent = 'Modifica locale';
+    cancelButton.classList.remove('hidden');
+    fillImageField({
+        preview: venueImagePreview, filename: venueImageFilename,
+        removeBtn: venueImageRemove, hiddenInput: fields.imageUri,
+        url: venue.imageUri
+    });
+    fields.name.focus();
 }
 
 function openDrinkPanel(venue) {
-  venueSelect.value = venue.id;
-  drinkPanelTitle.innerHTML = `<i class="fa-solid fa-beer-mug-empty"></i> Birre — ${escapeHtml(venue.name)}`;
-  drinkPanelSub.textContent = `${escapeHtml(venue.city)} · ${escapeHtml(statusLabel(venue.status))}`;
-  drinkAccordionPanel.classList.remove('hidden');
-  drinkAccordionPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  syncDrinkControls();
-  loadSelectedVenueDrinks();
+    venueSelect.value = venue.id;
+    drinkPanelTitle.innerHTML = `<i class="fa-solid fa-beer-mug-empty"></i> Birre — ${escapeHtml(venue.name)}`;
+    drinkPanelSub.textContent = `${escapeHtml(venue.city)} · ${escapeHtml(statusLabel(venue.status))}`;
+    drinkAccordionPanel.classList.remove('hidden');
+    drinkAccordionPanel.scrollIntoView({behavior: 'smooth', block: 'start'});
+    syncDrinkControls();
+    loadSelectedVenueDrinks();
 }
 
 function closeDrinkPanel() {
-  drinkAccordionPanel.classList.add('hidden');
-  venueSelect.value = '';
-  selectedVenueDrinks = [];
-  editingVenueDrinkId = null;
-  venueDrinksContainer.innerHTML = '<p class="dashboard-message">Seleziona un locale.</p>';
+    drinkAccordionPanel.classList.add('hidden');
+    venueSelect.value = '';
+    selectedVenueDrinks = [];
+    editingVenueDrinkId = null;
+    venueDrinksContainer.innerHTML = '<p class="dashboard-message">Seleziona un locale.</p>';
 }
 
 function renderVenues() {
-  if (!ownerVenues.length) {
-    list.innerHTML = '<p class="dashboard-message">Non hai ancora creato locali.</p>';
-    return;
-  }
+    if (!ownerVenues.length) {
+        list.innerHTML = '<p class="dashboard-message">Non hai ancora creato locali.</p>';
+        return;
+    }
 
-  list.innerHTML = ownerVenues.map(venue => `
+    list.innerHTML = ownerVenues.map(venue => `
     <article class="dashboard-item" data-id="${escapeHtml(venue.id)}">
-      <img src="${escapeHtml(venue.imageUri || '../assets/icons/Minimal.png')}" alt="Foto di ${escapeHtml(venue.name)}">
+      <img src="${escapeHtml(venue.imageUri || '../assets/icons/pin.png')}" alt="Foto di ${escapeHtml(venue.name)}">
       <div>
         <span class="dashboard-status status-${escapeHtml(venue.status).toLowerCase()}">${escapeHtml(statusLabel(venue.status))}</span>
         <h3>${escapeHtml(venue.name)}</h3>
@@ -249,65 +270,65 @@ function renderVenues() {
 }
 
 function renderVenueSelect() {
-  if (!ownerVenues.length) {
-    venueSelect.innerHTML = '<option value="">Crea prima un locale</option>';
-    syncDrinkControls();
-    return;
-  }
+    if (!ownerVenues.length) {
+        venueSelect.innerHTML = '<option value="">Crea prima un locale</option>';
+        syncDrinkControls();
+        return;
+    }
 
-  const previousValue = venueSelect.value;
-  venueSelect.innerHTML = ownerVenues.map(venue => `
+    const previousValue = venueSelect.value;
+    venueSelect.innerHTML = ownerVenues.map(venue => `
     <option value="${escapeHtml(venue.id)}">${escapeHtml(venue.name)}</option>
   `).join('');
 
-  if (ownerVenues.some(venue => String(venue.id) === previousValue)) {
-    venueSelect.value = previousValue;
-  }
+    if (ownerVenues.some(venue => String(venue.id) === previousValue)) {
+        venueSelect.value = previousValue;
+    }
 
-  syncDrinkControls();
+    syncDrinkControls();
 }
 
 function renderDrinkOptions() {
-  if (!allDrinks.length) {
-    existingDrinkSelect.innerHTML = '<option value="">Nessun drink disponibile</option>';
-    syncDrinkControls();
-    return;
-  }
+    if (!allDrinks.length) {
+        existingDrinkSelect.innerHTML = '<option value="">Nessun drink disponibile</option>';
+        syncDrinkControls();
+        return;
+    }
 
-  existingDrinkSelect.innerHTML = allDrinks.map(drink => `
+    existingDrinkSelect.innerHTML = allDrinks.map(drink => `
     <option value="${escapeHtml(drink.id)}">${escapeHtml(drink.name)} - ${escapeHtml(drink.category)}</option>
   `).join('');
 
-  syncDrinkControls();
+    syncDrinkControls();
 }
 
 function syncDrinkControls() {
-  const hasVenue = ownerVenues.length > 0;
-  const hasExistingDrinks = allDrinks.length > 0;
-  existingDrinkSelect.disabled = !hasVenue || !hasExistingDrinks;
-  existingDrinkSubmit.disabled = !hasVenue || !hasExistingDrinks;
-  newDrinkSubmit.disabled = !hasVenue;
+    const hasVenue = ownerVenues.length > 0;
+    const hasExistingDrinks = allDrinks.length > 0;
+    existingDrinkSelect.disabled = !hasVenue || !hasExistingDrinks;
+    existingDrinkSubmit.disabled = !hasVenue || !hasExistingDrinks;
+    newDrinkSubmit.disabled = !hasVenue;
 }
 
 function renderVenueDrinks() {
-  if (!selectedVenueId()) {
-    venueDrinksContainer.innerHTML = '<p class="dashboard-message">Seleziona un locale.</p>';
-    return;
-  }
+    if (!selectedVenueId()) {
+        venueDrinksContainer.innerHTML = '<p class="dashboard-message">Seleziona un locale.</p>';
+        return;
+    }
 
-  if (!selectedVenueDrinks.length) {
-    venueDrinksContainer.innerHTML = '<p class="dashboard-message">Nessun drink nel menu di questo locale.</p>';
-    return;
-  }
+    if (!selectedVenueDrinks.length) {
+        venueDrinksContainer.innerHTML = '<p class="dashboard-message">Nessun drink nel menu di questo locale.</p>';
+        return;
+    }
 
-  venueDrinksContainer.innerHTML = selectedVenueDrinks.map(item => {
-    const drinkId = String(item.drinkId);
-    const isEditing = editingVenueDrinkId === drinkId;
-    const price = item.price == null || item.price === '' ? '' : Number(item.price);
+    venueDrinksContainer.innerHTML = selectedVenueDrinks.map(item => {
+        const drinkId = String(item.drinkId);
+        const isEditing = editingVenueDrinkId === drinkId;
+        const price = item.price == null || item.price === '' ? '' : Number(item.price);
 
-    return `
+        return `
       <article class="dashboard-item drink-menu-item" data-drink-id="${escapeHtml(drinkId)}">
-        <img src="${escapeHtml(item.imageUri || '../assets/icons/Minimal.png')}" alt="Foto di ${escapeHtml(item.drinkName)}">
+        <img src="${escapeHtml(item.imageUri || '../assets/icons/pin.png')}" alt="Foto di ${escapeHtml(item.drinkName)}">
         <div>
           <span class="dashboard-status">${escapeHtml(item.category || 'Drink')}</span>
           <h3>${escapeHtml(item.drinkName)}</h3>
@@ -332,238 +353,244 @@ function renderVenueDrinks() {
         </div>
       </article>
     `;
-  }).join('');
+    }).join('');
 }
 
 async function loadOwnerVenues() {
-  list.innerHTML = '<p class="dashboard-message">Caricamento locali...</p>';
-  ownerVenues = await getOwnerVenues();
-  renderVenues();
-  renderVenueSelect();
+    list.innerHTML = '<p class="dashboard-message">Caricamento locali...</p>';
+    ownerVenues = await getOwnerVenues();
+    renderVenues();
+    renderVenueSelect();
 }
 
 async function loadAllDrinks() {
-  allDrinks = await getDrinks();
-  renderDrinkOptions();
+    allDrinks = await getDrinks();
+    renderDrinkOptions();
 }
 
 async function loadSelectedVenueDrinks() {
-  if (!selectedVenueId()) {
-    selectedVenueDrinks = [];
-    renderVenueDrinks();
-    return;
-  }
+    if (!selectedVenueId()) {
+        selectedVenueDrinks = [];
+        renderVenueDrinks();
+        return;
+    }
 
-  venueDrinksContainer.innerHTML = '<p class="dashboard-message">Caricamento menu...</p>';
-  selectedVenueDrinks = await getVenueDrinks(selectedVenueId());
-  renderVenueDrinks();
+    try {
+        venueDrinksContainer.innerHTML = '<p class="dashboard-message">Caricamento menu...</p>';
+        selectedVenueDrinks = await getOwnerVenueDrinks(selectedVenueId());
+        renderVenueDrinks();
+    } catch (error) {
+        selectedVenueDrinks = [];
+        venueDrinksContainer.innerHTML = '<p class="dashboard-message">Menu non disponibile per questo locale.</p>';
+        showDrinkMessage(error.message, 'is-error');
+    }
 }
 
 async function refreshDrinkArea() {
-  await Promise.all([loadAllDrinks(), loadSelectedVenueDrinks()]);
+    await Promise.all([loadAllDrinks(), loadSelectedVenueDrinks()]);
 }
 
-const user = await requireRole('OWNER');
+const user = await requireAnyRole('OWNER');
 
 if (user) {
-  await loadOwnerVenues();
-  await loadAllDrinks();
+    await loadOwnerVenues();
+    await loadAllDrinks();
 
-  // Inizializza upload fields
-  setupImageUpload({
-    fileInput: venueImageFile, preview: venueImagePreview,
-    filename: venueImageFilename, removeBtn: venueImageRemove,
-    hiddenInput: fields.imageUri,
-    defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
-  });
+    // Inizializza upload fields
+    setupImageUpload({
+        fileInput: venueImageFile, preview: venueImagePreview,
+        filename: venueImageFilename, removeBtn: venueImageRemove,
+        hiddenInput: fields.imageUri,
+        defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
+    });
 
-  setupImageUpload({
-    fileInput: drinkImageFile, preview: drinkImagePreview,
-    filename: drinkImageFilename, removeBtn: drinkImageRemove,
-    hiddenInput: newDrinkFields.imageUri,
-    defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
-  });
-
-  cancelButton.addEventListener('click', resetForm);
-
-  drinkPanelClose.addEventListener('click', closeDrinkPanel);
-
-  form.addEventListener('submit', async event => {
-    event.preventDefault();
-    submitButton.disabled = true;
-    showMessage(fields.id.value ? 'Aggiornamento locale...' : 'Creazione locale...');
-
-    try {
-      const imageUri = await resolveImageUri(venueImageFile, fields.imageUri, uploadVenueImage);
-      const payload = { ...readVenueForm(), imageUri };
-
-      if (fields.id.value) {
-        await updateVenue(fields.id.value, payload);
-        showMessage('Locale aggiornato.', 'is-success');
-        showToast('Locale aggiornato.');
-      } else {
-        await createVenue(payload);
-        showMessage('Locale creato e inviato in approvazione.', 'is-success');
-        showToast('Locale creato.');
-      }
-
-      resetForm();
-      await loadOwnerVenues();
-      if (selectedVenueId()) await loadSelectedVenueDrinks();
-    } catch (error) {
-      showMessage(error.message, 'is-error');
-      showToast(error.message, 'error');
-    } finally {
-      submitButton.disabled = false;
-    }
-  });
-
-  existingDrinkForm.addEventListener('submit', async event => {
-    event.preventDefault();
-    showDrinkMessage('Aggiunta drink al locale...');
-
-    try {
-      await addDrinkToVenue(selectedVenueId(), {
-        drinkId: existingDrinkSelect.value,
-        price: Number(existingDrinkPrice.value)
-      });
-      existingDrinkForm.reset();
-      showDrinkMessage('Drink aggiunto al locale.', 'is-success');
-      showToast('Drink aggiunto al locale.');
-      await loadSelectedVenueDrinks();
-    } catch (error) {
-      showDrinkMessage(error.message, 'is-error');
-      showToast(error.message, 'error');
-    }
-  });
-
-  newDrinkForm.addEventListener('submit', async event => {
-    event.preventDefault();
-    showDrinkMessage('Creazione drink...');
-
-    try {
-      const drinkImageUri = await resolveImageUri(drinkImageFile, newDrinkFields.imageUri, uploadDrinkImage);
-      const drink = await createDrink({ ...readNewDrinkForm(), imageUri: drinkImageUri });
-      await addDrinkToVenue(selectedVenueId(), {
-        drinkId: drink.id,
-        price: Number(newDrinkFields.price.value)
-      });
-      newDrinkForm.reset();
-      resetImageField({
+    setupImageUpload({
         fileInput: drinkImageFile, preview: drinkImagePreview,
         filename: drinkImageFilename, removeBtn: drinkImageRemove,
         hiddenInput: newDrinkFields.imageUri,
         defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
-      });
-      showDrinkMessage('Drink creato e aggiunto al locale.', 'is-success');
-      showToast('Drink creato e aggiunto al locale.');
-      await refreshDrinkArea();
-    } catch (error) {
-      showDrinkMessage(error.message, 'is-error');
-      showToast(error.message, 'error');
-    }
-  });
-
-  venueDrinksContainer.addEventListener('click', async event => {
-    const item = event.target.closest('.drink-menu-item');
-    if (!item) return;
-    const drinkId = item.dataset.drinkId;
-
-    if (event.target.closest('.edit-venue-drink')) {
-      editingVenueDrinkId = drinkId;
-      renderVenueDrinks();
-      venueDrinksContainer.querySelector('.compact-price-input')?.focus();
-      return;
-    }
-
-    if (event.target.closest('.cancel-venue-drink')) {
-      editingVenueDrinkId = null;
-      renderVenueDrinks();
-      return;
-    }
-
-    if (event.target.closest('.save-venue-drink')) {
-      const priceInput = item.querySelector('.compact-price-input');
-      const price = Number(priceInput.value);
-
-      if (priceInput.value === '' || Number.isNaN(price) || price < 0) {
-        showDrinkMessage('Inserisci un prezzo valido.', 'is-error');
-        return;
-      }
-
-      try {
-        await updateDrinkInVenue(selectedVenueId(), drinkId, { drinkId, price });
-        editingVenueDrinkId = null;
-        showDrinkMessage('Prezzo del drink aggiornato.', 'is-success');
-        showToast('Prezzo aggiornato.');
-        await loadSelectedVenueDrinks();
-      } catch (error) {
-        showDrinkMessage(error.message, 'is-error');
-        showToast(error.message, 'error');
-      }
-      return;
-    }
-
-    const button = event.target.closest('.remove-venue-drink');
-    if (!button) return;
-
-    const drink = selectedVenueDrinks.find(item => String(item.drinkId) === String(drinkId));
-    const confirmed = await confirmAction({
-      title: 'Rimuovere il drink?',
-      message: `${drink?.drinkName || 'Questo drink'} verrà rimosso dal menu del locale.`,
-      confirmText: 'Rimuovi',
-      danger: true
     });
-    if (!confirmed) return;
 
-    try {
-      await removeDrinkFromVenue(selectedVenueId(), drinkId);
-      showDrinkMessage('Drink rimosso dal locale.', 'is-success');
-      showToast('Drink rimosso dal locale.');
-      await loadSelectedVenueDrinks();
-    } catch (error) {
-      showDrinkMessage(error.message, 'is-error');
-      showToast(error.message, 'error');
-    }
-  });
+    cancelButton.addEventListener('click', resetForm);
 
-  list.addEventListener('click', async event => {
-    const card = event.target.closest('.dashboard-item');
-    if (!card) return;
+    drinkPanelClose.addEventListener('click', closeDrinkPanel);
 
-    const venue = ownerVenues.find(item => String(item.id) === String(card.dataset.id));
-    if (!venue) return;
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        submitButton.disabled = true;
+        showMessage(fields.id.value ? 'Aggiornamento locale...' : 'Creazione locale...');
 
-    if (event.target.closest('.edit-venue')) {
-      fillForm(venue);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
+        try {
+            const imageUri = await resolveImageUri(venueImageFile, fields.imageUri, uploadVenueImage);
+            const payload = {...readVenueForm(), imageUri};
 
-    if (event.target.closest('.manage-drinks')) {
-      openDrinkPanel(venue);
-      return;
-    }
+            if (fields.id.value) {
+                await updateVenue(fields.id.value, payload);
+                showMessage('Locale aggiornato.', 'is-success');
+                showToast('Locale aggiornato.');
+            } else {
+                await createVenue(payload);
+                showMessage('Locale creato e inviato in approvazione.', 'is-success');
+                showToast('Locale creato.');
+            }
 
-    if (event.target.closest('.delete-venue')) {
-      const confirmed = await confirmAction({
-        title: 'Eliminare il locale?',
-        message: `${venue.name} verrà eliminato definitivamente.`,
-        confirmText: 'Elimina',
-        danger: true
-      });
-      if (!confirmed) return;
+            resetForm();
+            await loadOwnerVenues();
+            if (selectedVenueId()) await loadSelectedVenueDrinks();
+        } catch (error) {
+            showMessage(error.message, 'is-error');
+            showToast(error.message, 'error');
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
 
-      try {
-        await deleteVenue(venue.id);
-        showMessage('Locale eliminato.', 'is-success');
-        showToast('Locale eliminato.');
-        if (selectedVenueId() === String(venue.id)) closeDrinkPanel();
-        await loadOwnerVenues();
-      } catch (error) {
-        showMessage(error.message, 'is-error');
-        showToast(error.message, 'error');
-      }
-    }
-  });
+    existingDrinkForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        showDrinkMessage('Aggiunta drink al locale...');
+
+        try {
+            await addDrinkToVenue(selectedVenueId(), {
+                drinkId: existingDrinkSelect.value,
+                price: Number(existingDrinkPrice.value)
+            });
+            existingDrinkForm.reset();
+            showDrinkMessage('Drink aggiunto al locale.', 'is-success');
+            showToast('Drink aggiunto al locale.');
+            await loadSelectedVenueDrinks();
+        } catch (error) {
+            showDrinkMessage(error.message, 'is-error');
+            showToast(error.message, 'error');
+        }
+    });
+
+    newDrinkForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        showDrinkMessage('Creazione drink...');
+
+        try {
+            const drinkImageUri = await resolveImageUri(drinkImageFile, newDrinkFields.imageUri, uploadDrinkImage);
+            const drink = await createDrink({...readNewDrinkForm(), imageUri: drinkImageUri});
+            await addDrinkToVenue(selectedVenueId(), {
+                drinkId: drink.id,
+                price: Number(newDrinkFields.price.value)
+            });
+            newDrinkForm.reset();
+            resetImageField({
+                fileInput: drinkImageFile, preview: drinkImagePreview,
+                filename: drinkImageFilename, removeBtn: drinkImageRemove,
+                hiddenInput: newDrinkFields.imageUri,
+                defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
+            });
+            showDrinkMessage('Drink creato e aggiunto al locale.', 'is-success');
+            showToast('Drink creato e aggiunto al locale.');
+            await refreshDrinkArea();
+        } catch (error) {
+            showDrinkMessage(error.message, 'is-error');
+            showToast(error.message, 'error');
+        }
+    });
+
+    venueDrinksContainer.addEventListener('click', async event => {
+        const item = event.target.closest('.drink-menu-item');
+        if (!item) return;
+        const drinkId = item.dataset.drinkId;
+
+        if (event.target.closest('.edit-venue-drink')) {
+            editingVenueDrinkId = drinkId;
+            renderVenueDrinks();
+            venueDrinksContainer.querySelector('.compact-price-input')?.focus();
+            return;
+        }
+
+        if (event.target.closest('.cancel-venue-drink')) {
+            editingVenueDrinkId = null;
+            renderVenueDrinks();
+            return;
+        }
+
+        if (event.target.closest('.save-venue-drink')) {
+            const priceInput = item.querySelector('.compact-price-input');
+            const price = Number(priceInput.value);
+
+            if (priceInput.value === '' || Number.isNaN(price) || price < 0) {
+                showDrinkMessage('Inserisci un prezzo valido.', 'is-error');
+                return;
+            }
+
+            try {
+                await updateDrinkInVenue(selectedVenueId(), drinkId, {drinkId, price});
+                editingVenueDrinkId = null;
+                showDrinkMessage('Prezzo del drink aggiornato.', 'is-success');
+                showToast('Prezzo aggiornato.');
+                await loadSelectedVenueDrinks();
+            } catch (error) {
+                showDrinkMessage(error.message, 'is-error');
+                showToast(error.message, 'error');
+            }
+            return;
+        }
+
+        const button = event.target.closest('.remove-venue-drink');
+        if (!button) return;
+
+        const drink = selectedVenueDrinks.find(item => String(item.drinkId) === String(drinkId));
+        const confirmed = await confirmAction({
+            title: 'Rimuovere il drink?',
+            message: `${drink?.drinkName || 'Questo drink'} verrà rimosso dal menu del locale.`,
+            confirmText: 'Rimuovi',
+            danger: true
+        });
+        if (!confirmed) return;
+
+        try {
+            await removeDrinkFromVenue(selectedVenueId(), drinkId);
+            showDrinkMessage('Drink rimosso dal locale.', 'is-success');
+            showToast('Drink rimosso dal locale.');
+            await loadSelectedVenueDrinks();
+        } catch (error) {
+            showDrinkMessage(error.message, 'is-error');
+            showToast(error.message, 'error');
+        }
+    });
+
+    list.addEventListener('click', async event => {
+        const card = event.target.closest('.dashboard-item');
+        if (!card) return;
+
+        const venue = ownerVenues.find(item => String(item.id) === String(card.dataset.id));
+        if (!venue) return;
+
+        if (event.target.closest('.edit-venue')) {
+            fillForm(venue);
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            return;
+        }
+
+        if (event.target.closest('.manage-drinks')) {
+            openDrinkPanel(venue);
+            return;
+        }
+
+        if (event.target.closest('.delete-venue')) {
+            const confirmed = await confirmAction({
+                title: 'Eliminare il locale?',
+                message: `${venue.name} verrà eliminato definitivamente.`,
+                confirmText: 'Elimina',
+                danger: true
+            });
+            if (!confirmed) return;
+
+            try {
+                await deleteVenue(venue.id);
+                showMessage('Locale eliminato.', 'is-success');
+                showToast('Locale eliminato.');
+                if (selectedVenueId() === String(venue.id)) closeDrinkPanel();
+                await loadOwnerVenues();
+            } catch (error) {
+                showMessage(error.message, 'is-error');
+                showToast(error.message, 'error');
+            }
+        }
+    });
 }

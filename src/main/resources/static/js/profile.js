@@ -1,8 +1,9 @@
-import { clearToken, updateMe, deleteMe, apiRequest, updateMyReview, getOwnerVenues } from './api.js';
+import { clearToken, updateMe, deleteMe, apiRequest, updateMyReview } from './api.js';
 import './logout.js';
 import { confirmAction, showToast } from './feedback.js';
 import { escapeHtml } from './utils.js';
 import { requireAnyRole } from './role-guard.js';
+import { RATING_ICON, ratingIconHtml, starsHtml, setInteractiveStars } from './rating.js';
 
 // ── API ───────────────────────────────────────────────────────
 const getMyReviews   = ()      => apiRequest('/api/v1/user/venue-reviews', { auth: true });
@@ -10,8 +11,8 @@ const deleteMyReview = id      => apiRequest(`/api/v1/user/venue-reviews/${id}`,
 
 // ── Nav ───────────────────────────────────────────────────────
 const content = document.getElementById('profile-content');
-const RATING_ICON = 'fa-solid fa-beer-mug-empty';
 
+// ── Helpers ───────────────────────────────────────────────────
 function setActiveNav(section) {
   document.querySelectorAll('.profile-nav-item').forEach(btn =>
     btn.classList.toggle('profile-nav-item--active', btn.dataset.section === section)
@@ -24,17 +25,6 @@ document.getElementById('profile-nav').addEventListener('click', e => {
   setActiveNav(btn.dataset.section);
   renderSection(btn.dataset.section);
 });
-
-// ── Helpers ───────────────────────────────────────────────────
-function ratingIconHtml(filled, extraClass = '') {
-  return `<i class="${RATING_ICON} rating-icon ${filled ? 'rating-icon--filled' : 'rating-icon--empty'} ${extraClass}"></i>`;
-}
-
-function starsHtml(rating) {
-  return Array.from({ length: 5 }, (_, i) =>
-    ratingIconHtml(i < rating, 'profile-star')
-  ).join('');
-}
 
 function setMsg(id, text, isError = false) {
   const el = document.getElementById(id);
@@ -173,7 +163,7 @@ async function renderRecensioni() {
           <article class="profile-review-card" data-id="${escapeHtml(r.id)}">
             <div class="profile-review-top">
               <div class="detail-stars-row review-stars-display" data-rating="${r.rating}">
-                ${starsHtml(r.rating)}
+                ${starsHtml(r.rating, 'profile-star')}
               </div>
               <span class="profile-review-venue">
                 <i class="fa-solid fa-store"></i> ${escapeHtml(r.venueName || '—')}
@@ -222,15 +212,6 @@ function editStarsHtml(current, reviewId) {
   ).join('');
 }
 
-function setEditStars(editDiv, value) {
-  editDiv.querySelectorAll('.edit-star').forEach((btn, i) => {
-    const position = i + 1;
-    const filled = position <= value;
-    const icon = btn.querySelector('i');
-    icon.className = `${RATING_ICON} rating-icon`;
-    btn.classList.toggle('is-filled', filled);
-  });
-}
 
 function bindReviewActions() {
   const list = content.querySelector('.profile-reviews-list');
@@ -266,7 +247,7 @@ function bindReviewActions() {
       const val    = Number(btn.dataset.value);
       const editDiv = card.querySelector('.profile-review-edit');
       editDiv.querySelector('.edit-rating-input').value = val;
-      setEditStars(editDiv, val);
+      setInteractiveStars(editDiv, val);
       return;
     }
 
@@ -318,60 +299,29 @@ function bindReviewActions() {
     stars.forEach(btn => {
       btn.addEventListener('mouseenter', () => {
         const v = Number(btn.dataset.value);
-        setEditStars(editDiv, v);
+        setInteractiveStars(editDiv, v);
       });
       btn.addEventListener('mouseleave', () => {
         const v = Number(input.value);
-        setEditStars(editDiv, v);
+        setInteractiveStars(editDiv, v);
       });
     });
   });
 }
 
 // ── Sezione: I miei locali (OWNER) ────────────────────────────
-async function renderLocali() {
-  content.innerHTML = '<p class="dashboard-message">Caricamento locali...</p>';
-  try {
-    const venues = await getOwnerVenues();
-    if (!venues.length) {
-      content.innerHTML = `
-        <h2 class="profile-section-heading">I miei locali</h2>
-        <p class="dashboard-message">Non hai ancora registrato nessun locale.</p>
-        <a href="owner-dashboard.html" class="profile-save-btn" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;text-decoration:none;">
-          <i class="fa-solid fa-gauge-high"></i> Vai alla Dashboard
-        </a>`;
-      return;
-    }
-    content.innerHTML = `
-      <h2 class="profile-section-heading">
-        I miei locali <span class="profile-count">${venues.length}</span>
-      </h2>
-      <div class="profile-locali-list">
-        ${venues.map(v => `
-          <article class="profile-form-block profile-locale-card">
-            <div class="profile-locale-header">
-              <div>
-                <strong>${escapeHtml(v.name)}</strong>
-                <p class="profile-locale-meta">
-                  <i class="fa-solid fa-location-dot"></i> ${escapeHtml(v.city || '—')}
-                  &nbsp;·&nbsp;
-                  <i class="fa-solid fa-beer-mug-empty rating-icon rating-icon--filled"></i> ${escapeHtml(String(v.rating ?? '—'))}
-                </p>
-                ${v.address ? `<p class="profile-locale-meta"><i class="fa-solid fa-map-pin"></i> ${escapeHtml(v.address)}</p>` : ''}
-              </div>
-              <span class="profile-role-badge">${v.active ? 'Attivo' : 'Inattivo'}</span>
-            </div>
-            ${v.description ? `<p class="profile-locale-desc">${escapeHtml(v.description)}</p>` : ''}
-          </article>`).join('')}
-      </div>
-      <a href="owner-dashboard.html" class="profile-save-btn" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;text-decoration:none;">
-        <i class="fa-solid fa-gauge-high"></i> Gestisci dalla Dashboard
-      </a>`;
-  } catch (err) {
-    content.innerHTML = `<p class="dashboard-message">Errore: ${escapeHtml(err.message)}</p>`;
-  }
+function renderLocali() {
+  const container = document.getElementById('profile-content');
+  if (!container) return;
+  container.innerHTML = `
+        <div class="profile-section">
+            <h2 class="profile-section-heading">I miei locali</h2>
+            <p class="profile-section-desc">Gestisci i tuoi locali, aggiungi birre e aggiorna le informazioni.</p>
+            <a href="owner-dashboard.html" class="auth-submit" style="display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;margin-top:8px;">
+                <i class="fa-solid fa-gauge-high"></i> Vai alla dashboard
+            </a>
+        </div>`;
 }
-
 // ── Sezione: Amministrazione (ADMIN) → redirect diretto ───────
 function renderAdmin() {
   window.location.href = 'admin-dashboard.html';
@@ -449,7 +399,7 @@ if (user) {
     document.querySelector('[data-section="recensioni"]').classList.remove('hidden');
   }
   if (user.role === 'OWNER') {
-    document.querySelector('[data-section="locali"]').classList.remove('hidden');
+    document.getElementById('nav-locali-link')?.classList.remove('hidden');
   }
   if (user.role === 'ADMIN') {
     document.querySelector('[data-section="admin"]').classList.remove('hidden');

@@ -32,46 +32,42 @@ const DARK_STYLE = 'dark';
 
 const mapLayers = {
     [SIMPLIFIED_STYLE]: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '',
         subdomains: 'abcd',
         maxZoom: 20
     }),
     [SATELLITE_STYLE]: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+        attribution: '',
         maxZoom: 19
     }),
     [DARK_STYLE]: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '',
         subdomains: 'abcd',
         maxZoom: 20
     })
 };
 
 // Sincronizza il tile layer con il tema UI (chiamata da theme.js via callback).
-// Usa lastNonSatStyle per ricordare quale layer (dark/simplified) era attivo,
-// in modo che il toggle light<->dark funzioni anche dopo aver usato satellite.
 let lastNonSatStyle = SIMPLIFIED_STYLE;
 
 export function syncMapTheme() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const target = isDark ? DARK_STYLE : SIMPLIFIED_STYLE;
-    if (target === lastNonSatStyle) return; // nessun cambio necessario
 
-    // Rimuove il vecchio layer non-satellite (sia simplified che dark)
-    if (map.hasLayer(mapLayers[lastNonSatStyle])) {
-        map.removeLayer(mapLayers[lastNonSatStyle]);
-    }
-    // Aggiunge il nuovo layer tema; se siamo su satellite si sovrappone
-    // (non visibile, ma pronto quando l'utente torna a simplified)
-    // Aggiornamo solo lastNonSatStyle, non currentMapStyle
+    // Aggiorna sempre lastNonSatStyle (anche se siamo su satellite)
+    const prev = lastNonSatStyle;
     lastNonSatStyle = target;
 
-    // Se NON siamo su satellite, aggiorna anche currentMapStyle e mostra il layer
-    if (currentMapStyle !== SATELLITE_STYLE) {
-        mapLayers[target].addTo(map);
-        currentMapStyle = target;
-    }
-    // Se siamo su satellite: ricordiamo il target ma non cambiamo il layer visibile
+    // Se siamo su satellite non cambiare il layer visibile, solo memorizza
+    if (currentMapStyle === SATELLITE_STYLE) return;
+
+    // Nessun cambio visivo necessario
+    if (target === prev && map.hasLayer(mapLayers[target])) return;
+
+    // Rimuovi il vecchio layer tema e aggiungi il nuovo
+    if (map.hasLayer(mapLayers[prev])) map.removeLayer(mapLayers[prev]);
+    mapLayers[target].addTo(map);
+    currentMapStyle = target;
 }
 
 let currentMapStyle = localStorage.getItem(MAP_STYLE_STORAGE_KEY) === SATELLITE_STYLE
@@ -144,6 +140,7 @@ export function getMapBounds() {
 export function onMapMoveEnd(callback) {
     map.on('moveend', callback);
 }
+
 export function fitItaly(options = {}) {
     map.setView(ITALY_CENTER, ITALY_ZOOM, {animate: false, ...options});
 }

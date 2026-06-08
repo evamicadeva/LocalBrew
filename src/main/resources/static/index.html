@@ -18,7 +18,8 @@
 <div class="page-shell">
     <header class="header">
         <div class="logo-container">
-            <img src="assets/icons/full.png" alt="Logo Local Brew" class="logo">
+            <img src="assets/icons/full.png" alt="Logo Local Brew" class="logo logo-light">
+            <img src="assets/icons/logo-dark-mode.png" alt="Logo Local Brew" class="logo logo-dark">
             <div class="logo-text">
                 <span class="eyebrow">Mappa birraria italiana</span>
                 <p>Scopri locali, birre artigianali e pub vicino a te.</p>
@@ -37,7 +38,8 @@
             <div class="search-panel hidden" id="search-panel">
                 <h3>Cerca locale o birra</h3>
                 <div class="search-box">
-                    <button type="button" class="search-clear-btn" id="search-clear" aria-label="Cancella ricerca" title="Cancella">
+                    <button type="button" class="search-clear-btn" id="search-clear" aria-label="Cancella ricerca"
+                            title="Cancella">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -85,9 +87,18 @@
                 <p>Esplora i locali della tua zona e trova la birra perfetta.</p>
             </div>
 
+            <div class="card-search-island" id="card-search-island" role="search" aria-label="Ricerca locali">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="card-search-input" placeholder="Cerca locali, birre o citta">
+                <button type="button" class="card-search-clear hidden" id="card-search-clear"
+                        aria-label="Cancella ricerca">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
             <p class="venues-status" id="venues-status" aria-live="polite"></p>
             <div class="cards" id="venue-container"></div>
-            <button type="button" class="all-btn hidden">Vedi tutti i locali</button>
+            <button type="button" class="all-btn hidden">Vedi altri</button>
         </section>
 
         <aside class="right-section">

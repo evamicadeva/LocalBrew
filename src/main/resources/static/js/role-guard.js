@@ -17,6 +17,3 @@ export async function requireAnyRole(expectedRoles) {
   return user;
 }
 
-export function requireRole(expectedRole) {
-  return requireAnyRole(expectedRole);
-}

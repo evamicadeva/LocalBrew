@@ -1,26 +1,32 @@
 /* Contenitore generale: crea il blocco bianco al centro della pagina. */
 .page-shell {
-    max-width: calc(100vw - 32px);
     margin: auto;
-    border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: var(--shadow);
     background: var(--paper);
 }
 
 /* Griglia principale sotto la mappa: contenuto largo + colonna filtri. */
 .content {
+    width: min(100%, 1560px);
+    margin: 0 auto;
     display: grid;
     grid-template-columns:minmax(0, 1fr) 340px;
     gap: 34px;
     padding: 42px;
-    background: linear-gradient(180deg, var(--paper), var(--cream));
+    background: var(--paper);
     transition: background .3s;
 }
 
 /* Evita overflow nelle due colonne e definisce lo stile dei titoli di sezione. */
 .left-section, .right-section {
     min-width: 0
+}
+
+.right-section {
+    position: sticky;
+    top: 24px;
+    align-self: start;
 }
 
 .section-heading {
@@ -50,10 +56,8 @@
     }
 
     .right-section {
-        order: 1
-    }
-
-    .page-shell {
-        border-radius: 20px
+        order: 1;
+        position: static;
+        top: auto;
     }
 }

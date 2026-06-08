@@ -46,6 +46,18 @@ public class VenueDrinkServiceImpl implements VenueDrinkService {
     }
 
     @Override
+    public List<VenueDrinkResponse> findAllByManageableVenueId(UUID venueId) {
+        if (venueId == null) {
+            throw new IllegalArgumentException("Venue ID non puo essere null");
+        }
+
+        Venue venue = findVenueById(venueId);
+        ensureCanManageVenue(venue);
+
+        return venueDrinkRepository.findByVenueId(venueId).stream().map(this::toResponse).toList();
+    }
+
+    @Override
     public VenueDrinkResponse addDrinkToVenue(UUID venueId, VenueDrinkRequest request) {
         if (venueId == null) {
             throw new IllegalArgumentException("Venue ID non puo essere null");

@@ -10,6 +10,8 @@ public interface VenueDrinkService {
 
     List<VenueDrinkResponse> findAllByVenueId(UUID venueId);
 
+    List<VenueDrinkResponse> findAllByManageableVenueId(UUID venueId);
+
     VenueDrinkResponse addDrinkToVenue(UUID venueId, VenueDrinkRequest request);
 
     VenueDrinkResponse updateVenueDrink(UUID venueId, UUID drinkId, VenueDrinkRequest request);

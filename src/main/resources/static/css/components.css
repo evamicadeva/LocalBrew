@@ -1,5 +1,11 @@
 /* Header: logo a sinistra e pulsanti account a destra. */
+.page-shell {
+    --header-height: 91px;
+}
+
 .header {
+    --header-height: 91px;
+    min-height: var(--header-height);
     background: rgba(255, 255, 255, .92);
     padding: 18px 28px;
     display: flex;
@@ -18,8 +24,21 @@
 
 .logo {
     width: 150px;
-    height: auto;
-    object-fit: contain
+    height: 54px;
+    object-fit: contain;
+    flex: 0 0 150px;
+}
+
+.logo-dark {
+    display: none;
+}
+
+[data-theme="dark"] .logo-light {
+    display: none;
+}
+
+[data-theme="dark"] .logo-dark {
+    display: block;
 }
 
 .logo-text p {
@@ -77,9 +96,9 @@
 }
 
 .register {
-    min-height: 51px;
     background: linear-gradient(135deg, var(--amber), var(--amber-2));
     color: #2d1900;
+    font-weight: 800;
 }
 
 .btn:hover {
@@ -140,7 +159,12 @@
 
 /* Layout compatto su mobile. */
 @media (max-width: 760px) {
+    .page-shell {
+        --header-height: 176px;
+    }
+
     .header {
+        --header-height: 176px;
         flex-direction: column;
         align-items: flex-start
     }
@@ -177,7 +201,8 @@
 
 /* ── Bottoni nav header (index + pagine interne) ── */
 .btn-map {
-    background: linear-gradient(135deg, var(--green), var(--green-2));
+    background: linear-gradient(135deg, #0d7a6e, #12a094);
+    border: none;
     color: #fff;
     display: inline-flex;
     align-items: center;
@@ -197,8 +222,8 @@
 .btn-dashboard:hover { filter: brightness(1.06); transform: translateY(-2px); }
 
 .btn-logout {
-    background: #9c2d1f;
-    color: #fff;
+    background: var(--logout-bg);
+    color: var(--logout-text);
     border: none;
     display: inline-flex;
     align-items: center;
@@ -206,7 +231,11 @@
     cursor: pointer;
     font-family: inherit;
 }
-.btn-logout:hover { background: #7a2218; transform: translateY(-2px); }
+.btn-logout:hover {
+    background: var(--logout-bg-hover);
+    color: var(--logout-text);
+    transform: translateY(-2px);
+}
 
 /* Bottone Profilo — stesso stile di .login (bianco con bordo) */
 .profile-btn {
