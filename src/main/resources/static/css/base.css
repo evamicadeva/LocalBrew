@@ -233,6 +233,14 @@ a {
     background: rgba(232,160,150,.2);
     border-color: rgba(232,160,150,.45);
     color: #f4c7c0;
+
+/* btn-dashboard / btn-map / btn-logout: mantengono il loro colore in dark mode */
+[data-theme="dark"] .btn-dashboard,
+[data-theme="dark"] .btn-dashboard:hover { background: linear-gradient(135deg, var(--amber), var(--amber-2)); color: #2d1900; }
+[data-theme="dark"] .btn-map,
+[data-theme="dark"] .btn-map:hover { background: linear-gradient(135deg, var(--green), var(--green-2)); color: #fff; }
+[data-theme="dark"] .btn-logout,
+[data-theme="dark"] .btn-logout:hover { background: #9c2d1f; color: #fff; }
 }
 [data-theme="dark"] .danger-button,
 [data-theme="dark"] .profile-delete-btn {
@@ -313,3 +321,200 @@ a {
 
 [data-theme="dark"] .theme-toggle-floating       { background: var(--surface); color: var(--amber-2); border-color: var(--line); box-shadow: 0 8px 22px rgba(0,0,0,.4); }
 [data-theme="dark"] .theme-toggle-floating:hover { background: var(--surface-2); }
+
+/* ── Password wrap nel profilo ── */
+.profile-pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.profile-pw-wrap input {
+  width: 100%;
+  padding-right: 40px;
+}
+.profile-pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted, #888);
+  font-size: 16px;
+  padding: 4px;
+  line-height: 1;
+  transition: color .18s;
+  z-index: 1;
+}
+.profile-pw-toggle:hover { color: var(--green); }
+
+[data-theme="dark"] .profile-pw-toggle { color: var(--muted); }
+[data-theme="dark"] .profile-pw-toggle:hover { color: var(--green); }
+
+/* ── Card fuori dal viewport mappa ── */
+.card-out-of-view {
+    display: none;
+}
+/* Quando c'è un filtro testo attivo, ignora l'out-of-view */
+#venue-container.is-filtering .card-out-of-view {
+    display: block;
+}
+
+
+/* ── Admin tabs ── */
+.admin-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 22px;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 0;
+}
+
+.admin-tab {
+    padding: 9px 20px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+    border-radius: 0;
+}
+
+.admin-tab:hover { color: var(--green); }
+
+.admin-tab--active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+}
+
+.admin-tab-panel.hidden { display: none; }
+
+/* ── Admin drinks panel ── */
+.admin-drinks-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.admin-drink-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+
+.admin-drink-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.admin-drink-thumb--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    color: var(--green);
+    font-size: 22px;
+}
+
+.admin-drink-info { flex: 1; min-width: 0; }
+
+.admin-drink-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.admin-drink-name { font-size: 14px; }
+
+.admin-drink-abv {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--cream);
+    padding: 2px 7px;
+    border-radius: 20px;
+}
+
+.admin-drink-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-drink-venues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.admin-drink-venue-pill {
+    background: var(--cream);
+    color: var(--green);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .admin-drink-card { background: #2e2010; border-color: var(--line); }
+[data-theme="dark"] .admin-drink-thumb--placeholder { background: #3d2c14; }
+[data-theme="dark"] .admin-drink-abv { background: #3d2c14; }
+[data-theme="dark"] .admin-drink-venue-pill { background: #3d2c14; border-color: var(--line); }
+
+/* ── Footer semplificato ── */
+.footer-team {
+    font-size: .82rem;
+    color: var(--muted);
+    margin: 0;
+}
+.footer-team a {
+    color: var(--green);
+    text-decoration: none;
+    font-weight: 700;
+}
+.footer-team a:hover { text-decoration: underline; }
+[data-theme="dark"] .footer-team { color: rgba(244,247,239,.4); }
+[data-theme="dark"] .footer-team a { color: var(--green); }
+
+/* ── Search X button ── */
+.search-clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 15px;
+    padding: 4px 6px;
+    line-height: 1;
+    transition: color .15s;
+    z-index: 1;
+}
+.search-clear-btn:hover { color: var(--text); }
+.search-box { position: relative; }

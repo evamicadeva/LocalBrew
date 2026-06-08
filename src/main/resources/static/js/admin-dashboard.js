@@ -4,9 +4,13 @@ import {
   deleteVenue,
   deleteVenueReview,
   getAdminVenues,
+  getVenueDrinks,
   getVenueReviews,
+  getDrinks,
   suspendVenue,
-  uploadDrinkImage
+  uploadDrinkImage,
+  updateDrink,
+  deleteDrink
 } from './api.js';
 import './logout.js';
 import {confirmAction, showToast} from './feedback.js';
@@ -62,9 +66,9 @@ function closeDrawer() {
     document.body.style.overflow = '';
 }
 
-openDrawerBtn.addEventListener('click', openDrawer);
-closeDrawerBtn.addEventListener('click', closeDrawer);
-overlay.addEventListener('click', closeDrawer);
+openDrawerBtn?.addEventListener('click', openDrawer);
+closeDrawerBtn?.addEventListener('click', closeDrawer);
+overlay?.addEventListener('click', closeDrawer);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
 
 // ── Upload helpers ───────────────────────────────────────────
@@ -165,8 +169,14 @@ function renderVenues(venues) {
 
 // ── Caricamento ───────────────────────────────────────────────
 async function loadVenues() {
+    if (!container) return;
     container.innerHTML = '<p class="dashboard-message">Caricamento locali...</p>';
-    adminVenues = await getAdminVenues();
+    try {
+        adminVenues = await getAdminVenues();
+    } catch (err) {
+        container.innerHTML = `<p class="dashboard-message">Errore caricamento locali: ${escapeHtml(err.message)}</p>`;
+        return;
+    }
 
     await Promise.allSettled(adminVenues.map(async v => {
         try {
@@ -374,4 +384,174 @@ if (user) {
             button.disabled = false;
         }
     });
+}
+
+// Tab switching
+const tabButtons  = document.querySelectorAll('.admin-tab');
+const tabPanelMap = { venues: document.getElementById('admin-tab-venues'), drinks: document.getElementById('admin-tab-drinks') };
+
+tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        tabButtons.forEach(b => { b.classList.remove('admin-tab--active'); b.setAttribute('aria-selected', 'false'); });
+        btn.classList.add('admin-tab--active');
+        btn.setAttribute('aria-selected', 'true');
+        const tab = btn.dataset.tab;
+        Object.entries(tabPanelMap).forEach(([key, panel]) => {
+            if (panel) panel.classList.toggle('hidden', key !== tab);
+        });
+        if (tab === 'drinks') renderDrinksTab();
+    });
+});
+
+// Drinks tab
+let drinksCache    = null;
+let drinkVenueMap  = null; // Map<drinkId, [{id, name}]>
+let activeDrinkCat = '';
+
+const drinksList  = document.getElementById('admin-drinks-list');
+const drinkSearch = document.getElementById('admin-drink-search');
+const catPills    = document.querySelectorAll('[data-category]');
+
+catPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+        catPills.forEach(p => p.classList.remove('admin-status-pill--active'));
+        pill.classList.add('admin-status-pill--active');
+        activeDrinkCat = pill.dataset.category;
+        applyDrinkFilters();
+    });
+});
+
+drinkSearch?.addEventListener('input', applyDrinkFilters);
+
+function applyDrinkFilters() {
+    if (!drinksCache) return;
+    const q   = (drinkSearch?.value || '').toLowerCase().trim();
+    const cat = activeDrinkCat;
+    const filtered = drinksCache.filter(d => {
+        const matchCat  = !cat || (d.category || '').toUpperCase() === cat.toUpperCase();
+        const matchText = !q   || [d.name, d.description, d.category].join(' ').toLowerCase().includes(q);
+        return matchCat && matchText;
+    });
+    renderDrinkCards(filtered);
+}
+
+function renderDrinkCards(drinks) {
+    if (!drinks.length) {
+        drinksList.innerHTML = '<p class="dashboard-message">Nessun drink trovato.</p>';
+        return;
+    }
+    drinksList.innerHTML = '<div class="admin-drinks-grid">' + drinks.map(d => {
+        const count = (drinkVenueMap && drinkVenueMap.get(String(d.id))) || 0;
+        const venueLabel = count === 0 ? 'Nessun locale' : `Presente in ${count} locale${count === 1 ? '' : 'i'}`;
+        return `
+        <article class="admin-drink-card" data-id="${escapeHtml(String(d.id))}">
+            ${d.imageUri ? `<img class="admin-drink-img" src="${escapeHtml(d.imageUri)}" alt="${escapeHtml(d.name)}">` : '<div class="admin-drink-img admin-drink-img--placeholder"><i class="fa-solid fa-beer-mug-empty"></i></div>'}
+            <div class="admin-drink-body">
+                <div class="admin-drink-header">
+                    <strong>${escapeHtml(d.name)}</strong>
+                    <span class="admin-drink-badge">${escapeHtml(d.category || '-')}</span>
+                </div>
+                ${d.description ? `<p class="admin-drink-desc">${escapeHtml(d.description)}</p>` : ''}
+                <div class="admin-drink-meta">
+                    ${d.abv != null ? `<span><i class="fa-solid fa-percent"></i> ${escapeHtml(String(d.abv))} ABV</span>` : ''}
+                    <span class="admin-drink-venue-count"><i class="fa-solid fa-store"></i> ${venueLabel}</span>
+                </div>
+                <div class="admin-drink-actions">
+                    <button type="button" class="secondary-button drink-edit-btn"><i class="fa-solid fa-pen"></i> Modifica</button>
+                    <button type="button" class="danger-button drink-delete-btn"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div class="admin-drink-edit-form hidden">
+                    <label class="admin-edit-label">Nome</label>
+                    <input class="edit-drink-name admin-search-input" type="text" value="${escapeHtml(d.name)}" maxlength="100">
+                    <label class="admin-edit-label">Descrizione</label>
+                    <textarea class="edit-drink-description admin-search-input" rows="2" maxlength="300">${escapeHtml(d.description || '')}</textarea>
+                    <label class="admin-edit-label">Categoria</label>
+                    <select class="edit-drink-category admin-search-input">
+                        ${['IPA','LAGER','STOUT','ALE','WHEAT','SOUR'].map(cat =>
+                            `<option value="${cat}"${d.category === cat ? ' selected' : ''}>${cat}</option>`
+                        ).join('')}
+                    </select>
+                    <label class="admin-edit-label">ABV</label>
+                    <input class="edit-drink-abv admin-search-input" type="number" step="0.1" min="0" max="100" value="${d.abv != null ? escapeHtml(String(d.abv)) : ''}">
+                    <div class="admin-drink-edit-actions">
+                        <button type="button" class="profile-save-btn drink-save-btn"><i class="fa-solid fa-check"></i> Salva</button>
+                        <button type="button" class="secondary-button drink-cancel-btn">Annulla</button>
+                    </div>
+                    <p class="profile-form-msg drink-edit-msg" aria-live="polite"></p>
+                </div>
+            </div>
+        </article>`;
+    }).join('') + '</div>';
+}
+
+drinksList?.addEventListener('click', async e => {
+    const card = e.target.closest('.admin-drink-card');
+    if (!card) return;
+    const id = card.dataset.id;
+    const form = card.querySelector('.admin-drink-edit-form');
+    const editBtn = card.querySelector('.drink-edit-btn');
+
+    if (e.target.closest('.drink-edit-btn')) {
+        const isOpen = !form.classList.contains('hidden');
+        form.classList.toggle('hidden', isOpen);
+        editBtn.innerHTML = isOpen ? '<i class="fa-solid fa-pen"></i> Modifica' : '<i class="fa-solid fa-xmark"></i> Chiudi';
+        return;
+    }
+    if (e.target.closest('.drink-cancel-btn')) {
+        form.classList.add('hidden');
+        editBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Modifica';
+        return;
+    }
+    if (e.target.closest('.drink-save-btn')) {
+        const msgEl = form.querySelector('.drink-edit-msg');
+        const name  = form.querySelector('.edit-drink-name').value.trim();
+        const desc  = form.querySelector('.edit-drink-description').value.trim();
+        const cat   = form.querySelector('.edit-drink-category').value;
+        const abv   = form.querySelector('.edit-drink-abv').value;
+        if (!name) { msgEl.textContent = 'Nome obbligatorio.'; return; }
+        msgEl.textContent = 'Salvataggio...';
+        try {
+            const updated = await updateDrink(id, { name, description: desc || null, category: cat, abv: abv !== '' ? Number(abv) : null });
+            const idx = drinksCache.findIndex(d => String(d.id) === String(id));
+            if (idx >= 0) drinksCache[idx] = updated;
+            showToast('Drink aggiornato.');
+            applyDrinkFilters();
+        } catch (err) { msgEl.textContent = err.message; }
+        return;
+    }
+    if (e.target.closest('.drink-delete-btn')) {
+        const confirmed = await confirmAction({ title: 'Eliminare il drink?', message: 'Azione non reversibile.', confirmText: 'Elimina', danger: true });
+        if (!confirmed) return;
+        try {
+            await deleteDrink(id);
+            drinksCache = drinksCache.filter(d => String(d.id) !== String(id));
+            showToast('Drink eliminato.');
+            applyDrinkFilters();
+        } catch (err) { showToast(err.message, 'error'); }
+    }
+});
+
+async function renderDrinksTab() {
+    drinksList.innerHTML = '<p class="dashboard-message">Caricamento drink...</p>';
+    try {
+        if (!drinksCache) {
+            // Carica drink globali e tutti i locali admin in parallelo
+            const [drinks, venues] = await Promise.all([getDrinks(), getAdminVenues()]);
+            drinksCache = drinks;
+
+            // Per ogni locale, carica i suoi drink e costruisce drink->locali
+            // VenueDrinkResponse ha campo drinkId che corrisponde a DrinkResponse.id
+            const countMap = new Map();
+            await Promise.all(venues.map(async v => {
+                try {
+                    const vd = await getVenueDrinks(v.id);
+                    vd.forEach(d => { const k = String(d.drinkId); countMap.set(k, (countMap.get(k) || 0) + 1); });
+                } catch { /* nessun drink */ }
+            }));
+            drinkVenueMap = countMap;
+        }
+        applyDrinkFilters();
+    } catch (err) {
+        drinksList.innerHTML = `<p class="dashboard-message">Errore: ${escapeHtml(err.message)}</p>`;
+    }
 }

@@ -174,3 +174,48 @@
         flex: 1
     }
 }
+
+/* ── Bottoni nav header (index + pagine interne) ── */
+.btn-map {
+    background: linear-gradient(135deg, var(--green), var(--green-2));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+}
+.btn-map:hover { filter: brightness(1.08); transform: translateY(-2px); }
+
+.btn-dashboard {
+    background: linear-gradient(135deg, var(--amber), var(--amber-2));
+    color: #2d1900;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+}
+.btn-dashboard:hover { filter: brightness(1.06); transform: translateY(-2px); }
+
+.btn-logout {
+    background: #9c2d1f;
+    color: #fff;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.btn-logout:hover { background: #7a2218; transform: translateY(-2px); }
+
+/* Bottone Profilo — stesso stile di .login (bianco con bordo) */
+.profile-btn {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--green);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+}
+.profile-btn:hover { transform: translateY(-2px); }

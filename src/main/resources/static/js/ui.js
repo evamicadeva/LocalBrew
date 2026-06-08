@@ -1,5 +1,5 @@
 import { applyFilters } from './filters.js';
-import { fitItaly, map } from './map.js';
+import { fitItaly, map, getMapBounds, onMapMoveEnd } from './map.js';
 import { markers, markersCluster } from './markers.js';
 import { escapeHtml } from './utils.js';
 import { getFavorites, toggleFavorite } from './favorites.js';
@@ -11,18 +11,7 @@ import { showToast } from './feedback.js';
 const INITIAL_VISIBLE_CARDS = 3;
 let showAllVenues = false;
 
-function updateCardsVisibility() {
-  const container = document.getElementById('venue-container');
-  const allButton = document.querySelector('.all-btn');
 
-  if (!container || !allButton) return;
-
-  const hasExtraCards = container.querySelectorAll('.card').length > INITIAL_VISIBLE_CARDS;
-
-  container.classList.toggle('is-expanded', showAllVenues);
-  allButton.classList.toggle('hidden', !hasExtraCards);
-  allButton.textContent = showAllVenues ? 'Mostra meno locali' : 'Vedi tutti i locali';
-}
 
 function googleMapsUrl(pub) {
   const lat = Number(pub.lat);
@@ -51,7 +40,6 @@ function renderCards(pubs, favorites) {
     const mapsUrl = escapeHtml(googleMapsUrl(pub));
     const isFavorite = favorites.includes(id);
 
-    // Le card dopo la terza vengono nascoste finche l'utente non apre la lista.
     const extraClass = index >= INITIAL_VISIBLE_CARDS ? 'card-extra' : '';
 
     const tags = String(pub.beers ?? '')
@@ -182,6 +170,12 @@ function renderFavoritesList(pubs, favoriteIds) {
 }
 
 
+function updateCardsVisibility() {
+  const container = document.getElementById('venue-container');
+  if (!container) return;
+  container.classList.toggle('is-expanded', showAllVenues);
+}
+
 export async function initUI(pubs) {
   let favoriteIds = await getFavorites();
   let showFavoritesOnly = false;
@@ -192,6 +186,8 @@ export async function initUI(pubs) {
 
   renderCards(pubs, favoriteIds);
   updateCardsVisibility();
+  // Dopo il primo render, sincronizza con la vista mappa corrente
+  setTimeout(syncCardsToMapView, 600);
 
   const searchInput     = document.getElementById('searchInput');
   const searchPanel     = document.getElementById('search-panel');
@@ -240,8 +236,107 @@ export async function initUI(pubs) {
   }
 
   if (searchInput) {
-    searchInput.addEventListener('input', applyCurrentFilters);
+    searchInput.addEventListener('input', () => {
+      applyCurrentFilters();
+      const q = searchInput.value.trim().toLowerCase();
+      if (q.length >= 3) {
+        const container = document.getElementById('venue-container');
+        // Espandi sempre la lista quando c'è una ricerca attiva
+        container?.classList.add('is-expanded');
+
+        const matched = pubs.filter((pub, index) => {
+          const card = document.querySelector(`.card[data-index="${index}"]`);
+          return card && !card.classList.contains('is-filtered-out');
+        });
+        if (matched.length) {
+          const coords = matched
+            .filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+            .map(p => [p.lat, p.lng]);
+          if (coords.length) {
+            map.fitBounds(L.latLngBounds(coords).pad(0.3), { animate: true, maxZoom: 13 });
+            setTimeout(syncCardsToMapView, 400);
+          }
+        }
+      } else if (q.length === 0) {
+        document.querySelectorAll('.card').forEach(card => {
+          card.style.display = '';
+          card.classList.remove('card-out-of-view');
+        });
+        // Ripristina la paginazione normale quando la ricerca è vuota
+        updateCardsVisibility();
+        syncCardsToMapView();
+      }
+    });
   }
+
+  // Aggiorna le card in base ai bounds della mappa.
+  // Se c'è una ricerca testo attiva, NON nasconde le card fuori-bounds
+  // (la ricerca deve mostrare tutti i risultati matching, non solo quelli in-view).
+  // Lo zoom manuale invece nasconde le card fuori-view.
+  function syncCardsToMapView() {
+    const bounds = getMapBounds();
+    if (!bounds) return;
+
+    const searchInput = document.getElementById('searchInput');
+    const hasTextSearch = (searchInput?.value || '').trim().length > 0;
+    const hasCheckbox = Array.from(document.querySelectorAll('.filter-option input'))
+      .some(b => b.checked);
+
+    // Se filtro testo o checkbox attivo: ripristina display inline su tutte le card
+    // (la visibilità è gestita solo da is-filtered-out via CSS)
+    if (hasTextSearch || hasCheckbox) {
+      pubs.forEach((_, index) => {
+        const card = document.querySelector(`.card[data-index="${index}"]`);
+        if (card) card.style.display = '';
+      });
+      updateAllBtnVisibility();
+      return;
+    }
+
+    // Zoom manuale senza filtri: mostra solo card in-view
+    const container = document.getElementById('venue-container');
+    let anyInView = false;
+
+    pubs.forEach((pub, index) => {
+      const card = document.querySelector(`.card[data-index="${index}"]`);
+      if (!card) return;
+
+      if (card.classList.contains('is-filtered-out')) {
+        card.style.display = '';
+        return;
+      }
+
+      const inView = bounds.contains([pub.lat, pub.lng]);
+      // style.display batte card-extra CSS solo se è esplicito
+      card.style.display = inView ? '' : 'none';
+      card.classList.toggle('card-out-of-view', !inView);
+      if (inView) anyInView = true;
+    });
+
+    // Se ci sono card in-view, espandi la lista per mostrare anche le card-extra in-view
+    if (anyInView && container) {
+      container.classList.add('is-expanded');
+    } else if (container) {
+      container.classList.remove('is-expanded');
+    }
+
+    updateAllBtnVisibility();
+  }
+
+  function updateAllBtnVisibility() {
+    const allButton = document.querySelector('.all-btn');
+    if (!allButton) return;
+    // Conta card in-view e non filtrate che hanno ancora card-extra
+    const inViewCards = Array.from(document.querySelectorAll('.card'))
+      .filter(card => !card.classList.contains('is-filtered-out') && card.style.display !== 'none');
+    const hiddenExtra = inViewCards.filter(card => card.classList.contains('card-extra') && !showAllVenues);
+    allButton.classList.toggle('hidden', hiddenExtra.length === 0);
+    allButton.textContent = showAllVenues ? 'Mostra meno locali' : 'Vedi tutti i locali';
+  }
+
+  onMapMoveEnd(syncCardsToMapView);
+  // Aggiorna il pulsante "Vedi tutti" all'avvio
+  setTimeout(updateAllBtnVisibility, 0);
 
   if (favoritesButton && getToken()) {
     favoritesButton.classList.remove('hidden');
@@ -283,7 +378,17 @@ export async function initUI(pubs) {
 
   // Ogni cambio dei filtri aggiorna insieme card e marker.
   beerCheckboxes.forEach(box => {
-    box.addEventListener('change', applyCurrentFilters);
+    box.addEventListener('change', () => {
+      applyCurrentFilters();
+      const anyChecked = Array.from(beerCheckboxes).some(b => b.checked);
+      const container = document.getElementById('venue-container');
+      if (anyChecked) {
+        container?.classList.add('is-expanded');
+      } else {
+        // Nessun filtro attivo: torna alla paginazione normale
+        updateCardsVisibility();
+      }
+    });
   });
 
   document.getElementById('btn-reset').addEventListener('click', () => {
@@ -291,8 +396,14 @@ export async function initUI(pubs) {
     searchInput.value = '';
     beerCheckboxes.forEach(box => box.checked = false);
     showFavoritesOnly = false;
+    showAllVenues = false;
     closeFavoritesPanel();
+    document.querySelectorAll('.card').forEach(card => {
+      card.style.display = '';
+      card.classList.remove('card-out-of-view');
+    });
     applyCurrentFilters();
+    updateCardsVisibility();
   });
 
   document.addEventListener('click', async event => {
@@ -370,10 +481,24 @@ export async function initUI(pubs) {
 
   searchButton?.addEventListener('click', () => {
     const shouldOpen = searchPanel.classList.contains('hidden');
-
     searchPanel.classList.toggle('hidden', !shouldOpen);
     searchButton.classList.toggle('active', shouldOpen);
     closeFavoritesPanel();
+  });
+
+  // X per cancellare e chiudere la ricerca
+  document.getElementById('search-clear')?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    searchPanel.classList.add('hidden');
+    searchButton?.classList.remove('active');
+    document.querySelectorAll('.card').forEach(card => {
+      card.style.display = '';
+      card.classList.remove('card-out-of-view');
+    });
+    document.getElementById('venue-container')?.classList.remove('is-expanded');
+    applyCurrentFilters();
+    updateCardsVisibility();
+    setTimeout(syncCardsToMapView, 100);
   });
 
   document.addEventListener('click', event => {
@@ -399,8 +524,9 @@ export async function initUI(pubs) {
   });
 
   // aggiorna le card per aagiungerne altre
-  document.querySelector('.all-btn').addEventListener('click', () => {
+  document.querySelector('.all-btn')?.addEventListener('click', () => {
     showAllVenues = !showAllVenues;
     updateCardsVisibility();
+    syncCardsToMapView();
   });
 }

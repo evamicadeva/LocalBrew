@@ -43,8 +43,8 @@ async function updateHeaderAuth() {
     <a class="btn profile-btn" href="pages/profile.html">
       <i class="fa-solid fa-user"></i> Profilo
     </a>
-    ${dashboardLink ? `<a class="btn register" href="${dashboardLink}">Dashboard</a>` : ''}
-    <button type="button" class="btn login" id="logout-button">Esci</button>
+    ${dashboardLink ? `<a class="btn btn-dashboard" href="${dashboardLink}"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>` : ''}
+    <button type="button" class="btn btn-logout" id="logout-button"><i class="fa-solid fa-right-from-bracket"></i> Esci</button>
   `;
 
   document.getElementById('logout-button').addEventListener('click', () => {

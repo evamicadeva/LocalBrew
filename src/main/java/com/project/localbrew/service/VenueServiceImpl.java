@@ -293,6 +293,14 @@ public class VenueServiceImpl implements VenueService {
     }
 
     private VenueResponse toResponse(Venue venue) {
+        String ownerUsername = null;
+        try {
+            if (venue.getOwner() != null) {
+                ownerUsername = venue.getOwner().getUsername();
+            }
+        } catch (Exception ignored) {
+            // LazyInitializationException o owner non disponibile
+        }
         return VenueResponse.builder()
                 .id(venue.getId())
                 .name(venue.getName())
@@ -304,7 +312,7 @@ public class VenueServiceImpl implements VenueService {
                 .type(venue.getType())
                 .status(venue.getStatus())
                 .createdAt(venue.getCreatedAt())
-                .ownerUsername(venue.getOwner().getUsername())
+                .ownerUsername(ownerUsername)
                 .imageUri(venue.getImageUri())
                 .build();
     }

@@ -288,3 +288,18 @@ export async function uploadDrinkImage(file) {
   if (!response.ok) throw new Error(data?.message || `Errore ${response.status}`);
   return data.url;
 }
+
+export function updateDrink(id, drink) {
+  return apiRequest(`/api/v1/owner/drinks/${id}`, {
+    method: 'PUT',
+    auth: true,
+    body: drink
+  });
+}
+
+export function deleteDrink(id) {
+  return apiRequest(`/api/v1/owner/drinks/${id}`, {
+    method: 'DELETE',
+    auth: true
+  });
+}

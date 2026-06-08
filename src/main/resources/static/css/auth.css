@@ -246,7 +246,9 @@
     text-decoration: none;
     white-space: nowrap;
     box-sizing: border-box;
+    transition: .2s;
 }
+
 
 #venue-cancel {
     margin-top: 18px;
@@ -885,15 +887,18 @@
 }
 
 .dashboard-logout-button {
-    border: 1px solid #efc8bd;
-    background: #fff5f1;
-    color: #9c2d1f;
+    background: #9c2d1f;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
     cursor: pointer;
     font-family: inherit;
+    transition: .2s;
 }
 
 .dashboard-logout-button:hover {
-    background: #ffe7df;
+    background: #7a2218;
+    transform: translateY(-2px);
 }
 
 /* ── Ricerca locale ───────────────────────────────────────── */
@@ -1524,6 +1529,8 @@
 .pw-toggle {
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
@@ -1535,3 +1542,157 @@
 }
 
 .pw-toggle:hover { color: var(--green); }
+
+/* ── I miei locali (profilo owner) ── */
+.profile-locali-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-locale-card {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.profile-locale-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.profile-locale-meta {
+  font-size: .85rem;
+  color: var(--muted);
+  margin: .25rem 0 0;
+}
+
+.profile-locale-desc {
+  font-size: .875rem;
+  color: var(--muted);
+  margin: .25rem 0 0;
+  line-height: 1.5;
+}
+
+/* ── Admin drinks tab ── */
+#admin-drinks-list {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  /* Scrollbar sottile */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+#admin-drinks-list::-webkit-scrollbar { width: 6px; }
+#admin-drinks-list::-webkit-scrollbar-track { background: transparent; }
+#admin-drinks-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+.admin-drinks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: .5rem 0;
+}
+
+.admin-drink-card {
+  border: 1px solid var(--line, #e0e0e0);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper, #fff);
+}
+
+.admin-drink-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.admin-drink-img--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface, #f5f5f5);
+  color: var(--muted, #999);
+  font-size: 2rem;
+}
+
+.admin-drink-body {
+  padding: .85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  flex: 1;
+}
+
+.admin-drink-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.admin-drink-badge {
+  font-size: .72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--accent-soft, #f0f0e8);
+  color: var(--amber, #b58000);
+  white-space: nowrap;
+}
+
+.admin-drink-desc {
+  font-size: .82rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.admin-drink-meta {
+  display: flex;
+  gap: .75rem;
+  font-size: .78rem;
+  color: var(--muted);
+}
+
+.admin-drink-venues {
+  margin-top: auto;
+  padding-top: .5rem;
+  border-top: 1px solid var(--line, #eee);
+}
+
+.admin-drink-venues-label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 0 .35rem;
+}
+
+.admin-drink-venue-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+
+.admin-drink-venue-chip {
+  font-size: .72rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--surface, #f5f5f5);
+  color: var(--text);
+  border: 1px solid var(--line, #e0e0e0);
+}
+
+.admin-drink-venue-chip--none {
+  color: var(--muted);
+  font-style: italic;
+}
+
+[data-theme="dark"] .admin-drink-card     { background: var(--surface); border-color: var(--line); }
+[data-theme="dark"] .admin-drink-img--placeholder { background: var(--surface-2); }
+[data-theme="dark"] .admin-drink-venues   { border-color: var(--line); }
+[data-theme="dark"] .admin-drink-venue-chip { background: var(--surface-2); border-color: var(--line); }

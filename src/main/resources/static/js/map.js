@@ -48,15 +48,30 @@ const mapLayers = {
 };
 
 // Sincronizza il tile layer con il tema UI (chiamata da theme.js via callback).
+// Usa lastNonSatStyle per ricordare quale layer (dark/simplified) era attivo,
+// in modo che il toggle light<->dark funzioni anche dopo aver usato satellite.
+let lastNonSatStyle = SIMPLIFIED_STYLE;
+
 export function syncMapTheme() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    // Se siamo già su satellite non sovrascriviamo la scelta dell'utente.
-    if (currentMapStyle === SATELLITE_STYLE) return;
     const target = isDark ? DARK_STYLE : SIMPLIFIED_STYLE;
-    if (target === currentMapStyle) return;
-    map.removeLayer(mapLayers[currentMapStyle]);
-    mapLayers[target].addTo(map);
-    currentMapStyle = target;
+    if (target === lastNonSatStyle) return; // nessun cambio necessario
+
+    // Rimuove il vecchio layer non-satellite (sia simplified che dark)
+    if (map.hasLayer(mapLayers[lastNonSatStyle])) {
+        map.removeLayer(mapLayers[lastNonSatStyle]);
+    }
+    // Aggiunge il nuovo layer tema; se siamo su satellite si sovrappone
+    // (non visibile, ma pronto quando l'utente torna a simplified)
+    // Aggiornamo solo lastNonSatStyle, non currentMapStyle
+    lastNonSatStyle = target;
+
+    // Se NON siamo su satellite, aggiorna anche currentMapStyle e mostra il layer
+    if (currentMapStyle !== SATELLITE_STYLE) {
+        mapLayers[target].addTo(map);
+        currentMapStyle = target;
+    }
+    // Se siamo su satellite: ricordiamo il target ma non cambiamo il layer visibile
 }
 
 let currentMapStyle = localStorage.getItem(MAP_STYLE_STORAGE_KEY) === SATELLITE_STYLE
@@ -70,7 +85,7 @@ function updateMapStyleButton(button) {
     const icon = button.querySelector('i');
     const label = button.querySelector('span');
 
-    button.classList.toggle('active', isSatellite);
+    button.classList.remove('active');
     button.setAttribute('aria-pressed', String(isSatellite));
     button.setAttribute(
         'aria-label',
@@ -82,7 +97,7 @@ function updateMapStyleButton(button) {
     }
 
     if (label) {
-        label.textContent = isSatellite ? 'Semplice' : 'Satellite';
+        label.textContent = isSatellite ? 'Mappa' : 'Satellite';
     }
 }
 
@@ -90,9 +105,21 @@ function setMapStyle(nextStyle) {
     if (nextStyle === currentMapStyle || !mapLayers[nextStyle]) return;
 
     map.removeLayer(mapLayers[currentMapStyle]);
-    mapLayers[nextStyle].addTo(map);
-    currentMapStyle = nextStyle;
-    localStorage.setItem(MAP_STYLE_STORAGE_KEY, currentMapStyle);
+
+    // Se stiamo uscendo dal satellite, ripristina il layer tema corretto
+    // (dark o simplified) invece di tornare sempre a simplified
+    const actualTarget = (nextStyle === SIMPLIFIED_STYLE)
+        ? lastNonSatStyle
+        : nextStyle;
+
+    mapLayers[actualTarget].addTo(map);
+    currentMapStyle = actualTarget;
+    // In localStorage salviamo solo se satellite, altrimenti puliamo
+    if (actualTarget === SATELLITE_STYLE) {
+        localStorage.setItem(MAP_STYLE_STORAGE_KEY, SATELLITE_STYLE);
+    } else {
+        localStorage.removeItem(MAP_STYLE_STORAGE_KEY);
+    }
 }
 
 function initMapStyleToggle() {
@@ -107,6 +134,16 @@ function initMapStyleToggle() {
     });
 }
 
+
+// Restituisce i bounds attuali della mappa (usato per filtrare le card).
+export function getMapBounds() {
+    return map.getBounds();
+}
+
+// Registra un listener sul moveend per aggiornare le card quando la mappa si sposta.
+export function onMapMoveEnd(callback) {
+    map.on('moveend', callback);
+}
 export function fitItaly(options = {}) {
     map.setView(ITALY_CENTER, ITALY_ZOOM, {animate: false, ...options});
 }

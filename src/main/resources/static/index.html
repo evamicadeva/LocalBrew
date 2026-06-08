@@ -37,6 +37,9 @@
             <div class="search-panel hidden" id="search-panel">
                 <h3>Cerca locale o birra</h3>
                 <div class="search-box">
+                    <button type="button" class="search-clear-btn" id="search-clear" aria-label="Cancella ricerca" title="Cancella">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="searchInput" placeholder="Cerca locale, birra, città…">
                 </div>
@@ -84,7 +87,7 @@
 
             <p class="venues-status" id="venues-status" aria-live="polite"></p>
             <div class="cards" id="venue-container"></div>
-            <button type="button" class="all-btn">Vedi tutti i locali</button>
+            <button type="button" class="all-btn hidden">Vedi tutti i locali</button>
         </section>
 
         <aside class="right-section">
@@ -115,12 +118,13 @@
     </section>
 
     <footer class="footer">
-        <div class="footer-brand">
-            <img src="assets/icons/full.png" alt="Local Brew" class="footer-logo">
-            <p class="footer-tagline">La mappa birraria italiana.<br>Scopri locali, birre artigianali e pub vicino a te.
-            </p>
-        </div>
         <p class="footer-copy"></p>
+        <p class="footer-team">
+            Progetto realizzato da 5 ragazzi appassionati di birra artigianale &nbsp;·&nbsp;
+            <a href="https://github.com/evamicadeva/LocalBrew" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-github"></i> GitHub
+            </a>
+        </p>
     </footer>
 </div>
 

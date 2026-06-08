@@ -21,13 +21,12 @@ function ratingValue(pub) {
   return Number.isNaN(rating) ? 0 : rating;
 }
 
-function uniqueTags(drinks, type) {
+function uniqueTags(drinks) {
   const categories = drinks
     .map(drink => drink.category || drink.drinkName)
     .filter(Boolean);
-
   const tags = [...new Set(categories)];
-  return tags.length ? tags.join(', ') : (VENUE_TYPE_LABELS[type] || type || 'Locale');
+  return tags.length ? tags.join(', ') : 'Drink non disponibili';
 }
 
 async function safeLoad(loader) {
@@ -54,7 +53,7 @@ async function enrichVenue(venue) {
     lng: Number(venue.longitude),
     rating: averageRating(reviews),
     reviewCount: reviews.length,
-    beers: uniqueTags(drinks, venue.type),
+    beers: uniqueTags(drinks),
     drinkNames: drinks.map(d => d.drinkName || '').filter(Boolean).join(' '),
     type: venue.type,
     image: venue.imageUri || FALLBACK_IMAGE,

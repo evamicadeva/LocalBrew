@@ -1,4 +1,4 @@
-import { clearToken, updateMe, deleteMe, apiRequest, updateMyReview } from './api.js';
+import { clearToken, updateMe, deleteMe, apiRequest, updateMyReview, getOwnerVenues } from './api.js';
 import './logout.js';
 import { confirmAction, showToast } from './feedback.js';
 import { escapeHtml } from './utils.js';
@@ -328,9 +328,48 @@ function bindReviewActions() {
   });
 }
 
-// ── Sezione: I miei locali (OWNER) → redirect diretto ─────────
-function renderLocali() {
-  window.location.href = 'owner-dashboard.html';
+// ── Sezione: I miei locali (OWNER) ────────────────────────────
+async function renderLocali() {
+  content.innerHTML = '<p class="dashboard-message">Caricamento locali...</p>';
+  try {
+    const venues = await getOwnerVenues();
+    if (!venues.length) {
+      content.innerHTML = `
+        <h2 class="profile-section-heading">I miei locali</h2>
+        <p class="dashboard-message">Non hai ancora registrato nessun locale.</p>
+        <a href="owner-dashboard.html" class="profile-save-btn" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;text-decoration:none;">
+          <i class="fa-solid fa-gauge-high"></i> Vai alla Dashboard
+        </a>`;
+      return;
+    }
+    content.innerHTML = `
+      <h2 class="profile-section-heading">
+        I miei locali <span class="profile-count">${venues.length}</span>
+      </h2>
+      <div class="profile-locali-list">
+        ${venues.map(v => `
+          <article class="profile-form-block profile-locale-card">
+            <div class="profile-locale-header">
+              <div>
+                <strong>${escapeHtml(v.name)}</strong>
+                <p class="profile-locale-meta">
+                  <i class="fa-solid fa-location-dot"></i> ${escapeHtml(v.city || '—')}
+                  &nbsp;·&nbsp;
+                  <i class="fa-solid fa-beer-mug-empty rating-icon rating-icon--filled"></i> ${escapeHtml(String(v.rating ?? '—'))}
+                </p>
+                ${v.address ? `<p class="profile-locale-meta"><i class="fa-solid fa-map-pin"></i> ${escapeHtml(v.address)}</p>` : ''}
+              </div>
+              <span class="profile-role-badge">${v.active ? 'Attivo' : 'Inattivo'}</span>
+            </div>
+            ${v.description ? `<p class="profile-locale-desc">${escapeHtml(v.description)}</p>` : ''}
+          </article>`).join('')}
+      </div>
+      <a href="owner-dashboard.html" class="profile-save-btn" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;text-decoration:none;">
+        <i class="fa-solid fa-gauge-high"></i> Gestisci dalla Dashboard
+      </a>`;
+  } catch (err) {
+    content.innerHTML = `<p class="dashboard-message">Errore: ${escapeHtml(err.message)}</p>`;
+  }
 }
 
 // ── Sezione: Amministrazione (ADMIN) → redirect diretto ───────

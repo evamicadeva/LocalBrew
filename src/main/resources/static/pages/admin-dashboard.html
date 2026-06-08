@@ -25,18 +25,30 @@
                 <button type="button" class="admin-new-drink-btn" id="admin-open-drawer">
                     <i class="fa-solid fa-beer-mug-empty"></i> Nuovo drink
                 </button>
-                <a class="dashboard-link" href="profile.html">
+                <a class="btn btn-dashboard" href="profile.html">
                     <i class="fa-solid fa-user"></i> Profilo
                 </a>
-                <a class="dashboard-link" href="../index.html">
+                <a class="btn btn-map" href="../index.html">
                     <i class="fa-solid fa-map-location-dot"></i> Mappa
                 </a>
-                <button type="button" class="dashboard-link dashboard-logout-button" data-logout-button>
+                <button type="button" class="btn btn-logout" data-logout-button>
                     <i class="fa-solid fa-right-from-bracket"></i> Esci
                 </button>
             </div>
         </div>
 
+        <!-- Tab navigazione -->
+        <div class="admin-tabs" role="tablist">
+            <button class="admin-tab admin-tab--active" data-tab="venues" role="tab" aria-selected="true">
+                <i class="fa-solid fa-store"></i> Locali
+            </button>
+            <button class="admin-tab" data-tab="drinks" role="tab" aria-selected="false">
+                <i class="fa-solid fa-beer-mug-empty"></i> Drink
+            </button>
+        </div>
+
+        <!-- Tab: Locali + Recensioni -->
+        <div class="admin-tab-panel" id="admin-tab-venues">
         <div class="admin-two-col">
 
             <!-- COLONNA 1: lista locali -->
@@ -88,7 +100,31 @@
                 <div class="admin-review-list" id="admin-reviews" aria-live="polite"></div>
             </section>
 
-        </div>
+        </div><!-- /admin-two-col -->
+        </div><!-- /admin-tab-panel venues -->
+
+        <!-- Tab: Drink globali -->
+        <div class="admin-tab-panel hidden" id="admin-tab-drinks">
+            <div class="admin-drinks-toolbar">
+                <div class="admin-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass admin-search-icon"></i>
+                    <input id="admin-drink-search" class="admin-search-input" type="search"
+                           placeholder="Cerca drink per nome o categoria…" autocomplete="off">
+                </div>
+                <div class="admin-status-filters" role="group">
+                    <button class="admin-status-pill admin-status-pill--active" data-category="">Tutti</button>
+                    <button class="admin-status-pill" data-category="IPA">IPA</button>
+                    <button class="admin-status-pill" data-category="LAGER">Lager</button>
+                    <button class="admin-status-pill" data-category="STOUT">Stout</button>
+                    <button class="admin-status-pill" data-category="ALE">Ale</button>
+                    <button class="admin-status-pill" data-category="WHEAT">Wheat</button>
+                    <button class="admin-status-pill" data-category="SOUR">Sour</button>
+                </div>
+            </div>
+            <div id="admin-drinks-list" aria-live="polite">
+                <p class="dashboard-message">Caricamento drink...</p>
+            </div>
+        </div><!-- /admin-tab-panel drinks -->
 
     </section>
 </main>

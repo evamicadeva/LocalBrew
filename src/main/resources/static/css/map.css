@@ -5,16 +5,7 @@
     overflow: hidden;
 }
 
-/* Sfumatura finale che addolcisce il passaggio tra mappa e contenuto sotto. */
-.map-section:after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0;
-    height: 110px;
-    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, .9));
-    z-index: 400;
-    pointer-events: none;
-}
+/* Sfumatura solo in dark mode */
 
 [data-theme="dark"] .map-section {
     background: var(--paper);
@@ -327,3 +318,5 @@
 .map-overlay-close:hover {
     background: rgba(21, 79, 31, .16);
 }
+
+#searchInput { padding-right: 34px; }
