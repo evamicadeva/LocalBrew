@@ -96,8 +96,8 @@
 }
 
 .register {
-    background: linear-gradient(135deg, var(--amber), var(--amber-2));
-    color: #2d1900;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
     font-weight: 800;
 }
 
@@ -146,16 +146,6 @@
     color: var(--green-2);
 }
 
-/* Nascondi le parti non più usate */
-.footer-top,
-.footer-nav,
-.footer-nav-title,
-.footer-divider,
-.footer-bottom,
-.footer-box {
-    display: none;
-}
-
 
 /* Layout compatto su mobile. */
 @media (max-width: 760px) {
@@ -201,25 +191,35 @@
 
 /* ── Bottoni nav header (index + pagine interne) ── */
 .btn-map {
-    background: linear-gradient(135deg, #0d7a6e, #12a094);
+    background: var(--action-green-bg);
     border: none;
-    color: #fff;
+    color: var(--action-text);
     display: inline-flex;
     align-items: center;
     gap: 7px;
     text-decoration: none;
 }
-.btn-map:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.btn-map:hover {
+    background: var(--action-green-bg-hover);
+    color: var(--action-text);
+    filter: none;
+    transform: translateY(-2px);
+}
 
 .btn-dashboard {
-    background: linear-gradient(135deg, var(--amber), var(--amber-2));
-    color: #2d1900;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
     display: inline-flex;
     align-items: center;
     gap: 7px;
     text-decoration: none;
 }
-.btn-dashboard:hover { filter: brightness(1.06); transform: translateY(-2px); }
+.btn-dashboard:hover {
+    background: var(--action-amber-bg-hover);
+    color: var(--action-text);
+    filter: none;
+    transform: translateY(-2px);
+}
 
 .btn-logout {
     background: var(--logout-bg);

@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,7 +76,7 @@ public class VenueReviewServiceImpl implements VenueReviewService {
             throw new IllegalArgumentException("Hai gia recensito questa venue");
         }
 
-        VenueReview review = VenueReview.builder().rating(request.getRating()).comment(request.getComment()).createdAt(LocalDateTime.now()).user(currentUser).venue(venue).build();
+        VenueReview review = VenueReview.builder().rating(request.getRating()).comment(request.getComment()).user(currentUser).venue(venue).build();
 
         return toResponse(venueReviewRepository.save(review));
     }

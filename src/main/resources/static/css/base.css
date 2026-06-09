@@ -19,6 +19,11 @@
     --logout-bg: #9c2d1f;
     --logout-bg-hover: #7a2218;
     --logout-text: #ffffff;
+    --action-text: #ffffff;
+    --action-green-bg: linear-gradient(135deg, #154f1f, #256b2c);
+    --action-green-bg-hover: linear-gradient(135deg, #123f1a, #1d5824);
+    --action-amber-bg: linear-gradient(135deg, #f4b220, #f4b236);
+    --action-amber-bg-hover: linear-gradient(135deg, #9f5b00, #c77804);
     --scrollbar-size: 10px;
     --scrollbar-track: transparent;
     --scrollbar-thumb: rgba(21, 79, 31, .36);
@@ -147,6 +152,11 @@ a {
     --logout-bg: #9c2d1f;
     --logout-bg-hover: #7a2218;
     --logout-text: #ffffff;
+    --action-text: #ffffff;
+    --action-green-bg: linear-gradient(135deg, #1d5628, #2f7138);
+    --action-green-bg-hover: linear-gradient(135deg, #286632, #3a7f43);
+    --action-amber-bg: linear-gradient(135deg, #f4b220, #f4b236);
+    --action-amber-bg-hover: linear-gradient(135deg, #8c5506, #b87508);
     --scrollbar-thumb: rgba(169, 189, 145, .34);
     --scrollbar-thumb-hover: rgba(169, 189, 145, .52);
 }
@@ -240,48 +250,40 @@ a {
     color: #d9c79c;
 }
 
-[data-theme="dark"] .favorite-button {
-    background: var(--surface);
-    color: var(--green);
-}
-
-[data-theme="dark"] .favorite-button:hover {
-    background: var(--surface-2);
-}
-
-[data-theme="dark"] .favorite-button.is-favorite {
-    background: var(--green);
-    color: #07120d;
-}
-
 [data-theme="dark"] .card-map-button,
 [data-theme="dark"] .card-google-button {
-    background: var(--green);
+    background: var(--action-green-bg);
     border-color: transparent;
-    color: #fff;
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .card-details-button {
-    background: linear-gradient(135deg, var(--amber), var(--amber-2));
-    color: #2d1900;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
+}
+
+[data-theme="dark"] .card-details-button:hover {
+    background: var(--action-amber-bg-hover);
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .card-map-button:hover,
 [data-theme="dark"] .card-google-button:hover {
-    background: var(--green-2);
-    color: #07120d;
+    background: var(--action-green-bg-hover);
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .all-btn {
-    background: var(--green);
+    background: var(--action-green-bg);
     border-color: transparent;
-    color: #fff;
+    color: var(--action-text);
     box-shadow: 0 10px 24px rgba(0, 0, 0, .28);
 }
 
 [data-theme="dark"] .all-btn:hover {
-    background: var(--green-2);
+    background: var(--action-green-bg-hover);
     border-color: transparent;
+    color: var(--action-text);
     box-shadow: 0 14px 28px rgba(0, 0, 0, .36);
 }
 
@@ -301,8 +303,9 @@ a {
 }
 
 [data-theme="dark"] .filter-option:has(input:checked) {
-    background: linear-gradient(135deg, rgba(215, 169, 81, .17), rgba(169, 189, 145, .13));
+    background: var(--action-amber-bg);
     border-color: var(--amber);
+    color: var(--action-text);
 }
 
 /* ── Drawer dettagli ── */
@@ -317,18 +320,19 @@ a {
 
 [data-theme="dark"] .detail-favorite-button,
 [data-theme="dark"] .detail-map-button {
-    background: var(--surface);
-    color: var(--green);
+    background: var(--action-green-bg);
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .detail-favorite-button:hover,
 [data-theme="dark"] .detail-map-button:hover {
-    background: var(--surface-2);
+    background: var(--action-green-bg-hover);
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .detail-favorite-button.is-favorite {
-    background: var(--green);
-    color: #07120d;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .detail-tabs {
@@ -418,14 +422,12 @@ a {
     border-color: var(--line);
 }
 
-[data-theme="dark"] .dashboard-link,
 [data-theme="dark"] .secondary-button,
 [data-theme="dark"] .dashboard-actions button {
     background: #2e5c35;
     color: #fff;
 }
 
-[data-theme="dark"] .dashboard-link:hover,
 [data-theme="dark"] .secondary-button:hover,
 [data-theme="dark"] .dashboard-actions button:hover {
     background: #2e5c35;
@@ -435,8 +437,8 @@ a {
 [data-theme="dark"] .profile-save-btn,
 [data-theme="dark"] .admin-status-pill--active,
 [data-theme="dark"] .profile-nav-item--active {
-    background: linear-gradient(135deg, #73885f, #a9bd91);
-    color: #11180f;
+    background: var(--action-green-bg);
+    color: var(--action-text);
     border-color: rgba(169, 189, 145, .52);
 }
 
@@ -444,45 +446,42 @@ a {
 [data-theme="dark"] .profile-save-btn:hover,
 [data-theme="dark"] .admin-status-pill--active:hover,
 [data-theme="dark"] .profile-nav-item--active:hover {
-    background: linear-gradient(135deg, #7f936b, #b6c9a1);
-    color: #11180f;
+    background: var(--action-green-bg-hover);
+    color: var(--action-text);
 }
 
-/* admin-new-drink-btn mantiene indaco anche in dark */
+/* admin-new-drink-btn mantiene il colore azione anche in dark */
 [data-theme="dark"] .admin-new-drink-btn {
-    background: linear-gradient(135deg, #4a58b0, #6572c0);
-    color: #fff;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
     border-color: rgba(114, 130, 203, .4);
 }
 
 [data-theme="dark"] .admin-new-drink-btn:hover {
-    background: linear-gradient(135deg, #5563bc, #717fcc);
-    color: #fff;
-}
-
-[data-theme="dark"] .dashboard-logout-button {
-    background: var(--logout-bg);
-    color: var(--logout-text);
-    border: none;
-}
-
-[data-theme="dark"] .dashboard-logout-button:hover {
-    background: var(--logout-bg-hover);
-    color: var(--logout-text);
+    background: var(--action-amber-bg-hover);
+    color: var(--action-text);
 }
 
 /* btn-dashboard / btn-map / btn-logout: mantengono il loro colore in dark mode */
 
-[data-theme="dark"] .btn-dashboard,
-[data-theme="dark"] .btn-dashboard:hover {
-    background: linear-gradient(135deg, var(--amber), var(--amber-2));
-    color: #2d1900;
+[data-theme="dark"] .btn-dashboard {
+    background: var(--action-amber-bg);
+    color: var(--action-text);
 }
 
-[data-theme="dark"] .btn-map,
+[data-theme="dark"] .btn-dashboard:hover {
+    background: var(--action-amber-bg-hover);
+    color: var(--action-text);
+}
+
+[data-theme="dark"] .btn-map {
+    background: var(--action-green-bg);
+    color: var(--action-text);
+}
+
 [data-theme="dark"] .btn-map:hover {
-    background: linear-gradient(135deg, #0a6560, #0d8a7e);
-    color: #fff;
+    background: var(--action-green-bg-hover);
+    color: var(--action-text);
 }
 
 [data-theme="dark"] .btn-logout {
@@ -494,20 +493,6 @@ a {
 [data-theme="dark"] .btn-logout:hover {
     background: var(--logout-bg-hover);
     color: var(--logout-text);
-}
-
-[data-theme="dark"] .danger-button,
-[data-theme="dark"] .profile-delete-btn {
-    background: var(--danger-bg);
-    border-color: var(--danger-border);
-    color: var(--danger-text);
-}
-
-[data-theme="dark"] .danger-button:hover,
-[data-theme="dark"] .profile-delete-btn:hover {
-    background: var(--danger-bg-hover);
-    border-color: var(--danger-border-hover);
-    color: var(--danger-text);
 }
 
 [data-theme="dark"] .profile-nav-item--danger.profile-nav-item--active {
@@ -528,11 +513,6 @@ a {
     border-color: var(--line);
 }
 
-[data-theme="dark"] .admin-review-panel {
-    background: var(--surface);
-    border-color: var(--line);
-}
-
 [data-theme="dark"] .admin-review-card {
     background: var(--paper);
     border-color: var(--line);
@@ -541,12 +521,6 @@ a {
 [data-theme="dark"] .admin-review-score {
     background: var(--accent-soft);
     color: var(--amber-2);
-}
-
-[data-theme="dark"] .admin-review-select {
-    background: var(--surface);
-    color: var(--text);
-    border-color: var(--line);
 }
 
 [data-theme="dark"] .admin-status-pill {
@@ -723,152 +697,7 @@ a {
 }
 
 
-/* ── Admin tabs ── */
-.admin-tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 22px;
-    border-bottom: 2px solid var(--line);
-    padding-bottom: 0;
-}
-
-.admin-tab {
-    padding: 9px 20px;
-    border: none;
-    background: none;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition: color .2s, border-color .2s;
-    border-radius: 0;
-}
-
-.admin-tab:hover {
-    color: var(--green);
-}
-
-.admin-tab--active {
-    color: var(--green);
-    border-bottom-color: var(--green);
-}
-
-.admin-tab-panel.hidden {
-    display: none;
-}
-
-/* ── Admin drinks panel ── */
-.admin-drinks-toolbar {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.admin-drink-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 10px;
-}
-
-.admin-drink-thumb {
-    width: 56px;
-    height: 56px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-.admin-drink-thumb--placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--cream);
-    color: var(--green);
-    font-size: 22px;
-}
-
-.admin-drink-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.admin-drink-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 4px;
-}
-
-.admin-drink-name {
-    font-size: 14px;
-}
-
-.admin-drink-abv {
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--cream);
-    padding: 2px 7px;
-    border-radius: 20px;
-}
-
-.admin-drink-desc {
-    font-size: 12px;
-    color: var(--muted);
-    margin: 4px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.admin-drink-venues {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    align-items: center;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 6px;
-}
-
-.admin-drink-venue-pill {
-    background: var(--cream);
-    color: var(--green);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 500;
-}
-
-/* Dark mode overrides */
-[data-theme="dark"] .admin-drink-card {
-    background: #2e2010;
-    border-color: var(--line);
-}
-
-[data-theme="dark"] .admin-drink-thumb--placeholder {
-    background: #3d2c14;
-}
-
-[data-theme="dark"] .admin-drink-abv {
-    background: #3d2c14;
-}
-
-[data-theme="dark"] .admin-drink-venue-pill {
-    background: #3d2c14;
-    border-color: var(--line);
-}
-
-/* ── Footer semplificato ── */
+/* Footer semplificato */
 .footer-team {
     font-size: .82rem;
     color: var(--muted);

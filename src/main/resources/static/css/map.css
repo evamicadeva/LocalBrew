@@ -60,8 +60,7 @@
     color:#7c4a00;
 }
 
-[data-theme="dark"] .map-interaction-hint,
-[data-theme="dark"] .map-overlay {
+[data-theme="dark"] .map-interaction-hint {
     background: rgba(20, 28, 23, .92);
     border-color: var(--line);
     box-shadow: 0 16px 38px rgba(0, 0, 0, .35);
@@ -69,49 +68,6 @@
 
 [data-theme="dark"] .map-interaction-hint i {
     color: var(--amber-2);
-}
-
-[data-theme="dark"] .badge {
-    background: var(--accent-soft);
-    color: var(--amber-2);
-}
-
-/* Box testuale sopra la mappa. */
-.map-overlay {
-    position: absolute;
-    left: 28px;
-    top: 28px;
-    z-index: 800;
-    max-width: 390px;
-    background: rgba(255, 255, 255, .92);
-    border: 1px solid var(--line);
-    border-radius: 28px;
-    padding: 22px;
-    box-shadow: 0 14px 35px rgba(0, 0, 0, .12);
-    backdrop-filter: blur(10px);
-}
-
-.map-overlay h1 {
-    font-size: 34px;
-    line-height: 1.05;
-    color: var(--green);
-    margin: 10px 0;
-}
-
-.map-overlay p {
-    color: var(--muted);
-    line-height: 1.5
-}
-
-.badge {
-    display: inline-flex;
-    gap: 8px;
-    align-items: center;
-    background: #fff3d8;
-    color: #7c4a00;
-    padding: 8px 12px;
-    border-radius: 999px;
-    font-weight: 800;
 }
 
 /* Personalizzazione cluster marker Leaflet. */
@@ -187,8 +143,8 @@
     margin-top: 12px;
     padding: 8px 10px;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--amber), var(--amber-2));
-    color: #2d1900;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
     font-weight: 800;
     font-size: 13px;
     box-shadow: 0 10px 20px rgba(244, 182, 61, .28);
@@ -233,8 +189,8 @@
 }
 
 [data-theme="dark"] .popup-details-link {
-    background: linear-gradient(135deg, var(--green-2), var(--green));
-    color: #11180f;
+    background: var(--action-amber-bg);
+    color: var(--action-text);
     box-shadow: 0 12px 24px rgba(143, 170, 115, .2);
 }
 
@@ -243,17 +199,6 @@
     #map {
         height: calc(100vh - var(--header-height, 176px) - 72px);
         min-height: 460px;
-    }
-
-    .map-overlay {
-        left: 14px;
-        right: 14px;
-        top: 14px;
-        max-width: none;
-    }
-
-    .map-overlay h1 {
-        font-size: 26px
     }
 
     .map-interaction-hint{
@@ -284,42 +229,5 @@
     }
 }
 
-/* Pulsante di chiusura del badge sopra la mappa. */
-.badge-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    margin-left: 4px;
-    border-radius: 999px;
-    background: rgba(124, 74, 0, .12);
-    color: #7c4a00;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.badge-close:hover {
-    background: rgba(124, 74, 0, .22);
-}
-
-/* Stile della chiusura del badge più grosso (Overlay)*/
-.map-overlay-close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 999px;
-    background: rgba(21, 79, 31, .08);
-    color: var(--green);
-}
-
-.map-overlay-close:hover {
-    background: rgba(21, 79, 31, .16);
-}
 
 #searchInput { padding-right: 34px; }

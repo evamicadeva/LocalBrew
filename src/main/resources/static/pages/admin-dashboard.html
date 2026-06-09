@@ -12,11 +12,9 @@
     <link rel="shortcut icon" href="../assets/icons/favicon.png" type="image/x-icon">
 </head>
 
-<body class="auth-page">
-<main class="auth-shell dashboard-shell">
-    <section class="auth-card dashboard-card">
-
-        <div class="dashboard-header">
+<body class="auth-page app-page">
+<main class="dashboard-shell app-shell">
+    <header class="app-page-header dashboard-header">
             <div>
                 <h1>Amministrazione</h1>
                 <p>Gestisci locali e recensioni.</p>
@@ -35,7 +33,9 @@
                     <i class="fa-solid fa-right-from-bracket"></i> Esci
                 </button>
             </div>
-        </div>
+    </header>
+
+    <section class="app-page-body dashboard-card">
 
         <!-- Tab navigazione -->
         <div class="admin-tabs" role="tablist">
@@ -198,6 +198,77 @@
 
 <button type="button" class="theme-toggle-floating" id="theme-toggle" aria-label="Passa alla modalità notte"><i class="fa-solid fa-moon"></i></button>
   <script type="module" src="../js/theme-init.js"></script>
+<!-- Modal: modifica drink -->
+<div class="admin-drink-edit-backdrop hidden" id="admin-drink-edit-backdrop" aria-hidden="true"></div>
+<section class="admin-drink-edit-modal hidden" id="admin-drink-edit-modal" role="dialog" aria-modal="true"
+         aria-labelledby="admin-edit-drink-title">
+    <div class="admin-drink-edit-modal-header">
+        <div>
+            <p class="eyebrow">Drink globale</p>
+            <h2 id="admin-edit-drink-title"><i class="fa-solid fa-pen"></i> Modifica drink</h2>
+        </div>
+        <button type="button" class="admin-drawer-close" id="admin-edit-drink-close" aria-label="Chiudi">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <form class="auth-form admin-drink-edit-modal-form" id="admin-drink-edit-form">
+        <input type="hidden" id="edit-drink-id">
+
+        <label for="edit-drink-name">Nome</label>
+        <input id="edit-drink-name" type="text" maxlength="100" required>
+
+        <label for="edit-drink-description">Descrizione</label>
+        <textarea id="edit-drink-description" rows="3" maxlength="300"></textarea>
+
+        <div class="form-columns">
+            <div>
+                <label for="edit-drink-category">Categoria</label>
+                <select id="edit-drink-category" required>
+                    <option value="IPA">IPA</option>
+                    <option value="LAGER">Lager</option>
+                    <option value="STOUT">Stout</option>
+                    <option value="ALE">Ale</option>
+                    <option value="WHEAT">Wheat</option>
+                    <option value="SOUR">Sour</option>
+                </select>
+            </div>
+            <div>
+                <label for="edit-drink-abv">ABV</label>
+                <input id="edit-drink-abv" type="number" step="0.1" min="0" max="100">
+            </div>
+        </div>
+
+        <label for="edit-drink-origin">Origine</label>
+        <input id="edit-drink-origin" type="text" maxlength="100">
+
+        <label for="edit-drink-image-file">Immagine birra</label>
+        <div class="upload-field" id="edit-drink-image-upload-field">
+            <input type="file" id="edit-drink-image-file" accept="image/jpeg,image/png,image/webp"
+                   class="upload-file-input">
+            <label for="edit-drink-image-file" class="upload-file-label">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                <span id="edit-drink-image-filename">Scegli immagine (JPG, PNG, WEBP - max 5 MB)</span>
+            </label>
+            <img id="edit-drink-image-preview" class="upload-preview hidden" alt="Anteprima immagine birra">
+            <button type="button" class="upload-remove hidden" id="edit-drink-image-remove"
+                    aria-label="Rimuovi immagine">
+                <i class="fa-solid fa-xmark"></i> Rimuovi
+            </button>
+        </div>
+        <input type="hidden" id="edit-drink-image-uri">
+
+        <p class="profile-form-msg" id="admin-drink-edit-message" aria-live="polite"></p>
+
+        <div class="admin-drink-edit-modal-actions">
+            <button type="button" class="secondary-button" id="admin-edit-drink-cancel">Annulla</button>
+            <button type="submit" class="profile-save-btn">
+                <i class="fa-solid fa-check"></i> Salva modifiche
+            </button>
+        </div>
+    </form>
+</section>
+
 <script type="module" src="../js/admin-dashboard.js"></script>
 </body>
 

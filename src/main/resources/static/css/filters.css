@@ -45,8 +45,9 @@
 
 /* Evidenzia il filtro quando la checkbox è selezionata. */
 .filter-option:has(input:checked){
-  background:linear-gradient(135deg,#fff2cf,#ffe0a0);
+  background:var(--action-amber-bg);
   border-color:var(--amber);
+  color:var(--action-text);
   box-shadow:0 8px 20px rgba(244,182,61,.22);
 }
 

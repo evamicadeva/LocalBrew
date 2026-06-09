@@ -36,14 +36,7 @@ async function updateHeaderAuth() {
     : user.role === 'OWNER'
       ? 'pages/owner-dashboard.html'
       : '';
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  const themeIcon = currentTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-  const themeLabel = currentTheme === 'dark' ? 'Passa alla modalita giorno' : 'Passa alla modalita notte';
-
   headerButtons.innerHTML = `
-    <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="${themeLabel}">
-      <i class="${themeIcon}"></i>
-    </button>
     <span class="logged-user">Benvenuto, ${username}</span>
     <a class="btn profile-btn" href="pages/profile.html">
       <i class="fa-solid fa-user"></i> Profilo

@@ -37,8 +37,8 @@
   transition:.25s;
 }
 .sidebar-item:hover,.sidebar-item.active{
-  background:linear-gradient(135deg,var(--amber),var(--amber-2));
-  color:#2d1900;
+  background:var(--action-amber-bg);
+  color:var(--action-text);
   transform:translateY(-2px);
 }
 .sidebar-item i{font-size:23px}
@@ -188,8 +188,8 @@
 }
 
 .favorite-panel-actions button:hover{
-  background:linear-gradient(135deg,var(--amber),var(--amber-2));
-  color:#2d1900;
+  background:var(--action-amber-bg);
+  color:var(--action-text);
   transform:translateY(-1px);
 }
 

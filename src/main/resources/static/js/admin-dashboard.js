@@ -45,7 +45,28 @@ const drinkImagePreview  = document.getElementById('admin-drink-image-preview');
 const drinkImageFilename = document.getElementById('admin-drink-image-filename');
 const drinkImageRemove   = document.getElementById('admin-drink-image-remove');
 
+const editDrinkModal       = document.getElementById('admin-drink-edit-modal');
+const editDrinkBackdrop    = document.getElementById('admin-drink-edit-backdrop');
+const editDrinkForm        = document.getElementById('admin-drink-edit-form');
+const editDrinkClose       = document.getElementById('admin-edit-drink-close');
+const editDrinkCancel      = document.getElementById('admin-edit-drink-cancel');
+const editDrinkMessage     = document.getElementById('admin-drink-edit-message');
+const editDrinkFields = {
+    id:          document.getElementById('edit-drink-id'),
+    name:        document.getElementById('edit-drink-name'),
+    description: document.getElementById('edit-drink-description'),
+    category:    document.getElementById('edit-drink-category'),
+    abv:         document.getElementById('edit-drink-abv'),
+    origin:      document.getElementById('edit-drink-origin'),
+    imageUri:    document.getElementById('edit-drink-image-uri')
+};
+const editDrinkImageFile     = document.getElementById('edit-drink-image-file');
+const editDrinkImagePreview  = document.getElementById('edit-drink-image-preview');
+const editDrinkImageFilename = document.getElementById('edit-drink-image-filename');
+const editDrinkImageRemove   = document.getElementById('edit-drink-image-remove');
+
 const DRINK_IMAGE_LABEL = 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)';
+const EDIT_DRINK_IMAGE_LABEL = 'Scegli immagine (JPG, PNG, WEBP - max 5 MB)';
 
 // ── Stato ────────────────────────────────────────────────────
 let adminVenues   = [];
@@ -53,23 +74,36 @@ let activeStatus  = '';        // '' | 'ACTIVE' | 'SUSPENDED' | 'PENDING'
 const reviewCache = {};
 
 // ── Drawer ───────────────────────────────────────────────────
+function syncBodyLock() {
+    const drawerOpen = drawer?.classList.contains('admin-drawer--open');
+    const editModalOpen = editDrinkModal && !editDrinkModal.classList.contains('hidden');
+    document.body.style.overflow = drawerOpen || editModalOpen ? 'hidden' : '';
+}
+
 function openDrawer()  {
     drawer.classList.add('admin-drawer--open');
     overlay.classList.add('admin-drawer-overlay--visible');
-    document.body.style.overflow = 'hidden';
+    syncBodyLock();
     drinkFields.name.focus();
 }
 
 function closeDrawer() {
     drawer.classList.remove('admin-drawer--open');
     overlay.classList.remove('admin-drawer-overlay--visible');
-    document.body.style.overflow = '';
+    syncBodyLock();
 }
 
 openDrawerBtn?.addEventListener('click', openDrawer);
 closeDrawerBtn?.addEventListener('click', closeDrawer);
 overlay?.addEventListener('click', closeDrawer);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (editDrinkModal && !editDrinkModal.classList.contains('hidden')) {
+        closeEditDrinkModal();
+        return;
+    }
+    closeDrawer();
+});
 
 // ── Upload helpers ───────────────────────────────────────────
 function setupImageUpload({ fileInput, preview, filename, removeBtn, hiddenInput, defaultLabel }) {
@@ -104,6 +138,62 @@ function resetImageField({ fileInput, preview, filename, removeBtn, hiddenInput,
     removeBtn.classList.add('hidden');
     filename.textContent = defaultLabel;
     hiddenInput.value = '';
+}
+
+function fillEditDrinkImage(url) {
+    editDrinkImageFile.value = '';
+    editDrinkFields.imageUri.value = url || '';
+    editDrinkFields.imageUri.dataset.cleared = 'false';
+
+    if (url) {
+        editDrinkImagePreview.src = url;
+        editDrinkImagePreview.classList.remove('hidden');
+        editDrinkImageRemove.classList.remove('hidden');
+        editDrinkImageFilename.textContent = 'Immagine attuale';
+        return;
+    }
+
+    editDrinkImagePreview.src = '';
+    editDrinkImagePreview.classList.add('hidden');
+    editDrinkImageRemove.classList.add('hidden');
+    editDrinkImageFilename.textContent = EDIT_DRINK_IMAGE_LABEL;
+}
+
+async function resolveEditDrinkImageUri() {
+    if (editDrinkImageFile.files[0]) return await uploadDrinkImage(editDrinkImageFile.files[0]);
+    if (editDrinkFields.imageUri.dataset.cleared === 'true') return '';
+    return editDrinkFields.imageUri.value.trim() || null;
+}
+
+function showEditDrinkMessage(text, type = '') {
+    editDrinkMessage.textContent = text;
+    editDrinkMessage.classList.remove('profile-form-msg--error', 'profile-form-msg--ok');
+    if (type) editDrinkMessage.classList.add(type);
+}
+
+function openEditDrinkModal(drink) {
+    editDrinkFields.id.value = drink.id;
+    editDrinkFields.name.value = drink.name || '';
+    editDrinkFields.description.value = drink.description || '';
+    editDrinkFields.category.value = drink.category || 'IPA';
+    editDrinkFields.abv.value = drink.abv != null ? drink.abv : '';
+    editDrinkFields.origin.value = drink.origin || '';
+    fillEditDrinkImage(drink.imageUri);
+    showEditDrinkMessage('');
+
+    editDrinkBackdrop.classList.remove('hidden');
+    editDrinkModal.classList.remove('hidden');
+    syncBodyLock();
+    editDrinkFields.name.focus();
+}
+
+function closeEditDrinkModal() {
+    editDrinkBackdrop.classList.add('hidden');
+    editDrinkModal.classList.add('hidden');
+    editDrinkForm.reset();
+    fillEditDrinkImage(null);
+    showEditDrinkMessage('');
+    syncBodyLock();
 }
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -285,6 +375,21 @@ if (user) {
         hiddenInput: drinkFields.imageUri, defaultLabel: DRINK_IMAGE_LABEL
     });
 
+    setupImageUpload({
+        fileInput: editDrinkImageFile, preview: editDrinkImagePreview,
+        filename: editDrinkImageFilename, removeBtn: editDrinkImageRemove,
+        hiddenInput: editDrinkFields.imageUri, defaultLabel: EDIT_DRINK_IMAGE_LABEL
+    });
+    editDrinkImageFile.addEventListener('change', () => {
+        editDrinkFields.imageUri.dataset.cleared = 'false';
+    });
+    editDrinkImageRemove.addEventListener('click', () => {
+        editDrinkFields.imageUri.dataset.cleared = 'true';
+    });
+    editDrinkClose?.addEventListener('click', closeEditDrinkModal);
+    editDrinkCancel?.addEventListener('click', closeEditDrinkModal);
+    editDrinkBackdrop?.addEventListener('click', closeEditDrinkModal);
+
     drinkForm.addEventListener('submit', async event => {
         event.preventDefault();
         showDrinkMessage('Creazione drink...');
@@ -303,6 +408,44 @@ if (user) {
         } catch (error) {
             showDrinkMessage(error.message, 'is-error');
             showToast(error.message, 'error');
+        }
+    });
+
+    editDrinkForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const id = editDrinkFields.id.value;
+        const submitButton = editDrinkForm.querySelector('button[type="submit"]');
+        const name = editDrinkFields.name.value.trim();
+
+        if (!name) {
+            showEditDrinkMessage('Nome obbligatorio.', 'profile-form-msg--error');
+            return;
+        }
+
+        submitButton.disabled = true;
+        showEditDrinkMessage('Salvataggio...');
+
+        try {
+            const imageUri = await resolveEditDrinkImageUri();
+            const abv = editDrinkFields.abv.value;
+            const updated = await updateDrink(id, {
+                name,
+                description: editDrinkFields.description.value.trim(),
+                category: editDrinkFields.category.value,
+                abv: abv !== '' ? Number(abv) : null,
+                origin: editDrinkFields.origin.value.trim(),
+                imageUri
+            });
+            const idx = drinksCache.findIndex(d => String(d.id) === String(id));
+            if (idx >= 0) drinksCache[idx] = updated;
+            showToast('Drink aggiornato.');
+            closeEditDrinkModal();
+            applyDrinkFilters();
+        } catch (error) {
+            showEditDrinkMessage(error.message, 'profile-form-msg--error');
+            showToast(error.message, 'error');
+        } finally {
+            submitButton.disabled = false;
         }
     });
 
@@ -460,25 +603,6 @@ function renderDrinkCards(drinks) {
                     <button type="button" class="secondary-button drink-edit-btn"><i class="fa-solid fa-pen"></i> Modifica</button>
                     <button type="button" class="danger-button drink-delete-btn"><i class="fa-solid fa-trash"></i></button>
                 </div>
-                <div class="admin-drink-edit-form hidden">
-                    <label class="admin-edit-label">Nome</label>
-                    <input class="edit-drink-name admin-search-input" type="text" value="${escapeHtml(d.name)}" maxlength="100">
-                    <label class="admin-edit-label">Descrizione</label>
-                    <textarea class="edit-drink-description admin-search-input" rows="2" maxlength="300">${escapeHtml(d.description || '')}</textarea>
-                    <label class="admin-edit-label">Categoria</label>
-                    <select class="edit-drink-category admin-search-input">
-                        ${['IPA','LAGER','STOUT','ALE','WHEAT','SOUR'].map(cat =>
-                            `<option value="${cat}"${d.category === cat ? ' selected' : ''}>${cat}</option>`
-                        ).join('')}
-                    </select>
-                    <label class="admin-edit-label">ABV</label>
-                    <input class="edit-drink-abv admin-search-input" type="number" step="0.1" min="0" max="100" value="${d.abv != null ? escapeHtml(String(d.abv)) : ''}">
-                    <div class="admin-drink-edit-actions">
-                        <button type="button" class="profile-save-btn drink-save-btn"><i class="fa-solid fa-check"></i> Salva</button>
-                        <button type="button" class="secondary-button drink-cancel-btn">Annulla</button>
-                    </div>
-                    <p class="profile-form-msg drink-edit-msg" aria-live="polite"></p>
-                </div>
             </div>
         </article>`;
     }).join('') + '</div>';
@@ -488,37 +612,13 @@ drinksList?.addEventListener('click', async e => {
     const card = e.target.closest('.admin-drink-card');
     if (!card) return;
     const id = card.dataset.id;
-    const form = card.querySelector('.admin-drink-edit-form');
-    const editBtn = card.querySelector('.drink-edit-btn');
 
     if (e.target.closest('.drink-edit-btn')) {
-        const isOpen = !form.classList.contains('hidden');
-        form.classList.toggle('hidden', isOpen);
-        editBtn.innerHTML = isOpen ? '<i class="fa-solid fa-pen"></i> Modifica' : '<i class="fa-solid fa-xmark"></i> Chiudi';
+        const drink = drinksCache.find(d => String(d.id) === String(id));
+        if (drink) openEditDrinkModal(drink);
         return;
     }
-    if (e.target.closest('.drink-cancel-btn')) {
-        form.classList.add('hidden');
-        editBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Modifica';
-        return;
-    }
-    if (e.target.closest('.drink-save-btn')) {
-        const msgEl = form.querySelector('.drink-edit-msg');
-        const name  = form.querySelector('.edit-drink-name').value.trim();
-        const desc  = form.querySelector('.edit-drink-description').value.trim();
-        const cat   = form.querySelector('.edit-drink-category').value;
-        const abv   = form.querySelector('.edit-drink-abv').value;
-        if (!name) { msgEl.textContent = 'Nome obbligatorio.'; return; }
-        msgEl.textContent = 'Salvataggio...';
-        try {
-            const updated = await updateDrink(id, { name, description: desc || null, category: cat, abv: abv !== '' ? Number(abv) : null });
-            const idx = drinksCache.findIndex(d => String(d.id) === String(id));
-            if (idx >= 0) drinksCache[idx] = updated;
-            showToast('Drink aggiornato.');
-            applyDrinkFilters();
-        } catch (err) { msgEl.textContent = err.message; }
-        return;
-    }
+
     if (e.target.closest('.drink-delete-btn')) {
         const confirmed = await confirmAction({ title: 'Eliminare il drink?', message: 'Azione non reversibile.', confirmText: 'Elimina', danger: true });
         if (!confirmed) return;
