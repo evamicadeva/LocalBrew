@@ -44,17 +44,31 @@ function ensureConfirmModal() {
   return confirmElements;
 }
 
+function dismissToast(toast) {
+  if (toast.dataset.hiding === 'true') return;
+
+  toast.dataset.hiding = 'true';
+  toast.classList.add('is-hiding');
+  toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+}
+
 export function showToast(message, type = 'success') {
   const root = ensureToastRoot();
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
+  toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+  toast.tabIndex = 0;
   toast.textContent = message;
+  toast.addEventListener('click', () => dismissToast(toast));
+  toast.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      dismissToast(toast);
+    }
+  });
   root.appendChild(toast);
 
-  window.setTimeout(() => {
-    toast.classList.add('is-hiding');
-    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
-  }, TOAST_TIMEOUT);
+  window.setTimeout(() => dismissToast(toast), TOAST_TIMEOUT);
 }
 
 export function confirmAction({

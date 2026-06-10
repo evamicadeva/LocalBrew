@@ -585,23 +585,42 @@ function renderDrinkCards(drinks) {
     }
     drinksList.innerHTML = '<div class="admin-drinks-grid">' + drinks.map(d => {
         const count = (drinkVenueMap && drinkVenueMap.get(String(d.id))) || 0;
-        const venueLabel = count === 0 ? 'Nessun locale' : `Presente in ${count} ${count === 1 ? 'locale' : 'locali'}`;
+        const venueLabel = count === 1 ? '1 locale' : `${count} locali`;
+        const abvLabel = d.abv != null ? `${escapeHtml(String(d.abv))}%` : 'N/D';
         return `
         <article class="admin-drink-card" data-id="${escapeHtml(String(d.id))}">
-            ${d.imageUri ? `<img class="admin-drink-img" src="${escapeHtml(d.imageUri)}" alt="${escapeHtml(d.name)}">` : '<div class="admin-drink-img admin-drink-img--placeholder"><i class="fa-solid fa-beer-mug-empty"></i></div>'}
-            <div class="admin-drink-body">
-                <div class="admin-drink-header">
-                    <strong>${escapeHtml(d.name)}</strong>
-                    <span class="admin-drink-badge">${escapeHtml(d.category || '-')}</span>
-                </div>
-                <p class="admin-drink-desc">${escapeHtml(d.description || 'Nessuna descrizione disponibile.')}</p>
-                <div class="admin-drink-meta">
-                    ${d.abv != null ? `<span><i class="fa-solid fa-percent"></i> ${escapeHtml(String(d.abv))} ABV</span>` : ''}
-                    <span class="admin-drink-venue-count"><i class="fa-solid fa-store"></i> ${venueLabel}</span>
-                </div>
-                <div class="admin-drink-actions">
-                    <button type="button" class="secondary-button drink-edit-btn"><i class="fa-solid fa-pen"></i> Modifica</button>
-                    <button type="button" class="danger-button drink-delete-btn"><i class="fa-solid fa-trash"></i></button>
+            <div class="admin-drink-card__inner">
+                ${d.imageUri ? `<img class="admin-drink-cover" src="${escapeHtml(d.imageUri)}" alt="${escapeHtml(d.name)}">` : '<div class="admin-drink-cover admin-drink-cover--placeholder"><i class="fa-solid fa-beer-mug-empty"></i></div>'}
+                <div class="admin-drink-body">
+                    <div class="admin-drink-header">
+                        <span class="admin-drink-chip admin-drink-category">
+                            ${escapeHtml(d.category || '-')}
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
+                        <strong>${escapeHtml(d.name)}</strong>
+                    </div>
+                    <p class="admin-drink-desc">${escapeHtml(d.description || 'Nessuna descrizione disponibile.')}</p>
+                    <div class="admin-drink-footer">
+                        <div class="admin-drink-stats">
+                            <span class="admin-drink-chip">
+                                <i class="fa-solid fa-percent"></i>
+                                ${abvLabel}
+                            </span>
+                            <span class="admin-drink-chip">
+                                <i class="fa-solid fa-store"></i>
+                                ${venueLabel}
+                            </span>
+                        </div>
+                        <div class="admin-drink-actions">
+                            <button type="button" class="drink-edit-btn">
+                                Modifica
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button type="button" class="drink-delete-btn" aria-label="Elimina ${escapeHtml(d.name)}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </article>`;
