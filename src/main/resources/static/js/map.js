@@ -3,11 +3,6 @@ const WORLD_BOUNDS = L.latLngBounds(
     [85, 180]
 );
 
-export const ITALY_BOUNDS = L.latLngBounds(
-    [35.2, 5.8],
-    [47.6, 19.0]
-);
-
 const ITALY_CENTER = [42.7, 12.4];
 const ITALY_ZOOM = 6;
 const USER_AREA_ZOOM = 10;

@@ -73,13 +73,6 @@
   outline-color:rgba(244,182,61,.7);
 }
 
-/* Stato temporaneo usato quando il popup riporta alla card. */
-.card.is-focused{
-  border-color:var(--amber);
-  outline:4px solid rgba(244,182,61,.28);
-  outline-offset:0;
-}
-
 /* Finestra della fotografia: l'immagine piu' alta viene ritagliata al centro. */
 .card-img{
   position:absolute;
@@ -113,6 +106,9 @@
 .card-body{
   position:relative;
   z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
   min-height:310px;
   padding:18px;
   flex:1;
@@ -282,12 +278,6 @@
   background:var(--action-green-bg);
   color:var(--action-text);
   filter:brightness(.9) saturate(1.04);
-}
-
-.card-body{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
 }
 
 /* Nasconde i locali oltre i primi tre finché la lista non viene espansa. */

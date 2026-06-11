@@ -2,7 +2,7 @@ import {createVenueReview, getActiveVenue, getCurrentUser, getVenueDrinks, getVe
 import {getFavorites, toggleFavorite} from './favorites.js';
 import {showToast} from './feedback.js';
 import {escapeHtml} from './utils.js';
-import {RATING_ICON, ratingIconHtml, starsHtml, setInteractiveStars} from './rating.js';
+import {ratingIconHtml, starsHtml, setInteractiveStars} from './rating.js';
 
 const FALLBACK_IMAGE = 'assets/icons/pin.png';
 const REVIEWS_PAGE_SIZE = 5;

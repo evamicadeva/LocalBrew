@@ -3,7 +3,7 @@ import './logout.js';
 import { confirmAction, showToast } from './feedback.js';
 import { escapeHtml } from './utils.js';
 import { requireAnyRole } from './role-guard.js';
-import { RATING_ICON, ratingIconHtml, starsHtml, setInteractiveStars } from './rating.js';
+import { ratingIconHtml, starsHtml, setInteractiveStars } from './rating.js';
 
 // ── API ───────────────────────────────────────────────────────
 const getMyReviews   = ()      => apiRequest('/api/v1/user/venue-reviews', { auth: true });

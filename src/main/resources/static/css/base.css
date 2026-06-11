@@ -144,16 +144,8 @@ a {
     background: #f5efe4;
 }
 
-.footer-tagline {
-    color: var(--muted);
-}
-
 .footer-copy {
     color: var(--muted);
-    opacity: .7;
-}
-
-.footer-logo {
     opacity: .7;
 }
 
@@ -226,19 +218,9 @@ a {
     background: rgba(10, 18, 14, .95);
 }
 
-[data-theme="dark"] .footer-tagline {
-    color: rgba(244, 247, 239, .45);
-    opacity: 1;
-}
-
 [data-theme="dark"] .footer-copy {
     color: rgba(244, 247, 239, .28);
     opacity: 1;
-}
-
-[data-theme="dark"] .footer-logo {
-    filter: brightness(0) invert(1);
-    opacity: .5;
 }
 
 /* ── Zona centrale (page-shell + content) ── */
@@ -603,10 +585,6 @@ a {
 
 [data-theme="dark"] .admin-drawer {
     background: var(--paper);
-}
-
-[data-theme="dark"] .admin-drawer-header {
-    border-color: var(--line);
 }
 
 [data-theme="dark"] .drink-form-block,

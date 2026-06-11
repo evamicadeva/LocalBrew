@@ -199,11 +199,6 @@
     transition: var(--button-transition);
 }
 
-.auth-submit:hover:not(:disabled) {
-    background: var(--action-green-bg-hover);
-    color: var(--action-text);
-}
-
 .auth-switch {
     margin-top: 22px;
     text-align: center;
@@ -378,13 +373,6 @@
     transition: var(--button-transition);
 }
 
-.admin-new-drink-btn:hover,
-.dashboard-actions button:hover:not(:disabled):not(.danger-button):not(.secondary-button):not(.manage-drinks):not(.edit-venue):not(.edit-venue-drink):not(.suspend):not(.show-reviews),
-.detail-review-form button:hover:not(:disabled) {
-    background: var(--action-green-bg-hover);
-    color: var(--action-text);
-}
-
 .secondary-button {
     display: inline-flex;
     align-items: center;
@@ -403,26 +391,6 @@
     box-sizing: border-box;
     transition: var(--button-transition);
 }
-
-.secondary-button:hover {
-    background: var(--action-neutral-bg-hover);
-    color: var(--action-neutral-text);
-}
-
-.dashboard-actions .secondary-button,
-[data-theme="dark"] .dashboard-actions button.secondary-button {
-    background: var(--action-neutral-bg);
-    color: var(--action-neutral-text);
-    border-color: var(--action-neutral-border);
-}
-
-.dashboard-actions .secondary-button:hover,
-[data-theme="dark"] .dashboard-actions button.secondary-button:hover {
-    background: var(--action-neutral-bg-hover);
-    color: var(--action-neutral-text);
-    border-color: var(--action-neutral-border);
-}
-
 
 #venue-cancel {
     margin-top: 18px;
@@ -494,12 +462,6 @@
 .dashboard-message {
     color: var(--muted);
     font-weight: 700;
-}
-
-#admin-venues {
-    max-height: 520px;
-    overflow: auto;
-    padding-right: 4px;
 }
 
 .dashboard-item {
@@ -1137,13 +1099,6 @@
     border-color: transparent;
 }
 
-.manage-drinks:hover:not(:disabled) {
-    background: var(--action-amber-bg-hover);
-    color: var(--action-text);
-    border-color: transparent;
-    filter: none;
-}
-
 @media (max-width: 840px) {
     .drink-accordion-panel {
         top: 50%;
@@ -1468,23 +1423,10 @@
     transition: var(--button-transition);
 }
 
-.admin-new-drink-btn:hover,
-.dashboard-header-actions .admin-new-drink-btn:hover {
-    background: var(--action-amber-bg-hover);
-    color: var(--action-text);
-    filter: none;
-}
-
 .dashboard-shell .dashboard-header-actions .btn-map {
     background: var(--action-green-bg);
     color: var(--action-text);
     border: none;
-}
-
-.dashboard-shell .dashboard-header-actions .btn-map:hover {
-    background: var(--action-green-bg-hover);
-    color: var(--action-text);
-    filter: none;
 }
 
 /* ── Ricerca locale ───────────────────────────────────────── */
@@ -2497,88 +2439,6 @@
     background: rgba(255, 255, 255, .035);
     border-color: var(--line);
     color: var(--text);
-}
-
-/* Annulla — azione neutra */
-#venue-cancel,
-.cancel-venue-drink {
-    background: var(--action-neutral-bg);
-    color: var(--action-neutral-text);
-    border-color: var(--action-neutral-border);
-}
-
-#venue-cancel:hover,
-.cancel-venue-drink:hover:not(:disabled) {
-    background: var(--action-neutral-bg-hover);
-    color: var(--action-neutral-text);
-    border-color: var(--action-neutral-border);
-}
-
-/* Dark mode overrides */
-[data-theme="dark"] .admin-venue-actions .activate {
-    background: var(--action-green-bg);
-    color: var(--action-text);
-}
-
-[data-theme="dark"] .admin-venue-actions .suspend {
-    background: var(--action-suspend-bg);
-    color: var(--action-text);
-}
-
-[data-theme="dark"] .admin-venue-actions .suspend:hover:not(:disabled) {
-    background: var(--action-suspend-bg-hover);
-    color: var(--action-text);
-}
-
-[data-theme="dark"] .admin-venue-actions .show-reviews {
-    background: var(--action-amber-bg);
-    color: var(--action-text);
-}
-
-[data-theme="dark"] .admin-venue-actions .show-reviews:hover {
-    background: var(--action-amber-bg-hover);
-    color: var(--action-text);
-}
-
-[data-theme="dark"] .manage-drinks {
-    background: var(--action-amber-bg);
-    color: var(--action-text);
-    border-color: transparent;
-}
-
-[data-theme="dark"] .manage-drinks:hover:not(:disabled) {
-    background: var(--action-amber-bg-hover);
-    color: var(--action-text);
-    border-color: transparent;
-}
-
-[data-theme="dark"] #venue-cancel,
-[data-theme="dark"] .cancel-venue-drink {
-    background: var(--action-neutral-bg);
-    color: var(--action-neutral-text);
-    border-color: var(--action-neutral-border);
-}
-
-[data-theme="dark"] #venue-cancel:hover,
-[data-theme="dark"] .cancel-venue-drink:hover:not(:disabled) {
-    background: var(--action-neutral-bg-hover);
-    color: var(--action-neutral-text);
-    border-color: var(--action-neutral-border);
-}
-
-.dashboard-shell .admin-new-drink-btn:hover,
-.dashboard-shell .dashboard-header-actions .admin-new-drink-btn:hover,
-.dashboard-shell .admin-venue-actions .activate:hover:not(:disabled),
-.dashboard-shell .admin-venue-actions .suspend:hover:not(:disabled),
-.dashboard-shell .admin-venue-actions .show-reviews:hover,
-.dashboard-shell .admin-drink-actions .drink-edit-btn:hover,
-[data-theme="dark"] .dashboard-shell .admin-new-drink-btn:hover,
-[data-theme="dark"] .dashboard-shell .dashboard-header-actions .admin-new-drink-btn:hover,
-[data-theme="dark"] .dashboard-shell .admin-venue-actions .activate:hover:not(:disabled),
-[data-theme="dark"] .dashboard-shell .admin-venue-actions .suspend:hover:not(:disabled),
-[data-theme="dark"] .dashboard-shell .admin-venue-actions .show-reviews:hover,
-[data-theme="dark"] .dashboard-shell .admin-drink-actions .drink-edit-btn:hover {
-    color: var(--action-text);
 }
 
 /* Admin drink cards: layout ispirato alla card glass proposta. */

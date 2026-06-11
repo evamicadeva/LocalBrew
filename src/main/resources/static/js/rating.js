@@ -1,5 +1,5 @@
 // Helper condivisi per la visualizzazione e l'interazione con le stelle di valutazione.
-export const RATING_ICON = 'fa-solid fa-beer-mug-empty';
+const RATING_ICON = 'fa-solid fa-beer-mug-empty';
 
 /**
  * Restituisce l'HTML di una singola icona stella (riempita o vuota).

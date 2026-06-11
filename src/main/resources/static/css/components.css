@@ -132,22 +132,6 @@
     flex-wrap: wrap;
 }
 
-.footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.footer-logo {
-    width: 110px;
-}
-
-.footer-tagline {
-    font-size: 13px;
-    line-height: 1.5;
-    margin: 0;
-}
-
 .footer-copy {
     font-size: 12px;
     margin: 0;
