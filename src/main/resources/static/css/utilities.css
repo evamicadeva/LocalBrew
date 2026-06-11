@@ -76,17 +76,17 @@
   display:grid;
   place-items:center;
   padding:22px;
-  background:rgba(20,12,6,.54);
+  background:var(--modal-backdrop);
   backdrop-filter:blur(3px);
 }
 
 .confirm-dialog{
   width:min(430px,100%);
   padding:24px;
-  border:1px solid var(--line);
+  border:1px solid var(--modal-border);
   border-radius:18px;
-  background:#fff;
-  box-shadow:var(--shadow);
+  background:var(--modal-bg);
+  box-shadow:var(--modal-shadow);
 }
 
 .confirm-kicker{
@@ -121,23 +121,35 @@
   padding:10px 16px;
   border-radius:12px;
   font-weight:900;
+  border:1px solid transparent;
+  transition:var(--button-transition);
 }
 
 .confirm-cancel{
-  background:#f7f3ec;
-  color:var(--green);
+  background:var(--action-neutral-bg);
+  color:var(--action-neutral-text);
+  border-color:var(--action-neutral-border);
+}
+
+.confirm-cancel:hover{
+  background:var(--action-neutral-bg-hover);
+  color:var(--action-neutral-text);
 }
 
 .confirm-submit{
-  background:var(--green);
-  color:#fff;
+  background:var(--action-green-bg);
+  color:var(--action-text);
+}
+
+.confirm-submit:hover{
+  background:var(--action-green-bg-hover);
+  color:var(--action-text);
 }
 
 .confirm-submit.is-danger{
   background:var(--danger-bg);
   color:var(--danger-text);
   border:1.5px solid var(--danger-border);
-  transition:none;
 }
 
 .confirm-submit.is-danger:hover{
@@ -147,15 +159,15 @@
 }
 
 [data-theme="dark"] .confirm-overlay{
-  background:rgba(3,7,5,.68);
+  background:var(--modal-backdrop);
   backdrop-filter:blur(5px);
 }
 
 [data-theme="dark"] .confirm-dialog{
-  background:var(--surface-2, #233029);
+  background:var(--modal-bg);
   color:var(--text);
-  border-color:var(--line);
-  box-shadow:0 24px 60px rgba(0,0,0,.55);
+  border-color:var(--modal-border);
+  box-shadow:var(--modal-shadow);
 }
 
 [data-theme="dark"] .confirm-kicker{
@@ -171,14 +183,14 @@
 }
 
 [data-theme="dark"] .confirm-cancel{
-  background:var(--surface-3, #2c3a31);
-  color:var(--text);
-  border:1px solid var(--line);
+  background:var(--action-neutral-bg);
+  color:var(--action-neutral-text);
+  border-color:var(--action-neutral-border);
 }
 
 [data-theme="dark"] .confirm-cancel:hover{
-  background:rgba(169,189,145,.16);
-  color:var(--text);
+  background:var(--action-neutral-bg-hover);
+  color:var(--action-neutral-text);
 }
 
 [data-theme="dark"] .confirm-submit:not(.is-danger){

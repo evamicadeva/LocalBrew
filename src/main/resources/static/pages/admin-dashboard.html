@@ -20,7 +20,7 @@
                 <p>Gestisci locali e recensioni.</p>
             </div>
             <div class="dashboard-header-actions">
-                <button type="button" class="admin-new-drink-btn" id="admin-open-drawer">
+                <button type="button" class="admin-new-drink-btn" id="admin-open-create-drink">
                     <i class="fa-solid fa-beer-mug-empty"></i> Nuovo drink
                 </button>
                 <a class="btn profile-btn" href="profile.html">
@@ -38,13 +38,32 @@
     <section class="app-page-body dashboard-card">
 
         <!-- Tab navigazione -->
-        <div class="admin-tabs" role="tablist">
-            <button class="admin-tab admin-tab--active" data-tab="venues" role="tab" aria-selected="true">
-                <i class="fa-solid fa-store"></i> Locali
-            </button>
-            <button class="admin-tab" data-tab="drinks" role="tab" aria-selected="false">
-                <i class="fa-solid fa-beer-mug-empty"></i> Drink
-            </button>
+        <div class="admin-tabs-row">
+            <div class="admin-tabs" role="tablist">
+                <button class="admin-tab admin-tab--active" data-tab="venues" role="tab" aria-selected="true">
+                    <i class="fa-solid fa-store"></i> Locali
+                </button>
+                <button class="admin-tab" data-tab="drinks" role="tab" aria-selected="false">
+                    <i class="fa-solid fa-beer-mug-empty"></i> Drink
+                </button>
+            </div>
+
+            <div class="admin-drinks-toolbar hidden" id="admin-drinks-toolbar">
+                <div class="admin-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass admin-search-icon"></i>
+                    <input id="admin-drink-search" class="admin-search-input" type="search"
+                           placeholder="Cerca drink per nome o categoria..." autocomplete="off">
+                </div>
+                <div class="admin-status-filters" role="group">
+                    <button class="admin-status-pill admin-status-pill--active" data-category="">Tutti</button>
+                    <button class="admin-status-pill" data-category="IPA">IPA</button>
+                    <button class="admin-status-pill" data-category="LAGER">Lager</button>
+                    <button class="admin-status-pill" data-category="STOUT">Stout</button>
+                    <button class="admin-status-pill" data-category="ALE">Ale</button>
+                    <button class="admin-status-pill" data-category="WHEAT">Wheat</button>
+                    <button class="admin-status-pill" data-category="SOUR">Sour</button>
+                </div>
+            </div>
         </div>
 
         <!-- Tab: Locali + Recensioni -->
@@ -105,22 +124,6 @@
 
         <!-- Tab: Drink globali -->
         <div class="admin-tab-panel hidden" id="admin-tab-drinks">
-            <div class="admin-drinks-toolbar">
-                <div class="admin-search-wrap">
-                    <i class="fa-solid fa-magnifying-glass admin-search-icon"></i>
-                    <input id="admin-drink-search" class="admin-search-input" type="search"
-                           placeholder="Cerca drink per nome o categoria…" autocomplete="off">
-                </div>
-                <div class="admin-status-filters" role="group">
-                    <button class="admin-status-pill admin-status-pill--active" data-category="">Tutti</button>
-                    <button class="admin-status-pill" data-category="IPA">IPA</button>
-                    <button class="admin-status-pill" data-category="LAGER">Lager</button>
-                    <button class="admin-status-pill" data-category="STOUT">Stout</button>
-                    <button class="admin-status-pill" data-category="ALE">Ale</button>
-                    <button class="admin-status-pill" data-category="WHEAT">Wheat</button>
-                    <button class="admin-status-pill" data-category="SOUR">Sour</button>
-                </div>
-            </div>
             <div id="admin-drinks-list" aria-live="polite">
                 <p class="dashboard-message">Caricamento drink...</p>
             </div>
@@ -129,23 +132,23 @@
     </section>
 </main>
 
-<!-- Overlay -->
-<div class="admin-drawer-overlay" id="admin-drawer-overlay" aria-hidden="true"></div>
-
-<!-- Drawer: Nuovo drink -->
-<aside class="admin-drawer" id="admin-drink-drawer" role="dialog" aria-modal="true" aria-label="Nuovo drink globale">
-    <div class="admin-drawer-header">
-        <h2><i class="fa-solid fa-beer-mug-empty"></i> Nuovo drink</h2>
-        <button class="admin-drawer-close" id="admin-close-drawer" aria-label="Chiudi">
+<!-- Modal: nuovo drink -->
+<div class="admin-drink-create-backdrop hidden" id="admin-drink-create-backdrop" aria-hidden="true"></div>
+<section class="admin-drink-create-modal hidden" id="admin-drink-create-modal" role="dialog" aria-modal="true"
+         aria-labelledby="admin-create-drink-title">
+    <div class="admin-drink-modal-header">
+        <div>
+            <p class="eyebrow">Drink globale</p>
+            <h2 id="admin-create-drink-title"><i class="fa-solid fa-beer-mug-empty"></i> Nuovo drink</h2>
+        </div>
+        <button type="button" class="admin-modal-close" id="admin-close-create-drink" aria-label="Chiudi">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
-    <div class="admin-drawer-body">
-        <p class="dashboard-message" style="margin-bottom:10px;">Drink globali, disponibili a tutti i locali senza
-            prezzo.</p>
-        <p class="auth-message" id="admin-drink-message" aria-live="polite"></p>
 
-        <form class="auth-form" id="admin-drink-form">
+        <form class="auth-form admin-drink-modal-form" id="admin-drink-form">
+            <p class="dashboard-message">Drink globali, disponibili a tutti i locali senza prezzo.</p>
+            <p class="auth-message" id="admin-drink-message" aria-live="polite"></p>
             <label for="admin-drink-name">Nome</label>
             <input id="admin-drink-name" type="text" maxlength="100" required>
 
@@ -189,12 +192,14 @@
             </div>
             <input type="hidden" id="admin-drink-image-uri">
 
-            <button type="submit" class="auth-submit">
-                <i class="fa-solid fa-plus"></i> Crea drink
-            </button>
+            <div class="admin-drink-modal-actions">
+                <button type="button" class="secondary-button" id="admin-cancel-create-drink">Annulla</button>
+                <button type="submit" class="auth-submit">
+                    <i class="fa-solid fa-plus"></i> Crea drink
+                </button>
+            </div>
         </form>
-    </div>
-</aside>
+</section>
 
 <button type="button" class="theme-toggle-floating" id="theme-toggle" aria-label="Passa alla modalità notte"><i class="fa-solid fa-moon"></i></button>
   <script type="module" src="../js/theme-init.js"></script>
@@ -207,7 +212,7 @@
             <p class="eyebrow">Drink globale</p>
             <h2 id="admin-edit-drink-title"><i class="fa-solid fa-pen"></i> Modifica drink</h2>
         </div>
-        <button type="button" class="admin-drawer-close" id="admin-edit-drink-close" aria-label="Chiudi">
+        <button type="button" class="admin-modal-close" id="admin-edit-drink-close" aria-label="Chiudi">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>

@@ -147,12 +147,14 @@
     color: var(--action-text);
     font-weight: 800;
     font-size: 13px;
-    box-shadow: 0 10px 20px rgba(244, 182, 61, .28);
-    transition: .25s;
+    filter: none;
+    transition: var(--button-transition);
 }
 
 .popup-details-link:hover {
-    transform: translateY(-2px)
+    background: var(--action-amber-bg);
+    color: var(--action-text);
+    filter: brightness(.9) saturate(1.04);
 }
 
 [data-theme="dark"] .leaflet-popup-content-wrapper,
@@ -191,7 +193,14 @@
 [data-theme="dark"] .popup-details-link {
     background: var(--action-amber-bg);
     color: var(--action-text);
+    filter: none;
     box-shadow: 0 12px 24px rgba(143, 170, 115, .2);
+}
+
+[data-theme="dark"] .popup-details-link:hover {
+    background: var(--action-amber-bg);
+    color: var(--action-text);
+    filter: brightness(.88) saturate(1.06);
 }
 
 /* Adattamenti della mappa per schermi stretti. */

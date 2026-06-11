@@ -27,14 +27,13 @@
   padding:15px;
   border-radius:18px;
   cursor:pointer;
-  transition:.22s;
+  transition:var(--button-transition);
   font-weight:800;
   color:var(--green);
 }
 .filter-option:hover{
   background:#fff3dc;
   border-color:var(--amber);
-  transform:translateX(4px);
 }
 .filter-option input{
   width:19px;

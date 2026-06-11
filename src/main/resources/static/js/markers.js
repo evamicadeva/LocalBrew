@@ -12,7 +12,8 @@ export const markersCluster = L.markerClusterGroup({
 
 map.addLayer(markersCluster);
 
-const MARKER_CLICK_ZOOM = 13;
+const MARKER_CLICK_ZOOM = 14;
+const MARKER_FOCUS_DURATION = 1.15;
 
 const markerIconOptions = {
     iconSize: [46, 46],
@@ -65,7 +66,11 @@ export function initMarkers(pubs) {
 
         marker.on('click', () => {
             const targetZoom = Math.max(map.getZoom(), MARKER_CLICK_ZOOM);
-            map.setView(marker.getLatLng(), targetZoom, {animate: true});
+            map.flyTo(marker.getLatLng(), targetZoom, {
+                animate: true,
+                duration: MARKER_FOCUS_DURATION,
+                easeLinearity: 0.22
+            });
         });
 
         // Il popup mostra gia le informazioni principali senza rimandare alla card.

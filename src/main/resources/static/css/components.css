@@ -83,10 +83,16 @@
 }
 
 .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
     padding: 13px 20px;
+    border: 1px solid transparent;
     border-radius: 999px;
     font-weight: 800;
-    transition: .25s;
+    transition: var(--button-transition);
 }
 
 .login {
@@ -95,14 +101,25 @@
     color: var(--green);
 }
 
+.login:hover {
+    background: #f7f3ec;
+    border-color: var(--green);
+    color: var(--green-2);
+}
+
 .register {
     background: var(--action-amber-bg);
     color: var(--action-text);
     font-weight: 800;
 }
 
+.register:hover {
+    background: var(--action-amber-bg-hover);
+    color: var(--action-text);
+}
+
 .btn:hover {
-    transform: translateY(-2px)
+    filter: none;
 }
 
 /* Footer ────────────────────────────────────────────────── */
@@ -192,49 +209,39 @@
 /* ── Bottoni nav header (index + pagine interne) ── */
 .btn-map {
     background: var(--action-green-bg);
-    border: none;
     color: var(--action-text);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
     text-decoration: none;
-}
-.btn-map:hover {
-    background: var(--action-green-bg-hover);
-    color: var(--action-text);
     filter: none;
-    transform: translateY(-2px);
+}
+
+.btn-map:hover {
+    background: var(--action-green-bg);
+    color: var(--action-text);
+    filter: brightness(.9) saturate(1.04);
 }
 
 .btn-dashboard {
     background: var(--action-amber-bg);
     color: var(--action-text);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
     text-decoration: none;
-}
-.btn-dashboard:hover {
-    background: var(--action-amber-bg-hover);
-    color: var(--action-text);
     filter: none;
-    transform: translateY(-2px);
+}
+
+.btn-dashboard:hover {
+    background: var(--action-amber-bg);
+    color: var(--action-text);
+    filter: brightness(.9) saturate(1.04);
 }
 
 .btn-logout {
     background: var(--logout-bg);
     color: var(--logout-text);
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
     cursor: pointer;
     font-family: inherit;
 }
 .btn-logout:hover {
     background: var(--logout-bg-hover);
     color: var(--logout-text);
-    transform: translateY(-2px);
 }
 
 /* Bottone Profilo — stesso stile di .login (bianco con bordo) */
@@ -242,9 +249,10 @@
     background: var(--paper);
     border: 1px solid var(--line);
     color: var(--green);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
     text-decoration: none;
 }
-.profile-btn:hover { transform: translateY(-2px); }
+.profile-btn:hover {
+    background: #f7f3ec;
+    border-color: var(--green);
+    color: var(--green-2);
+}

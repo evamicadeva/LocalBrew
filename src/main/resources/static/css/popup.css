@@ -4,13 +4,13 @@
   top:100px;
   left:50%;
   transform:translateX(-50%);
-  background:white;
+  background:var(--modal-bg);
   border-radius:22px;
   display:flex;
   gap:15px;
   padding:15px;
   width:400px;
-  box-shadow:var(--shadow);
+  box-shadow:var(--modal-shadow);
 }
 
 /* Immagine e contenuto del popup custom. */
@@ -27,7 +27,7 @@
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(20,12,6,.45);
+  background: var(--modal-backdrop);
   backdrop-filter: blur(2px);
 }
 
@@ -41,8 +41,8 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  background: var(--paper);
-  box-shadow: -6px 0 32px rgba(44,27,15,.18);
+  background: var(--modal-bg);
+  box-shadow: var(--modal-shadow);
   transform: translateX(0);
 }
 
@@ -66,13 +66,17 @@
   border-radius: 999px;
   background: #fff3d8;
   color: var(--green);
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   font-size: 16px;
-  transition: background .15s;
+  transition: var(--button-transition);
 }
 
-#details-close:hover { background: #ffe4a8; }
+#details-close:hover {
+  background: #ffe4a8;
+  color: var(--green);
+  border-color: rgba(244, 182, 61, .34);
+}
 
 #venue-details-content {
   flex: 1;
@@ -136,7 +140,7 @@
   background:var(--action-green-bg);
   color:var(--action-text);
   font-weight:800;
-  transition:.2s;
+  transition:var(--button-transition);
 }
 
 .detail-favorite-button span,
@@ -155,6 +159,11 @@
 
 .detail-favorite-button.is-favorite{
   background:var(--action-amber-bg);
+  color:var(--action-text);
+}
+
+.detail-favorite-button.is-favorite:hover{
+  background:var(--action-amber-bg-hover);
   color:var(--action-text);
 }
 
@@ -203,6 +212,7 @@
   color:var(--green);
   cursor:pointer;
   font-weight:900;
+  transition:var(--button-transition);
 }
 
 .detail-tab.is-active{
@@ -268,6 +278,7 @@
   color:var(--action-text);
   cursor:pointer;
   font-weight:900;
+  transition:var(--button-transition);
 }
 
 .detail-load-more:hover{
@@ -343,19 +354,19 @@
   color:var(--action-text);
   font-weight:900;
   box-shadow:0 12px 22px rgba(21,79,31,.18);
-  transition:.2s;
+  transition:var(--button-transition);
 }
 
 .detail-review-form button:hover{
   background:var(--action-green-bg-hover);
   color:var(--action-text);
-  transform:translateY(-1px);
+  box-shadow:none;
 }
 
 .detail-review-form button:disabled{
   cursor:not-allowed;
   opacity:.65;
-  transform:none;
+  box-shadow:none;
 }
 
 .detail-form-message{

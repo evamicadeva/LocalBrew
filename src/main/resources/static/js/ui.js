@@ -123,7 +123,11 @@ function focusMarker(index) {
   });
 
   markersCluster.zoomToShowLayer(marker, () => {
-    map.setView(marker.getLatLng(), Math.max(map.getZoom(), 15), { animate: true });
+    map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), 15), {
+      animate: true,
+      duration: 1.15,
+      easeLinearity: 0.22
+    });
     marker.openPopup();
   });
 }

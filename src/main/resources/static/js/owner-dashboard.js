@@ -23,6 +23,10 @@ const message = document.getElementById('owner-message');
 const submitButton = document.getElementById('venue-submit');
 const cancelButton = document.getElementById('venue-cancel');
 const formColLabel = document.getElementById('form-col-label');
+const venueModal = document.getElementById('venue-modal');
+const venueModalBackdrop = document.getElementById('venue-modal-backdrop');
+const openVenueModalButton = document.getElementById('venue-modal-open');
+const closeVenueModalButton = document.getElementById('venue-modal-close');
 const drinkMessage = document.getElementById('drink-message');
 const venueSelect = document.getElementById('drink-venue-select');
 const existingDrinkForm = document.getElementById('existing-drink-form');
@@ -45,6 +49,7 @@ const drinkImagePreview = document.getElementById('new-drink-image-preview');
 const drinkImageFilename = document.getElementById('new-drink-image-filename');
 const drinkImageRemove = document.getElementById('new-drink-image-remove');
 const drinkAccordionPanel = document.getElementById('drink-accordion-panel');
+const drinkModalBackdrop = document.getElementById('drink-modal-backdrop');
 const drinkPanelTitle = document.getElementById('drink-panel-title');
 const drinkPanelSub = document.getElementById('drink-panel-sub');
 const drinkPanelClose = document.getElementById('drink-panel-close');
@@ -193,12 +198,35 @@ function selectedVenueId() {
     return venueSelect.value;
 }
 
+function openVenueModal() {
+    venueModal.classList.remove('hidden');
+    venueModalBackdrop.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    fields.name.focus();
+}
+
+function closeVenueModal() {
+    venueModal.classList.add('hidden');
+    venueModalBackdrop.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    resetForm();
+}
+
+function openCreateVenueModal() {
+    resetForm();
+    openVenueModal();
+}
+
+function openEditVenueModal(venue) {
+    fillForm(venue);
+    openVenueModal();
+}
+
 function resetForm() {
     form.reset();
     fields.id.value = '';
     submitButton.textContent = 'Crea locale';
     formColLabel.textContent = 'Nuovo locale';
-    cancelButton.classList.add('hidden');
     resetImageField({
         fileInput: venueImageFile, preview: venueImagePreview,
         filename: venueImageFilename, removeBtn: venueImageRemove,
@@ -217,13 +245,11 @@ function fillForm(venue) {
     fields.imageUri.value = venue.imageUri || '';
     submitButton.textContent = 'Aggiorna locale';
     formColLabel.textContent = 'Modifica locale';
-    cancelButton.classList.remove('hidden');
     fillImageField({
         preview: venueImagePreview, filename: venueImageFilename,
         removeBtn: venueImageRemove, hiddenInput: fields.imageUri,
         url: venue.imageUri
     });
-    fields.name.focus();
 }
 
 function openDrinkPanel(venue) {
@@ -231,13 +257,17 @@ function openDrinkPanel(venue) {
     drinkPanelTitle.innerHTML = `<i class="fa-solid fa-beer-mug-empty"></i> Birre — ${escapeHtml(venue.name)}`;
     drinkPanelSub.textContent = `${escapeHtml(venue.city)} · ${escapeHtml(statusLabel(venue.status))}`;
     drinkAccordionPanel.classList.remove('hidden');
-    drinkAccordionPanel.scrollIntoView({behavior: 'smooth', block: 'start'});
+    drinkModalBackdrop.classList.remove('hidden');
+    document.body.classList.add('modal-open');
     syncDrinkControls();
     loadSelectedVenueDrinks();
+    drinkPanelClose.focus();
 }
 
 function closeDrinkPanel() {
     drinkAccordionPanel.classList.add('hidden');
+    drinkModalBackdrop.classList.add('hidden');
+    document.body.classList.remove('modal-open');
     venueSelect.value = '';
     selectedVenueDrinks = [];
     editingVenueDrinkId = null;
@@ -411,9 +441,24 @@ if (user) {
         defaultLabel: 'Scegli immagine (JPG, PNG, WEBP · max 5 MB)'
     });
 
-    cancelButton.addEventListener('click', resetForm);
+    openVenueModalButton.addEventListener('click', openCreateVenueModal);
+    cancelButton.addEventListener('click', closeVenueModal);
+    closeVenueModalButton.addEventListener('click', closeVenueModal);
+    venueModalBackdrop.addEventListener('click', closeVenueModal);
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !venueModal.classList.contains('hidden')) {
+            closeVenueModal();
+            return;
+        }
+
+        if (event.key === 'Escape' && !drinkAccordionPanel.classList.contains('hidden')) {
+            closeDrinkPanel();
+        }
+    });
 
     drinkPanelClose.addEventListener('click', closeDrinkPanel);
+    drinkModalBackdrop.addEventListener('click', closeDrinkPanel);
 
     form.addEventListener('submit', async event => {
         event.preventDefault();
@@ -434,7 +479,7 @@ if (user) {
                 showToast('Locale creato.');
             }
 
-            resetForm();
+            closeVenueModal();
             await loadOwnerVenues();
             if (selectedVenueId()) await loadSelectedVenueDrinks();
         } catch (error) {
@@ -562,8 +607,7 @@ if (user) {
         if (!venue) return;
 
         if (event.target.closest('.edit-venue')) {
-            fillForm(venue);
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            openEditVenueModal(venue);
             return;
         }
 

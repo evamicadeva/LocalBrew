@@ -20,14 +20,15 @@ import {escapeHtml} from './utils.js';
 // ── DOM refs ─────────────────────────────────────────────────
 const container        = document.getElementById('admin-venues');
 const venueSearch      = document.getElementById('admin-venue-search');
-const statusPills      = document.querySelectorAll('.admin-status-pill');
+const statusPills      = document.querySelectorAll('[data-status]');
 const reviewHint       = document.getElementById('admin-review-hint');
 const reviewVenueName  = document.getElementById('admin-review-venue-name');
 const reviewList       = document.getElementById('admin-reviews');
-const openDrawerBtn    = document.getElementById('admin-open-drawer');
-const closeDrawerBtn   = document.getElementById('admin-close-drawer');
-const drawer           = document.getElementById('admin-drink-drawer');
-const overlay          = document.getElementById('admin-drawer-overlay');
+const openCreateDrinkBtn   = document.getElementById('admin-open-create-drink');
+const closeCreateDrinkBtn  = document.getElementById('admin-close-create-drink');
+const cancelCreateDrinkBtn = document.getElementById('admin-cancel-create-drink');
+const createDrinkModal     = document.getElementById('admin-drink-create-modal');
+const createDrinkBackdrop  = document.getElementById('admin-drink-create-backdrop');
 const drinkForm        = document.getElementById('admin-drink-form');
 const drinkMessage     = document.getElementById('admin-drink-message');
 
@@ -75,34 +76,46 @@ const reviewCache = {};
 
 // ── Drawer ───────────────────────────────────────────────────
 function syncBodyLock() {
-    const drawerOpen = drawer?.classList.contains('admin-drawer--open');
+    const createModalOpen = createDrinkModal && !createDrinkModal.classList.contains('hidden');
     const editModalOpen = editDrinkModal && !editDrinkModal.classList.contains('hidden');
-    document.body.style.overflow = drawerOpen || editModalOpen ? 'hidden' : '';
+    document.body.style.overflow = createModalOpen || editModalOpen ? 'hidden' : '';
 }
 
-function openDrawer()  {
-    drawer.classList.add('admin-drawer--open');
-    overlay.classList.add('admin-drawer-overlay--visible');
+function openCreateDrinkModal() {
+    createDrinkModal.classList.remove('hidden');
+    createDrinkBackdrop.classList.remove('hidden');
+    createDrinkBackdrop.setAttribute('aria-hidden', 'false');
     syncBodyLock();
     drinkFields.name.focus();
 }
 
-function closeDrawer() {
-    drawer.classList.remove('admin-drawer--open');
-    overlay.classList.remove('admin-drawer-overlay--visible');
+function closeCreateDrinkModal() {
+    createDrinkModal.classList.add('hidden');
+    createDrinkBackdrop.classList.add('hidden');
+    createDrinkBackdrop.setAttribute('aria-hidden', 'true');
+    drinkForm.reset();
+    resetImageField({
+        fileInput: drinkImageFile, preview: drinkImagePreview,
+        filename: drinkImageFilename, removeBtn: drinkImageRemove,
+        hiddenInput: drinkFields.imageUri, defaultLabel: DRINK_IMAGE_LABEL
+    });
+    showDrinkMessage('');
     syncBodyLock();
 }
 
-openDrawerBtn?.addEventListener('click', openDrawer);
-closeDrawerBtn?.addEventListener('click', closeDrawer);
-overlay?.addEventListener('click', closeDrawer);
+openCreateDrinkBtn?.addEventListener('click', openCreateDrinkModal);
+closeCreateDrinkBtn?.addEventListener('click', closeCreateDrinkModal);
+cancelCreateDrinkBtn?.addEventListener('click', closeCreateDrinkModal);
+createDrinkBackdrop?.addEventListener('click', closeCreateDrinkModal);
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (editDrinkModal && !editDrinkModal.classList.contains('hidden')) {
         closeEditDrinkModal();
         return;
     }
-    closeDrawer();
+    if (createDrinkModal && !createDrinkModal.classList.contains('hidden')) {
+        closeCreateDrinkModal();
+    }
 });
 
 // ── Upload helpers ───────────────────────────────────────────
@@ -402,9 +415,8 @@ if (user) {
                 filename: drinkImageFilename, removeBtn: drinkImageRemove,
                 hiddenInput: drinkFields.imageUri, defaultLabel: DRINK_IMAGE_LABEL
             });
-            showDrinkMessage('Drink creato.', 'is-success');
             showToast('Drink creato.');
-            closeDrawer();
+            closeCreateDrinkModal();
         } catch (error) {
             showDrinkMessage(error.message, 'is-error');
             showToast(error.message, 'error');
@@ -532,6 +544,7 @@ if (user) {
 // Tab switching
 const tabButtons  = document.querySelectorAll('.admin-tab');
 const tabPanelMap = { venues: document.getElementById('admin-tab-venues'), drinks: document.getElementById('admin-tab-drinks') };
+const drinkToolbar = document.getElementById('admin-drinks-toolbar');
 
 tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -542,6 +555,7 @@ tabButtons.forEach(btn => {
         Object.entries(tabPanelMap).forEach(([key, panel]) => {
             if (panel) panel.classList.toggle('hidden', key !== tab);
         });
+        drinkToolbar?.classList.toggle('hidden', tab !== 'drinks');
         if (tab === 'drinks') renderDrinksTab();
     });
 });
@@ -553,7 +567,7 @@ let activeDrinkCat = '';
 
 const drinksList  = document.getElementById('admin-drinks-list');
 const drinkSearch = document.getElementById('admin-drink-search');
-const catPills    = document.querySelectorAll('[data-category]');
+const catPills    = document.querySelectorAll('#admin-drinks-toolbar [data-category]');
 
 catPills.forEach(pill => {
     pill.addEventListener('click', () => {

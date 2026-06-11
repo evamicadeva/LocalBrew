@@ -34,12 +34,11 @@
   gap:7px;
   border-radius:18px;
   font-weight:800;
-  transition:.25s;
+  transition:var(--button-transition);
 }
 .sidebar-item:hover,.sidebar-item.active{
   background:var(--action-amber-bg);
   color:var(--action-text);
-  transform:translateY(-2px);
 }
 .sidebar-item i{font-size:23px}
 .sidebar-item span{font-size:12px}
@@ -137,7 +136,7 @@
   background:#fffaf2;
   color:var(--text);
   text-align:left;
-  transition:.2s;
+  transition:var(--button-transition);
 }
 
 .favorite-panel-card:hover{
@@ -184,13 +183,12 @@
   border-radius:999px;
   background:#fff3d8;
   color:var(--green);
-  transition:.2s;
+  transition:var(--button-transition);
 }
 
 .favorite-panel-actions button:hover{
   background:var(--action-amber-bg);
   color:var(--action-text);
-  transform:translateY(-1px);
 }
 
 /* Su mobile la sidebar diventa una barra inferiore. */

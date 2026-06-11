@@ -12,7 +12,7 @@
     <link rel="shortcut icon" href="../assets/icons/favicon.png" type="image/x-icon">
 </head>
 
-<body class="auth-page app-page">
+<body class="auth-page app-page owner-dashboard-page">
 <main class="dashboard-shell app-shell">
     <header class="app-page-header dashboard-header">
             <div>
@@ -20,6 +20,9 @@
                 <p>Crea, aggiorna o elimina i tuoi locali.</p>
             </div>
             <div class="dashboard-header-actions">
+                <button type="button" class="admin-new-drink-btn owner-new-venue-btn" id="venue-modal-open">
+                    <i class="fa-solid fa-plus"></i> Nuovo locale
+                </button>
                 <a class="btn profile-btn" href="profile.html">
                     <i class="fa-solid fa-user"></i> Profilo
                 </a>
@@ -37,12 +40,18 @@
 
         <div class="dashboard-grid owner-dashboard-grid">
 
-            <!-- COLONNA SX: form crea/aggiorna -->
-            <div class="venue-form-col">
-                <h2 class="dashboard-col-title">
-                    <i class="fa-solid fa-store"></i>
-                    <span id="form-col-label">Nuovo locale</span>
-                </h2>
+            <!-- Modal: form crea/aggiorna locale -->
+            <div class="venue-modal-backdrop hidden" id="venue-modal-backdrop"></div>
+            <div class="venue-form-col venue-modal hidden" id="venue-modal" role="dialog" aria-modal="true" aria-labelledby="form-col-label">
+                <div class="venue-modal-header">
+                    <h2 class="dashboard-col-title">
+                        <i class="fa-solid fa-store"></i>
+                        <span id="form-col-label">Nuovo locale</span>
+                    </h2>
+                    <button type="button" class="venue-modal-close" id="venue-modal-close" aria-label="Chiudi form locale">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
                 <form class="auth-form" id="venue-form">
                     <input type="hidden" id="venue-id">
 
@@ -85,13 +94,12 @@
 
                     <div class="dashboard-actions">
                         <button type="submit" class="auth-submit" id="venue-submit">Crea locale</button>
-                        <button type="button" class="secondary-button hidden" id="venue-cancel">Annulla modifica
-                        </button>
+                        <button type="button" class="secondary-button" id="venue-cancel">Annulla</button>
                     </div>
                 </form>
             </div>
 
-            <!-- COLONNA DX: lista locali + accordion birre per ciascuno -->
+            <!-- Lista locali -->
             <section class="dashboard-list owner-dashboard-list" aria-live="polite">
                 <h2 class="dashboard-col-title">
                     <i class="fa-solid fa-list"></i>
@@ -109,7 +117,9 @@
         <!-- select nascosto, usato solo dal JS per tracciare il locale attivo -->
         <select id="drink-venue-select" class="hidden" aria-hidden="true"></select>
 
-        <div class="drink-accordion-panel hidden" id="drink-accordion-panel">
+        <div class="drink-modal-backdrop hidden" id="drink-modal-backdrop"></div>
+        <div class="drink-accordion-panel hidden" id="drink-accordion-panel" role="dialog" aria-modal="true"
+             aria-labelledby="drink-panel-title">
 
             <div class="drink-panel-header">
                 <div>
